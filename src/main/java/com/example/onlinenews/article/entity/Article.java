@@ -1,0 +1,70 @@
+package com.example.onlinenews.article.entity;
+
+import com.example.onlinenews.article_img.entity.ArticleImg;
+import com.example.onlinenews.like.entity.Like;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Article {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    //기자 id 넣을 예정 - User
+    //private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column
+    private String subtitle;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
+    @CreatedDate
+    private LocalDateTime created_at;
+
+    @Column
+    @LastModifiedDate
+    private LocalDateTime modified_at;
+
+    @Column
+    private LocalDateTime hold_at;
+
+    @Column
+    private LocalDateTime approved_at;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private State state;
+
+    @Column(nullable = false)
+    private Boolean is_public;
+
+    @Column(nullable = false)
+    private int views = 0;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ArticleImg> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+}

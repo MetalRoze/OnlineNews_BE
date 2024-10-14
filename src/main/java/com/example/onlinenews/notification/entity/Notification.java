@@ -1,4 +1,4 @@
-package com.example.onlinenews.mailing.entity;
+package com.example.onlinenews.notification.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,14 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Mailing {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mailing_id; // 메일링 아이디 (PK)
+    private Long noti_id; // 알림 아이디 (PK)
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private User user; //사용자id (fk)
@@ -23,15 +22,20 @@ public class Mailing {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Article article; //기사 id (fk)
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LocalDateTime send_at; //전송시간
+    private NotificationType type;
 
     @Column(nullable = false)
-    private boolean is_sent; //전송여부
+    private LocalDateTime created_at;
+
+    @Column(nullable = false)
+    private boolean is_read;
 
     @Builder
-    public Mailing(LocalDateTime send_at, boolean is_sent){
-        this.send_at = send_at;
-        this.is_sent = is_sent;
+    public Notification(NotificationType type, LocalDateTime created_at, boolean is_read) {
+        this.type = type;
+        this.created_at = created_at;
+        this.is_read = is_read;
     }
 }

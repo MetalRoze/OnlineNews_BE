@@ -1,6 +1,8 @@
 package com.example.onlinenews.request.entity;
 
 
+import com.example.onlinenews.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,8 +19,10 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long req_id; // 요청 아이디 (PK)
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user; //사용자id (fk)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Article article; //기사 id (fk)

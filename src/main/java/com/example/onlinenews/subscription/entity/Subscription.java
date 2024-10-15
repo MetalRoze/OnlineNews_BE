@@ -1,5 +1,7 @@
 package com.example.onlinenews.subscription.entity;
 
+import com.example.onlinenews.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,8 +18,10 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sub_id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user; // 사용자 (FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 //
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    private Publisher publisher; // 신문사 (FK)

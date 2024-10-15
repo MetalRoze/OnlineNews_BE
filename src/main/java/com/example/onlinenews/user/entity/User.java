@@ -17,7 +17,7 @@ public class User {
 
     @Id
     @Column(nullable = false)
-    private String user_id; //사용자 id, PK
+    private long user_id; //사용자 id, PK
 
     @Column(nullable = false)
     private String user_pw; //비밀번호

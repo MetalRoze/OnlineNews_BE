@@ -1,6 +1,7 @@
 package com.example.onlinenews.comment.entity;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,7 +22,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
     @Column(nullable = false)
     private String content;

@@ -4,7 +4,7 @@
  ├─ entity
  ├─ dto 
  ├─ repository(interface)
- ├─ api
+ ├─ api (interface)
  ├─ controller
  ├─ service
  └─ util (필요시)

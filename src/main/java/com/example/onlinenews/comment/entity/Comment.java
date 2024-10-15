@@ -36,10 +36,10 @@ public class Comment {
 
     @Column(nullable = false)
     @CreatedDate
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private int like_count = 0;
+    private int likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

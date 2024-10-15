@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sub_id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -30,10 +30,10 @@ public class Subscription {
     private Article article;
 
     @Column(nullable = false)
-    private LocalDateTime created_at; //구독 날짜
+    private LocalDateTime createdAt; //구독 날짜
 
     @Builder
     public Subscription(LocalDateTime created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 }

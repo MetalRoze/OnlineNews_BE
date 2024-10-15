@@ -24,7 +24,6 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -45,24 +44,24 @@ public class Article {
 
     @Column(nullable = false)
     @CreatedDate
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Column
     @LastModifiedDate
-    private LocalDateTime modified_at;
+    private LocalDateTime modifiedAt;
 
     @Column
-    private LocalDateTime hold_at;
+    private LocalDateTime holdAt;
 
     @Column
-    private LocalDateTime approved_at;
+    private LocalDateTime approvedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private State state;
 
     @Column(nullable = false)
-    private Boolean is_public;
+    private Boolean isPublic;
 
     @Column(nullable = false)
     private int views = 0;

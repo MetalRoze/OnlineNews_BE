@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long noti_id; // 알림 아이디 (PK)
+    private Long id; // 알림 아이디 (PK)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -34,15 +34,15 @@ public class Notification {
     private NotificationType type;
 
     @Column(nullable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private boolean is_read;
+    private boolean isRead;
 
     @Builder
     public Notification(NotificationType type, LocalDateTime created_at, boolean is_read) {
         this.type = type;
-        this.created_at = created_at;
-        this.is_read = is_read;
+        this.createdAt = created_at;
+        this.isRead = is_read;
     }
 }

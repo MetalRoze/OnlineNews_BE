@@ -30,6 +30,6 @@ public class UserLike {
 
     @Column(nullable = false)
     @CreatedDate
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
 }

@@ -1,3 +1,15 @@
+### ⭐folder 구조
+```
+─ 기능 상위 도메인
+ ├─ entity
+ ├─ dto 
+ ├─ repository(interface)
+ ├─ api
+ ├─ controller
+ ├─ service
+ └─ util (필요시)
+```
+
 ### 🔖Commit message
 |헤더|내용|
 |----|------|

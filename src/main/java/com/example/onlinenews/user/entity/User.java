@@ -12,13 +12,13 @@ import java.util.concurrent.Flow;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class User {
-
     @Id
     @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long user_id; //사용자 id, PK
 
     @Column(nullable = false)
@@ -52,6 +52,6 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pub_id")
     @JsonIgnore
-    private Publisher pub_id;
+    private Publisher publisher;
 
 }

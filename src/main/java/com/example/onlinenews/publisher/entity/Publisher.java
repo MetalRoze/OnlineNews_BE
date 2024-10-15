@@ -8,11 +8,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Publisher {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pub_id; // 신문사 아이디 (PK)

@@ -1,7 +1,7 @@
 package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
-import com.example.onlinenews.like.entity.Like;
+import com.example.onlinenews.like.entity.UserLike;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Article {
@@ -71,5 +71,5 @@ public class Article {
     private List<ArticleImg> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Like> likes = new ArrayList<>();
+    private List<UserLike> userLikes = new ArrayList<>();
 }

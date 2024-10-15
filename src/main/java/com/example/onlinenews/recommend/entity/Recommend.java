@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Recommend {
@@ -28,7 +28,7 @@ public class Recommend {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     @JsonIgnore
-    private Article article_id;
+    private Article article;
 
     @Column(nullable = false)
     private Boolean rating; // 추천/비추천

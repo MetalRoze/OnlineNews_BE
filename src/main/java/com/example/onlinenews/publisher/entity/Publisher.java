@@ -14,15 +14,15 @@ import java.util.List;
 public class Publisher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long pub_id; // 신문사 아이디 (PK)
+    private Long id; // 신문사 아이디 (PK)
 
     @Column(nullable = false)
-    private String pub_name; // 신문사 이름
+    private String name; // 신문사 이름
 
     @Column
-    private String pub_url; // 홈페이지 링크
+    private String url; // 홈페이지 링크
 
     @Column
-    private String pub_img; // 신문사 로고 URL
+    private String img; // 신문사 로고 URL
 
 }

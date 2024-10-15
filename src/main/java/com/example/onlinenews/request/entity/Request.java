@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long req_id; // 요청 아이디 (PK)
+    private Long id; // 요청 아이디 (PK)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -31,7 +31,7 @@ public class Request {
     private Article article;
 
     @Column(nullable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,7 +42,7 @@ public class Request {
 
     @Builder
     public Request (LocalDateTime created_at, RequestStatus status, String comment){
-        this.created_at= created_at;
+        this.createdAt= created_at;
         this.status = status;
         this.comment = comment;
     }

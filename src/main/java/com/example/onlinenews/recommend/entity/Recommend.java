@@ -15,10 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class Recommend {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rec_id; // 추천 아이디 (PK)
+    private Long id; // 추천 아이디 (PK)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -35,5 +34,5 @@ public class Recommend {
 
     @Column(nullable = false)
     @CreatedDate
-    private LocalDateTime timestamp; // 평점한 시각
+    private LocalDateTime createdAt; // 평점한 시각
 }

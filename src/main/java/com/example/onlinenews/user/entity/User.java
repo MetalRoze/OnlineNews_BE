@@ -19,32 +19,32 @@ public class User {
     @Id
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long user_id; //사용자 id, PK
+    private long id; //사용자 id, PK
 
     @Column(nullable = false)
-    private String user_pw; //비밀번호
+    private String pw; //비밀번호
 
     @Column(nullable = false)
-    private boolean user_sex; //성별
+    private boolean sex; //성별
 
     @Column(nullable = false)
-    private String user_email; //이메일주소
+    private String email; //이메일주소
 
     @Column(nullable = false)
-    private String user_name; //이름
+    private String name; //이름
 
     @Column(nullable = false)
-    private String user_cp; //전화번호
+    private String cp; //전화번호
 
     @Column
-    private String user_img; //프로필 사진
+    private String img; //프로필 사진
 
     @Column(nullable = false)
-    private int user_grade; //사용자 등급
+    private int grade; //사용자 등급
 
     @CreatedDate
     @Column(nullable = false)
-    private LocalDateTime created_at; //가입일자
+    private LocalDateTime createdAt; //가입일자
 
     @Column
     private String bio; //자기소개

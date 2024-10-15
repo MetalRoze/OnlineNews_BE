@@ -35,3 +35,10 @@
 > * feat, refact branch -> `dev`
 > * hotfix -> `main, dev`
 > * `dev` -> `main`
+
+<br/>
+
+### ⭐API 
+> `/api/{entity}/{api name}`
+
+예 : /api/user/signnup : 회원가입 API 

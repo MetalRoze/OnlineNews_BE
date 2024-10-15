@@ -1,5 +1,8 @@
 package com.example.onlinenews.mailing.entity;
 
+import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,11 +20,15 @@ public class Mailing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mailing_id; // 메일링 아이디 (PK)
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private User user; //사용자id (fk)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user_id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Article article; //기사 id (fk)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    @JsonIgnore
+    private Article article_id;
 
     @Column(nullable = false)
     private LocalDateTime send_at; //전송시간

@@ -2,6 +2,8 @@ package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.like.entity.Like;
+import com.example.onlinenews.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,8 +24,11 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //기자 id 넣을 예정 - User
-    //private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user; 
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

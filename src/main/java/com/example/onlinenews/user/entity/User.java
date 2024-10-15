@@ -1,5 +1,7 @@
 package com.example.onlinenews.user.entity;
 
+import com.example.onlinenews.publisher.entity.Publisher;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.joda.time.LocalDateTime;
@@ -17,7 +19,7 @@ public class User {
 
     @Id
     @Column(nullable = false)
-    private String user_id; //사용자 id, PK
+    private long user_id; //사용자 id, PK
 
     @Column(nullable = false)
     private String user_pw; //비밀번호
@@ -47,9 +49,9 @@ public class User {
     @Column
     private String bio; //자기소개
 
-
-//    @ManyToOne(fetch=FetchType.LAZY)
-//    @Column(nullable = false)
-//    private Publisher publisher; //신문사id, FK
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pub_id")
+    @JsonIgnore
+    private Publisher pub_id;
 
 }

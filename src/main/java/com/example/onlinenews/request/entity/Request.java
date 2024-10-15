@@ -11,22 +11,17 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 요청 아이디 (PK)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id")
     @JsonIgnore
     private Article article;
 
@@ -41,10 +36,12 @@ public class Request {
     private String comment;
 
     @Builder
-    public Request (LocalDateTime created_at, RequestStatus status, String comment){
-        this.createdAt= created_at;
+
+    public Request(User user, Article article, LocalDateTime created_at, RequestStatus status, String comment) {
+        this.user = user;
+        this.article = article;
+        this.createdAt = createdAt;
         this.status = status;
         this.comment = comment;
     }
-
 }

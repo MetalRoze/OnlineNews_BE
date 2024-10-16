@@ -11,14 +11,14 @@ public enum ExceptionCode {
     ALREADY_LIKED(400, "LIKE_001", "이미 '좋아요'를 누른 상태입니다."),
 
 
-
     USER_NOT_FOUND(404, "USER_004", "해당 유저를 찾을 수 없습니다."),
     TOKEN_NOT_VALID(401, "TOKEN_001", "토큰이 만료되었습니다. 다시 로그인 해주세요."),
     USER_CAN_NOT_BE_NULL(400, "USER_005", "사용자는 null이 될 수 없습니다."),
     USER_ID_NOT_FOUND(404, "USER_006", "해당되는 id의 사용자를 찾을 수 없습니다."),
-
+    EMAIL_CONFLICT(409, "EMAIL_009","이미 존재하는 email입니다. "),
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
+    PASSWORD_MISMATCH(400,"PASSWORD_001", "비밀번호 확인이 틀렸습니다."),
 
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "Validation Exception 발생");

@@ -33,16 +33,16 @@ public class Article {
     @Column(nullable = false)
     private Category category;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
     @Column
     private String subtitle;
 
-    @Column(nullable = false)
+    @Column
     private String content;
 
-    @Column(nullable = false)
+    @Column
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -60,7 +60,7 @@ public class Article {
     @Column(nullable = false)
     private State state;
 
-    @Column(nullable = false)
+    @Column
     private Boolean isPublic;
 
     @Column(nullable = false)

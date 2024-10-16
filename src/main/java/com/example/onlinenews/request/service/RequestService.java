@@ -10,6 +10,7 @@ import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.repository.RequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,6 +50,7 @@ public class RequestService {
 //    }
 
     //요청 수락
+    @Transactional
     public RequestStatus requestAccept (Long userId, Long reqId){
 //        추후 주석해제
 //        User user = userRepository.findById(user_id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));

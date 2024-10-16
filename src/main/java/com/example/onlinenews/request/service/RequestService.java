@@ -1,15 +1,17 @@
 package com.example.onlinenews.request.service;
 
+import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.request.dto.RequestCreateDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.repository.RequestRepository;
-import com.example.onlinenews.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,21 @@ public class RequestService {
         Request request = requestRepository.findById(req_id).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         return RequestDto.fromEntity(request);
     }
+
+    //요청 생성 (user, article 생성 시 주석 해제)
+//    public RequestDto create(RequestCreateDto createDto){
+//        User user = userRepository.findById(createDto.getUserId()).orElseThrow(() -> new  BusinessException(ExceptionCode.USER_NOT_FOUND));
+//        Article article = articleRepository.findById(createDto.getArticleId()).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+////
+//        Request request  = Request.builder()
+//                .user(user)
+//                .article(article)
+//                .createdAt(LocalDateTime.now())
+//                .build();
+//
+//        requestRepository.save(request);
+//        return RequestDto.fromEntity(request);
+//    }
 
     //요청 수락
     public RequestStatus requestAccept (Long userId, Long reqId){

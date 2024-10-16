@@ -1,5 +1,7 @@
 package com.example.onlinenews.request.service;
 
+import com.example.onlinenews.error.BusinessException;
+import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.repository.RequestRepository;
@@ -21,9 +23,9 @@ public class RequestService {
                 .collect(Collectors.toList());
     }
 
-    //req_id로 개별 조회
+    //request id로 개별 조회
     public RequestDto read(Long req_id){
-        Request request = requestRepository.findById(req_id).orElseThrow(() -> new IllegalArgumentException("해당 요청이 없습니다."));
+        Request request = requestRepository.findById(req_id).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         return RequestDto.fromEntity(request);
     }
 

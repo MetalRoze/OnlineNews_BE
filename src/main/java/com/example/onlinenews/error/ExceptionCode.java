@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum ExceptionCode {
 
 
-    ARTICLE_NOT_FOUND(404, "POST_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
+    ARTICLE_NOT_FOUND(404, "ARTICLE_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
     REPLY_NOT_FOUND(404, "REPLY_001", "해당되는 id의 댓글을 찾을 수 없습니다."),
     ALREADY_LIKED(400, "LIKE_001", "이미 '좋아요'를 누른 상태입니다."),
 
@@ -16,6 +16,8 @@ public enum ExceptionCode {
     USER_CAN_NOT_BE_NULL(400, "USER_005", "사용자는 null이 될 수 없습니다."),
     USER_ID_NOT_FOUND(404, "USER_006", "해당되는 id의 사용자를 찾을 수 없습니다."),
     EMAIL_CONFLICT(409, "EMAIL_009","이미 존재하는 email입니다. "),
+
+    REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
     PASSWORD_MISMATCH(400,"PASSWORD_001", "비밀번호 확인이 틀렸습니다."),

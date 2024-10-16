@@ -36,8 +36,7 @@ public class Request {
     private String comment;
 
     @Builder
-
-    public Request(User user, Article article, LocalDateTime created_at, RequestStatus status, String comment) {
+    public Request(User user, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
         this.user = user;
         this.article = article;
         this.createdAt = createdAt;

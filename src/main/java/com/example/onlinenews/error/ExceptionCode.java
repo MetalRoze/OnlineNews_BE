@@ -15,6 +15,8 @@ public enum ExceptionCode {
     TOKEN_NOT_VALID(401, "TOKEN_001", "토큰이 만료되었습니다. 다시 로그인 해주세요."),
     USER_CAN_NOT_BE_NULL(400, "USER_005", "사용자는 null이 될 수 없습니다."),
     USER_ID_NOT_FOUND(404, "USER_006", "해당되는 id의 사용자를 찾을 수 없습니다."),
+    USER_NOT_ALLOWED(404, "USER_007", "편집장 이상만 가능한 작업입니다."),
+
     EMAIL_CONFLICT(409, "EMAIL_009","이미 존재하는 email입니다. "),
 
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),

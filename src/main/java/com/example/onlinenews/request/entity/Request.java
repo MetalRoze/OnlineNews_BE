@@ -43,4 +43,10 @@ public class Request {
         this.status = status;
         this.comment = comment;
     }
+
+    //상태 업데이트
+    public void updateStatus(RequestStatus newStatus, String comment){
+        this.status = newStatus;
+        this.comment = comment;
+    }
 }

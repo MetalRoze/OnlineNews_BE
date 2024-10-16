@@ -45,6 +45,7 @@ dependencies {
 
     //s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.300'
 
     // security
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'

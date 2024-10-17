@@ -43,7 +43,7 @@ public class User {
     private int grade; //사용자 등급
 
     @CreatedDate
-    @Column
+    @Column(nullable = false)
     private LocalDateTime createdAt; //가입일자
 
     @Column

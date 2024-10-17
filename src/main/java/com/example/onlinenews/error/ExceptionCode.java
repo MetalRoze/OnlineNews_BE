@@ -20,6 +20,10 @@ public enum ExceptionCode {
     EMAIL_CONFLICT(409, "EMAIL_009","이미 존재하는 email입니다. "),
 
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),
+    ALREADY_APPROVED(400, "REQUEST_002", "이미 '승인' 한 상태입니다."),
+    ALREADY_HOLDING(400, "REQUEST_003", "이미 '보류' 한 상태입니다."),
+    ALREADY_REFUSED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
+
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
     PASSWORD_MISMATCH(400,"PASSWORD_001", "비밀번호 확인이 틀렸습니다."),

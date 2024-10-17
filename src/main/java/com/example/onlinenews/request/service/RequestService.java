@@ -1,5 +1,6 @@
 package com.example.onlinenews.request.service;
 
+import com.example.onlinenews.article.service.ArticleService;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.request.dto.RequestCommentDto;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final ArticleService articleService;
 
     //전체 조회
     public List<RequestDto> list(){
@@ -44,6 +46,7 @@ public class RequestService {
 //                .user(user)
 //                .article(article)
 //                .createdAt(LocalDateTime.now())
+//                .statue(RequestStatus.PENDING)
 //                .build();
 //
 //        requestRepository.save(request);
@@ -54,7 +57,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestAccept (Long userId, Long reqId){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<9){
+        if(user.getGrade()<4){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
@@ -62,6 +65,11 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
         }
         request.updateStatus(RequestStatus.APPROVED, null);
+
+        //기사 상태 업데이트
+        Long articleId = request.getArticle().getId();
+        articleService.statusUpdate(articleId, request.getStatus());
+
         return request.getStatus();
     }
 
@@ -69,7 +77,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestHold(Long userId, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<9){
+        if(user.getGrade()<4){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
 
@@ -79,6 +87,11 @@ public class RequestService {
         }
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.HOLDING, comment);
+
+        //기사 상태 업데이트
+        Long articleId = request.getArticle().getId();
+        articleService.statusUpdate(articleId, request.getStatus());
+
         return request.getStatus();
     }
 
@@ -86,7 +99,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestReject(Long userId, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<9){
+        if(user.getGrade()<4){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
@@ -95,6 +108,11 @@ public class RequestService {
         }
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.REJECTED, comment);
+
+        //기사 상태 업데이트
+        Long articleId = request.getArticle().getId();
+        articleService.statusUpdate(articleId, request.getStatus());
+
         return request.getStatus();
     }
 

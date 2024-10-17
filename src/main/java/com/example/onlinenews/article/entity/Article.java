@@ -2,6 +2,7 @@ package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.like.entity.UserLike;
+import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -58,7 +59,7 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private State state;
+    private RequestStatus state;
 
     @Column
     private Boolean isPublic;
@@ -71,4 +72,8 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserLike> userLikes = new ArrayList<>();
+
+    public void updateStatue(RequestStatus newRequestStatus) {
+        this.state= newRequestStatus;
+    }
 }

@@ -44,4 +44,9 @@ public class RequestController implements RequestApi {
         return ResponseEntity.ok(requestService.requestReject(2L, reqId, requestCommentDto));
     }
 
+    @Override
+    public List<RequestDto> getByStatus(String keyword) {
+        return requestService.getByStatus(keyword);
+    }
+
 }

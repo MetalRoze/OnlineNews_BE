@@ -15,7 +15,7 @@ import java.util.List;
 public interface RequestApi {
 
     @GetMapping("")
-    @Operation(summary = "전체 요청 조회", description = "전체 요청 목록을 조회하는 메소드입니다.")
+    @Operation(summary = "전체 요청 조회", description = "전체 요청 목록을 조회합니다.")
     List<RequestDto> list();
 
     @GetMapping("/{reqId}")
@@ -34,4 +34,8 @@ public interface RequestApi {
     @PutMapping("/{reqId}/reject")
     @Operation(summary = "요청 id로 요청 조회", description = "편집장이 id에 해당하는 요청을 거절하고 커멘트를 남깁니다.")
     ResponseEntity<?> requestReject(@PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
+
+    @GetMapping("/status")
+    @Operation(summary = "상태별로 요청 조회", description = "상태를 입력(param)하여 해당 상태의 요청들을 조회합니다.")
+    List<RequestDto> getByStatus(@RequestParam String keyword);
 }

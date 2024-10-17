@@ -57,7 +57,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestAccept (Long userId, Long reqId){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<4){
+        if(user.getGrade()<9){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
@@ -77,7 +77,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestHold(Long userId, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<4){
+        if(user.getGrade()<9){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
 
@@ -99,7 +99,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestReject(Long userId, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<4){
+        if(user.getGrade()<9){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
@@ -114,6 +114,22 @@ public class RequestService {
         articleService.statusUpdate(articleId, request.getStatus());
 
         return request.getStatus();
+    }
+
+    //상태로 요청조회
+    @Transactional
+    public List<RequestDto> getByStatus(String keyword) {
+        RequestStatus enumStatus = switch (keyword.toLowerCase()) {
+            case "pending" -> RequestStatus.PENDING;
+            case "approved" -> RequestStatus.APPROVED;
+            case "holding" -> RequestStatus.HOLDING;
+            case "rejected" -> RequestStatus.REJECTED;
+            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
+        };
+
+        return requestRepository.findRequestsByStatus(enumStatus).stream()
+                .map(RequestDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
 }

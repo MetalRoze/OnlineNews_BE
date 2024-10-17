@@ -39,4 +39,9 @@ public class RequestController implements RequestApi {
         return ResponseEntity.ok(requestService.requestHold(2L, reqId, requestCommentDto));
     }
 
+    @Override
+    public ResponseEntity<?> requestReject(Long reqId, RequestCommentDto requestCommentDto) {
+        return ResponseEntity.ok(requestService.requestReject(2L, reqId, requestCommentDto));
+    }
+
 }

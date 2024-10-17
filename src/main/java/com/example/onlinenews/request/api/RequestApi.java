@@ -23,11 +23,15 @@ public interface RequestApi {
     RequestDto read(@PathVariable Long reqId);
 
     @PatchMapping("/{reqId}/accept")
-    @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
+    @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
     ResponseEntity<?> requestAccept(@PathVariable Long reqId);
 
 
     @PutMapping("/{reqId}/hold")
-    @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
+    @Operation(summary = "요청 보류", description = "편집장이 id에 해당하는 요청을 보류하고 커멘트를 남깁니다.")
     ResponseEntity<?> requestHold(@PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
+
+    @PutMapping("/{reqId}/reject")
+    @Operation(summary = "요청 id로 요청 조회", description = "편집장이 id에 해당하는 요청을 거절하고 커멘트를 남깁니다.")
+    ResponseEntity<?> requestReject(@PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
 }

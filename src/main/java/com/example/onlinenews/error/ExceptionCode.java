@@ -22,7 +22,7 @@ public enum ExceptionCode {
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),
     ALREADY_APPROVED(400, "REQUEST_002", "이미 '승인' 한 상태입니다."),
     ALREADY_HOLDING(400, "REQUEST_003", "이미 '보류' 한 상태입니다."),
-    ALREADY_REFUSED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
+    ALREADY_REJECTED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
 
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),

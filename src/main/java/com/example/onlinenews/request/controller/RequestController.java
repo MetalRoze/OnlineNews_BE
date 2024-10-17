@@ -1,10 +1,13 @@
 package com.example.onlinenews.request.controller;
 
 import com.example.onlinenews.request.api.RequestApi;
+import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,15 +23,20 @@ public class RequestController implements RequestApi {
     }
 
     @Override
-    public RequestDto read(Long req_id) {
-        return requestService.read(req_id);
+    public RequestDto read(Long reqId) {
+        return requestService.read(reqId);
     }
 
     @Override
-    public RequestStatus requestAccept(Long req_id) {
+    public ResponseEntity<?> requestAccept(Long reqId) {
+        //임시로 userID, 3 (추후 토큰검사)
+        return ResponseEntity.ok(requestService.requestAccept(2L, reqId));
+    }
 
-        //임시로 userID, 1 (추후 토큰검사)
-        return requestService.requestAccept(1L, req_id);
+    @Override
+    public ResponseEntity<?> requestHold(Long reqId, RequestCommentDto requestCommentDto) {
+        //임시로 userID, 3 (추후 토큰검사)
+        return ResponseEntity.ok(requestService.requestHold(2L, reqId, requestCommentDto));
     }
 
 }

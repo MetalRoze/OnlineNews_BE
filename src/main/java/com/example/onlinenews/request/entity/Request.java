@@ -27,7 +27,7 @@ public class Request {
     @JsonIgnore
     private Article article;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)

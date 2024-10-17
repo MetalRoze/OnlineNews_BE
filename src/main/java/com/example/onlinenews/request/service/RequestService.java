@@ -3,6 +3,7 @@ package com.example.onlinenews.request.service;
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestCreateDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
@@ -56,7 +57,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestAccept (Long userId, Long reqId){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        if(user.getGrade()<9){
+        if(user.getGrade()<4){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
@@ -64,6 +65,23 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
         }
         request.updateStatus(RequestStatus.APPROVED, null);
+        return request.getStatus();
+    }
+
+    //보류
+    @Transactional
+    public RequestStatus requestHold(Long userId, Long reqId,  RequestCommentDto requestCommentDto){
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        if(user.getGrade()<4){
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getStatus().equals(RequestStatus.HOLDING)){
+            throw new BusinessException(ExceptionCode.ALREADY_HOLDING);
+        }
+        String comment = requestCommentDto.getComment();
+        request.updateStatus(RequestStatus.HOLDING, comment);
         return request.getStatus();
     }
 

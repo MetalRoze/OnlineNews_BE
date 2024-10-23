@@ -6,6 +6,7 @@ import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class UserService {
                 .bio(null)
                 .publisher(null)
                 .createdAt(LocalDateTime.now())
-                .grade(3).build();
+                .grade(UserGrade.GENERAL_MEMBER).build();
 
         userRepository.save(user);
     }
@@ -77,7 +78,7 @@ public class UserService {
                 .bio(null)
                 .publisher(publisherService.getPublisherByName(requestDTO.getPublisher()))
                 .createdAt(LocalDateTime.now())
-                .grade(4).build();
+                .grade(UserGrade.CITIZEN_REPORTER).build();
 
         userRepository.save(user);
     }

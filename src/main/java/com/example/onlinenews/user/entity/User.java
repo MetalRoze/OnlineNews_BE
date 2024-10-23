@@ -39,8 +39,9 @@ public class User {
     @Column
     private String img; //프로필 사진
 
+    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
     @Column(nullable = false)
-    private int grade; //사용자 등급
+    private UserGrade grade; //사용자 등급
 
     @CreatedDate
     @Column(nullable = false)

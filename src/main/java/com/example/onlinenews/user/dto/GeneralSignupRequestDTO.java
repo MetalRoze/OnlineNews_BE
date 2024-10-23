@@ -12,4 +12,5 @@ public class GeneralSignupRequestDTO {
     private String user_cp;
     private MultipartFile user_img;
     private String user_sex;
+    private String user_nickname;
 }

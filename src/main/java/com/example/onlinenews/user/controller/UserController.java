@@ -66,6 +66,7 @@ public class UserController implements UserAPI {
         createRequestDTO.setUser_cp(requestDTO.getUser_cp());
         createRequestDTO.setUser_sex(user_sex);
         createRequestDTO.setUser_img(user_img);
+        createRequestDTO.setUser_nickname(requestDTO.getUser_nickname());
 
         userService.createGeneralUser(createRequestDTO);
         return ResponseEntity.ok(createRequestDTO);

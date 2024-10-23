@@ -54,4 +54,7 @@ public class User {
     @JsonIgnore
     private Publisher publisher;
 
+    @Column
+    private String nickname;
+
 }

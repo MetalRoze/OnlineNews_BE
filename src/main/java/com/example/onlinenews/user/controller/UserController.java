@@ -2,16 +2,19 @@ package com.example.onlinenews.user.controller;
 
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.api.UserAPI;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
+import com.example.onlinenews.user.dto.LoginRequestDto;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,7 +91,6 @@ public class UserController implements UserAPI {
             user_img = userService.saveProfileImg(requestDTO.getUser_img());
         }
 
-
         String user_pw = passwordEncoder.encode(requestDTO.getUser_pw());
         boolean user_sex = !requestDTO.getUser_sex().equals("F");
 
@@ -108,5 +110,10 @@ public class UserController implements UserAPI {
     @Override
     public Boolean emailCheck(String email){
         return !userService.emailExists(email);
+    }
+
+    @Override
+    public ResponseEntity<JwtToken> login(LoginRequestDto requestDto) {
+        return new ResponseEntity<>(userService.login(requestDto), HttpStatus.OK);
     }
 }

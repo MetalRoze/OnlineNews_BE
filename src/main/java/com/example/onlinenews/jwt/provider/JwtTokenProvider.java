@@ -129,10 +129,9 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            if (!token.startsWith(BEARER_PREFIX)) {
-                return false;
+            if (token.startsWith(BEARER_PREFIX)) {
+                token = token.substring(BEARER_PREFIX.length()).trim();
             }
-            token = token.substring(BEARER_PREFIX.length()).trim();
 
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -140,6 +139,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
 
             return !claims.getBody().getExpiration().before(new Date());
+
         } catch (Exception e) {
             log.error("Invalid JWT token: {}", token, e);
             return false;

@@ -11,10 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +27,7 @@ public class Request {
     @JsonIgnore
     private Article article;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
@@ -41,10 +38,17 @@ public class Request {
     private String comment;
 
     @Builder
-    public Request (LocalDateTime created_at, RequestStatus status, String comment){
-        this.createdAt= created_at;
+    public Request(User user, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
+        this.user = user;
+        this.article = article;
+        this.createdAt = createdAt;
         this.status = status;
         this.comment = comment;
     }
 
+    //상태 업데이트
+    public void updateStatus(RequestStatus newStatus, String comment){
+        this.status = newStatus;
+        this.comment = comment;
+    }
 }

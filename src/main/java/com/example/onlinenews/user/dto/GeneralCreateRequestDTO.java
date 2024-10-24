@@ -11,4 +11,5 @@ public class GeneralCreateRequestDTO {
     private String user_cp;
     private String user_img;
     private Boolean user_sex;
+    private String user_nickname;
 }

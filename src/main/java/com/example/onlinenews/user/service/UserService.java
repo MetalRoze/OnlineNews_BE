@@ -2,22 +2,27 @@ package com.example.onlinenews.user.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.onlinenews.error.BusinessException;
+import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.jwt.dto.JwtToken;
+import com.example.onlinenews.jwt.provider.JwtTokenProvider;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
+import com.example.onlinenews.user.dto.LoginRequestDto;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 
 @Service
@@ -26,31 +31,35 @@ public class UserService {
     private final PublisherService publisherService;
     private final PasswordEncoder passwordEncoder;
     private final AmazonS3 amazonS3;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${cloud.aws.s3.bucket}")
     private String buketName;
 
     @Autowired
-    public UserService(UserRepository userRepository, PublisherService publisherService, PasswordEncoder passwordEncoder, AmazonS3 amazonS3) {
+    public UserService(UserRepository userRepository, PublisherService publisherService,
+                       PasswordEncoder passwordEncoder, AmazonS3 amazonS3,
+                       JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.publisherService = publisherService;
         this.passwordEncoder = passwordEncoder;
         this.amazonS3 = amazonS3;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public List<User> getAllUser(){
+    public List<User> getAllUser() {
         return userRepository.findAll();
     }
 
-    public Optional<User> read(Long id){
+    public Optional<User> read(Long id) {
         return userRepository.findById(id);
     }
 
-    public Boolean emailExists(String email){
+    public Boolean emailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    public void createGeneralUser(GeneralCreateRequestDTO requestDTO){
+    public void createGeneralUser(GeneralCreateRequestDTO requestDTO) {
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -61,12 +70,12 @@ public class UserService {
                 .bio(null)
                 .publisher(null)
                 .createdAt(LocalDateTime.now())
-                .grade(3).build();
+                .grade(UserGrade.GENERAL_MEMBER).build();
 
         userRepository.save(user);
     }
 
-    public void createJournalistUser(JournallistCreateRequestDTO requestDTO){
+    public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -77,12 +86,12 @@ public class UserService {
                 .bio(null)
                 .publisher(publisherService.getPublisherByName(requestDTO.getPublisher()))
                 .createdAt(LocalDateTime.now())
-                .grade(4).build();
+                .grade(UserGrade.CITIZEN_REPORTER).build();
 
         userRepository.save(user);
     }
 
-    public String saveProfileImg(MultipartFile file){
+    public String saveProfileImg(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
         if (originalFilename != null && !originalFilename.isEmpty()) {
@@ -93,11 +102,32 @@ public class UserService {
         String fileUrl = "https://" + buketName + ".s3.amazonaws.com/profileImg/" + uniqueFilename;
 
         try {
-            amazonS3.putObject(new PutObjectRequest(buketName,uniqueFilename,file.getInputStream(),null));
+            amazonS3.putObject(new PutObjectRequest(buketName, uniqueFilename, file.getInputStream(), null));
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file to S3");
         }
 
         return fileUrl;
+    }
+
+    public JwtToken login(LoginRequestDto requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPw())) {
+            throw new BusinessException(ExceptionCode.USER_PASSWORD_INCORRECT);
+        }
+
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
+        System.out.println("login - token 만들기 : " + accessToken + ", " + refreshToken);
+
+        return JwtToken.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build()
+                ;
+
     }
 }

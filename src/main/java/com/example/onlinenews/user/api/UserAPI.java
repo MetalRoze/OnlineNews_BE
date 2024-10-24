@@ -1,7 +1,9 @@
 package com.example.onlinenews.user.api;
 
+import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
+import com.example.onlinenews.user.dto.LoginRequestDto;
 import com.example.onlinenews.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,5 +34,11 @@ public interface UserAPI {
     @GetMapping("/emailCheck")
     @Operation(summary = "이메일 존재하는지 확인", description = "이메일이 이미 존재하는지 확인합니다. ")
     Boolean emailCheck(@RequestParam String email);
+
+
+    @PostMapping("/login")
+    @Operation(summary = "로그인 메서드", description = "사용자의 아이디, 패스워드를 받아 인증합니다. ")
+    ResponseEntity<JwtToken> login(@RequestBody LoginRequestDto requestDto);
+
 
 }

@@ -18,7 +18,8 @@ public enum ExceptionCode {
     USER_NOT_ALLOWED(404, "USER_007", "편집장 이상만 가능한 작업입니다."),
     USER_PASSWORD_INCORRECT(401, "USER_008", "비밀번호가 틀렸습니다."),
     INVITE_CODE_MISMATCH(400, "KEY_001", "올바르지 않는 초대코드 입니다."),
-
+    PUBLISHER_NOT_FOUND(404, "PUB_001", "해당 이름의 신문사를 찾을 수 없습니다."),
+    
     EMAIL_CONFLICT(409, "EMAIL_009", "이미 존재하는 email입니다. "),
 
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),

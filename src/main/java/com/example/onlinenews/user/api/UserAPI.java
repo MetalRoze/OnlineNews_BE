@@ -2,6 +2,7 @@ package com.example.onlinenews.user.api;
 
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
+import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDto;
@@ -39,6 +40,10 @@ public interface UserAPI {
     @PostMapping("/signup/admin")
     @Operation(summary = "시스템 관리자 계정 생성(회원가입)", description = "시스템 관리자의 회원가입을 수행합니다")
     ResponseEntity<?> systemAdminSignup(@RequestBody AdminCreateRequestDTO requestDTO);
+
+    @PostMapping("/signup/editor")
+    @Operation(summary = "편집장 계정 생성(회원가입)", description = "편집장의 회원가입을 수행합니다. ")
+    ResponseEntity<?> editorSignup(@RequestBody EditorCreateRequestDTO requestDTO);
 
     @GetMapping("/emailCheck")
     @Operation(summary = "이메일 존재하는지 확인", description = "이메일이 이미 존재하는지 확인합니다. ")

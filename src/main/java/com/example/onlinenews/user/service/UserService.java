@@ -151,6 +151,10 @@ public class UserService {
         Publisher publisher = null;
         if (!publisherName.isEmpty() || !publisherName.isBlank()) {
             publisher = publisherService.getPublisherByName(publisherName);
+
+            if (publisher == null) {
+                throw new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND);
+            }
         }
 
         User user = User.builder()

@@ -6,6 +6,7 @@ import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.api.UserAPI;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
+import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
@@ -118,6 +119,21 @@ public class UserController implements UserAPI {
         if (userService.checkSecreteKey(GRADE, inviteCode)) {
             userService.createAdminUser(id, pw, GRADE, "");
             return ResponseEntity.ok("ADMIN 계정 생성이 완료되었습니다");
+        }
+        throw new BusinessException(ExceptionCode.INVITE_CODE_MISMATCH);
+    }
+
+    @Override
+    public ResponseEntity<?> editorSignup(EditorCreateRequestDTO requestDTO) {
+        String id = requestDTO.getId();
+        String pw = requestDTO.getPassword();
+        String inviteCode = requestDTO.getInviteCode();
+        String publisherName = requestDTO.getPublisherName();
+
+        UserGrade GRADE = UserGrade.EDITOR;
+        if (userService.checkSecreteKey(GRADE, inviteCode)) {
+            userService.createAdminUser(id, pw, GRADE, publisherName);
+            return ResponseEntity.ok("EDITOR 계정 생성이 완료되었습니다");
         }
         throw new BusinessException(ExceptionCode.INVITE_CODE_MISMATCH);
     }

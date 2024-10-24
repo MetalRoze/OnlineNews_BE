@@ -17,8 +17,9 @@ public enum ExceptionCode {
     USER_ID_NOT_FOUND(404, "USER_006", "해당되는 id의 사용자를 찾을 수 없습니다."),
     USER_NOT_ALLOWED(404, "USER_007", "편집장 이상만 가능한 작업입니다."),
     USER_PASSWORD_INCORRECT(401, "USER_008", "비밀번호가 틀렸습니다."),
+    INVITE_CODE_MISMATCH(400, "KEY_001", "올바르지 않는 초대코드 입니다."),
 
-    EMAIL_CONFLICT(409, "EMAIL_009","이미 존재하는 email입니다. "),
+    EMAIL_CONFLICT(409, "EMAIL_009", "이미 존재하는 email입니다. "),
 
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),
     ALREADY_APPROVED(400, "REQUEST_002", "이미 '승인' 한 상태입니다."),
@@ -27,11 +28,10 @@ public enum ExceptionCode {
 
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
-    PASSWORD_MISMATCH(400,"PASSWORD_001", "비밀번호 확인이 틀렸습니다."),
+    PASSWORD_MISMATCH(400, "PASSWORD_001", "비밀번호 확인이 틀렸습니다."),
 
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "Validation Exception 발생");
-
 
     // 1. status = 날려줄 상태코드
     // 2. code = 해당 오류가 어느부분과 관련있는지 카테고리화 해주는 코드. 예외 원인 식별하기 편하기에 추가

@@ -6,6 +6,7 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
+import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
@@ -35,6 +36,12 @@ public class UserService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String buketName;
+
+    @Value("${secretKey.admin}")
+    private String adminSecretKey;
+
+    @Value("${secretKey.editor}")
+    private String editorSecretKey;
 
     @Autowired
     public UserService(UserRepository userRepository, PublisherService publisherService,
@@ -129,5 +136,35 @@ public class UserService {
                 .build()
                 ;
 
+    }
+
+    public boolean checkSecreteKey(UserGrade usergrade, String inviteCode) {
+        if (usergrade.equals(UserGrade.SYSTEM_ADMIN)) {
+            return inviteCode.equals(adminSecretKey);
+        } else if (usergrade.equals(UserGrade.EDITOR)) {
+            return inviteCode.equals(editorSecretKey);
+        }
+        return false;
+    }
+
+    public void createAdminUser(String id, String password, UserGrade userGrade, String publisherName) {
+        Publisher publisher = null;
+        if (!publisherName.isEmpty() || !publisherName.isBlank()) {
+            publisher = publisherService.getPublisherByName(publisherName);
+        }
+
+        User user = User.builder()
+                .email(id)
+                .pw(passwordEncoder.encode(password))
+                .grade(userGrade)
+                .sex(true) // 관리자의 나머지 계정 정보의 나머지값들에 "ADMIN" 이 들어가도록 설정
+                .cp("ADMIN")
+                .name("ADMIN")
+                .nickname("ADMIN")
+                .publisher(publisher)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        userRepository.save(user);
     }
 }

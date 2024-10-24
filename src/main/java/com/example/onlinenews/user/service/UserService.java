@@ -157,14 +157,19 @@ public class UserService {
             }
         }
 
+        String setString = "ADMIN";
+        if (userGrade.equals(UserGrade.EDITOR)) {
+            setString = "EDITOR";
+        }
+
         User user = User.builder()
                 .email(id)
                 .pw(passwordEncoder.encode(password))
                 .grade(userGrade)
                 .sex(true) // 관리자의 나머지 계정 정보의 나머지값들에 "ADMIN" 이 들어가도록 설정
-                .cp("ADMIN")
-                .name("ADMIN")
-                .nickname("ADMIN")
+                .cp(setString)
+                .name(setString)
+                .nickname(setString)
                 .publisher(publisher)
                 .createdAt(LocalDateTime.now())
                 .build();

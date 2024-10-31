@@ -5,23 +5,25 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.api.UserAPI;
+import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
+import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDto;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.service.UserService;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,17 +41,17 @@ public class UserController implements UserAPI {
 
     @Override
     public User read(Long id) {
-        Optional<User> user =  userService.read(id);
+        Optional<User> user = userService.read(id);
         return user.orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     @Override
     public ResponseEntity<?> generalSignup(GeneralSignupRequestDTO requestDTO) {
-        if(userService.emailExists(requestDTO.getUser_email())){
+        if (userService.emailExists(requestDTO.getUser_email())) {
             throw new BusinessException(ExceptionCode.EMAIL_CONFLICT);
         }
 
-        if(!requestDTO.getUser_pw().equals(requestDTO.getUser_pw2())){
+        if (!requestDTO.getUser_pw().equals(requestDTO.getUser_pw2())) {
             throw new BusinessException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
@@ -77,11 +79,11 @@ public class UserController implements UserAPI {
 
     @Override
     public ResponseEntity<?> journalistSignup(JournalistSignupRequestDTO requestDTO) {
-        if(userService.emailExists(requestDTO.getUser_email())){
+        if (userService.emailExists(requestDTO.getUser_email())) {
             throw new BusinessException(ExceptionCode.EMAIL_CONFLICT);
         }
 
-        if(!requestDTO.getUser_pw().equals(requestDTO.getUser_pw2())){
+        if (!requestDTO.getUser_pw().equals(requestDTO.getUser_pw2())) {
             throw new BusinessException(ExceptionCode.PASSWORD_MISMATCH);
         }
 
@@ -108,7 +110,37 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public Boolean emailCheck(String email){
+    public ResponseEntity<?> systemAdminSignup(AdminCreateRequestDTO requestDTO) {
+        String id = requestDTO.getId();
+        String pw = requestDTO.getPassword();
+        String inviteCode = requestDTO.getInviteCode();
+
+        UserGrade GRADE = UserGrade.SYSTEM_ADMIN;
+        if (userService.checkSecreteKey(GRADE, inviteCode)) {
+            userService.createAdminUser(id, pw, GRADE, "");
+            return ResponseEntity.ok("ADMIN 계정 생성이 완료되었습니다");
+        }
+        throw new BusinessException(ExceptionCode.INVITE_CODE_MISMATCH);
+    }
+
+    @Override
+    public ResponseEntity<?> editorSignup(EditorCreateRequestDTO requestDTO) {
+        String id = requestDTO.getId();
+        String pw = requestDTO.getPassword();
+        String inviteCode = requestDTO.getInviteCode();
+        String publisherName = requestDTO.getPublisherName();
+
+        UserGrade GRADE = UserGrade.EDITOR;
+        if (userService.checkSecreteKey(GRADE, inviteCode)) {
+            userService.createAdminUser(id, pw, GRADE, publisherName);
+            return ResponseEntity.ok("EDITOR 계정 생성이 완료되었습니다");
+        }
+        throw new BusinessException(ExceptionCode.INVITE_CODE_MISMATCH);
+    }
+
+
+    @Override
+    public Boolean emailCheck(String email) {
         return !userService.emailExists(email);
     }
 

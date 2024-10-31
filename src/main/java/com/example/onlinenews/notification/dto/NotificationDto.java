@@ -12,19 +12,22 @@ public class NotificationDto {
     private String userName;
     private String articleTitle;
     private LocalDateTime createdAt;
+    private boolean isRead;
 
-    public NotificationDto(Long notificationId, String userName, String articleTitle, LocalDateTime createdAt) {
+    public NotificationDto(Long notificationId, String userName, String articleTitle, LocalDateTime createdAt,boolean isRead) {
         this.notificationId = notificationId;
         this.userName = userName;
         this.articleTitle = articleTitle;
         this.createdAt = createdAt;
+        this.isRead = isRead;
     }
     public static NotificationDto fromEntity(Notification notification){
         return new NotificationDto(
                 notification.getId(),
                 notification.getUser().getName(),
                 notification.getArticle().getTitle() + " " + notification.getType().getMessage(),
-                notification.getCreatedAt()
+                notification.getCreatedAt(),
+                notification.isRead()
         );
     }
 }

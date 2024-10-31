@@ -15,10 +15,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +43,15 @@ public class Notification {
     private boolean isRead;
 
     @Builder
-    public Notification(NotificationType type, LocalDateTime createdAt, boolean isRead) {
+    public Notification(User user, Article article, NotificationType type, LocalDateTime createdAt, boolean isRead) {
+        this.user= user;
+        this.article = article;
         this.type = type;
         this.createdAt = createdAt;
         this.isRead = isRead;
+    }
+
+    public void updateIsRead(boolean newIsRead){
+        this.isRead = newIsRead;
     }
 }

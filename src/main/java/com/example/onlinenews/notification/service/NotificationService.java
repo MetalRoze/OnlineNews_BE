@@ -12,6 +12,7 @@ import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,5 +48,12 @@ public class NotificationService {
     public NotificationDto read(Long notificationId){
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
         return NotificationDto.fromEntity(notification);
+    }
+    //알림 읽음
+    @Transactional
+    public boolean updateIsRead(Long notificationId){
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
+        notification.updateIsRead(true);
+        return notification.isRead();
     }
 }

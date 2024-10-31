@@ -20,4 +20,8 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         article.updateStatue(newRequestStatus);
     }
+
+    public void create(){
+        notificationService.createRequestNoti(1L,1L);
+    }
 }

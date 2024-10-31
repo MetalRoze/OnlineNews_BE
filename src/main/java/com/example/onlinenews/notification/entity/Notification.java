@@ -38,8 +38,6 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType type;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;

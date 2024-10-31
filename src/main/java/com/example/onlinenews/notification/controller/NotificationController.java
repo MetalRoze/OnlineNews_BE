@@ -28,4 +28,9 @@ public class NotificationController implements NotificationApi {
     public ResponseEntity<?> updateIsRead(Long notificationId) {
         return ResponseEntity.ok(notificationService.updateIsRead(notificationId));
     }
+
+    @Override
+    public List<NotificationDto> getByType(String keyword) {
+        return notificationService.getByType(keyword);
+    }
 }

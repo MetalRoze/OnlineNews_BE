@@ -8,6 +8,8 @@ import com.example.onlinenews.notification.dto.NotificationDto;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
+import com.example.onlinenews.request.dto.RequestDto;
+import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +57,18 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
         notification.updateIsRead(true);
         return notification.isRead();
+    }
+    //스위치케이스 덜적은거입니다...
+    public List<NotificationDto> getByType(String keyword) {
+        NotificationType enumStatus = switch (keyword.toLowerCase()) {
+            case "request" -> NotificationType.EDITOR;
+            case "comment" -> NotificationType.REPORTER_COMMENT;
+            case "reply" -> NotificationType.USER_REPLY;
+            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
+        };
+
+        return notificationRepository.findNotificationsByType(enumStatus).stream()
+                .map(NotificationDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

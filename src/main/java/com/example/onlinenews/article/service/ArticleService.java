@@ -22,6 +22,6 @@ public class ArticleService {
     }
 
     public void create(){
-        notificationService.createRequestNoti(1L,1L);
+        notificationService.createRequestNoti(2L,2L);
     }
 }

@@ -25,6 +25,7 @@ public enum ExceptionCode {
     ALREADY_HOLDING(400, "REQUEST_003", "이미 '보류' 한 상태입니다."),
     ALREADY_REJECTED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
 
+    NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_001", "해당되는 id 의 알림을 찾을 수 없습니다."),
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
     PASSWORD_MISMATCH(400,"PASSWORD_001", "비밀번호 확인이 틀렸습니다."),

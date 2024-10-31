@@ -3,8 +3,13 @@ package com.example.onlinenews.notification.entity;
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.joda.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -33,6 +38,9 @@ public class Notification {
     @Column(nullable = false)
     private NotificationType type;
 
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -40,9 +48,9 @@ public class Notification {
     private boolean isRead;
 
     @Builder
-    public Notification(NotificationType type, LocalDateTime created_at, boolean is_read) {
+    public Notification(NotificationType type, LocalDateTime createdAt, boolean isRead) {
         this.type = type;
-        this.createdAt = created_at;
-        this.isRead = is_read;
+        this.createdAt = createdAt;
+        this.isRead = isRead;
     }
 }

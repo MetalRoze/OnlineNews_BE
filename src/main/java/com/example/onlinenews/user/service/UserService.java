@@ -10,6 +10,8 @@ import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.dto.FindIdRequestDTO;
 import com.example.onlinenews.user.dto.FindIdResponseDTO;
+import com.example.onlinenews.user.dto.FindPwRequestDTO;
+import com.example.onlinenews.user.dto.FindPwResponseDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -224,5 +227,36 @@ public class UserService {
 
         String maskedUsername = username.substring(0, 2) + "****" + username.substring(username.length() - 2);
         return maskedUsername + domain;
+    }
+
+    public FindPwResponseDTO generateTemporaryPassword(FindPwRequestDTO requestDTO) {
+        String email = requestDTO.getEmail();
+        String name = requestDTO.getName();
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+
+        if (!user.getName().equals(name)) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        String randomPassword = generateRandomPassword();
+        String encodedPassword = passwordEncoder.encode(randomPassword);
+
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        FindPwResponseDTO responseDTO = new FindPwResponseDTO();
+        responseDTO.setTemporaryPw(randomPassword);
+
+        return responseDTO;
+    }
+
+    private String generateRandomPassword() {
+        return RandomStringUtils.random(12, true, true) + RandomStringUtils.random(3, true, true);
     }
 }

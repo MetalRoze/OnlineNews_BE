@@ -7,6 +7,7 @@ import com.example.onlinenews.user.api.UserAPI;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
 import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
 import com.example.onlinenews.user.dto.FindIdRequestDTO;
+import com.example.onlinenews.user.dto.FindPwRequestDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
@@ -150,5 +151,10 @@ public class UserController implements UserAPI {
     @Override
     public ResponseEntity<?> findId(FindIdRequestDTO requestDTO) {
         return new ResponseEntity<>(userService.getEmailWithUsernameAndCp(requestDTO), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findPassword(FindPwRequestDTO requestDTO) {
+        return new ResponseEntity<>(userService.generateTemporaryPassword(requestDTO), HttpStatus.OK);
     }
 }

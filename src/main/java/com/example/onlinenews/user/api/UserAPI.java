@@ -4,6 +4,7 @@ import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
 import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
 import com.example.onlinenews.user.dto.FindIdRequestDTO;
+import com.example.onlinenews.user.dto.FindPwRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,7 +56,11 @@ public interface UserAPI {
     @Operation(summary = "로그인", description = "사용자의 아이디, 패스워드를 받아 인증합니다. ")
     ResponseEntity<JwtToken> login(@RequestBody LoginRequestDTO requestDto);
 
-    @GetMapping("/findId")
+    @PostMapping("/findId")
     @Operation(summary = "아이디 찾기", description = "사용자의 이름과 휴대전화 번호를 받아 이메일을 찾아줍니다.")
     ResponseEntity<?> findId(@RequestBody FindIdRequestDTO requestDTO);
+
+    @PatchMapping("/findPassword")
+    @Operation(summary = "비밀번호 찾기", description = "사용자의 이름과 이메일을 받아 임시 비밀번호를 발급받습니다.")
+    ResponseEntity<?> findPassword(@RequestBody FindPwRequestDTO requestDTO);
 }

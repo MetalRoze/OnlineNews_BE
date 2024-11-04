@@ -67,4 +67,8 @@ public class User {
 
     @Column
     private String nickname;
+
+    public void setPassword(String encodedPassword) {
+        this.pw = encodedPassword;
+    }
 }

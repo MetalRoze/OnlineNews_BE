@@ -15,6 +15,7 @@ import com.example.onlinenews.user.dto.FindPwResponseDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
+import com.example.onlinenews.user.dto.MypageResponseDTO;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
@@ -258,5 +259,28 @@ public class UserService {
 
     private String generateRandomPassword() {
         return RandomStringUtils.random(12, true, true) + RandomStringUtils.random(3, true, true);
+    }
+
+    public MypageResponseDTO getMypageInfo(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        MypageResponseDTO responseDTO = new MypageResponseDTO();
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setName(user.getName());
+        responseDTO.setCp(user.getCp());
+        responseDTO.setNickname(user.getNickname());
+        responseDTO.setType(String.valueOf(user.getGrade()));
+        responseDTO.setSex(user.getSex());
+        responseDTO.setBio(user.getBio());
+
+        String maskedPassword = "*".repeat(12);
+        responseDTO.setEncodedPw(maskedPassword);
+
+        return responseDTO;
     }
 }

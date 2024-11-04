@@ -71,4 +71,12 @@ public class User {
     public void setPassword(String encodedPassword) {
         this.pw = encodedPassword;
     }
+
+    public String getSex() {
+        if (sex) {
+            return "남성";
+        } else {
+            return "여성";
+        }
+    }
 }

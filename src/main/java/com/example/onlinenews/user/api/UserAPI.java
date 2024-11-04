@@ -11,6 +11,7 @@ import com.example.onlinenews.user.dto.LoginRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,4 +64,8 @@ public interface UserAPI {
     @PatchMapping("/findPassword")
     @Operation(summary = "비밀번호 찾기", description = "사용자의 이름과 이메일을 받아 임시 비밀번호를 발급받습니다.")
     ResponseEntity<?> findPassword(@RequestBody FindPwRequestDTO requestDTO);
+
+    @GetMapping("/myPage")
+    @Operation(summary = "마이페이지", description = "사용자(기자,일반회원)의 개인정보를 반환합니다.")
+    ResponseEntity<?> myPage(HttpServletRequest httpServletRequest);
 }

@@ -8,6 +8,7 @@ import com.example.onlinenews.user.dto.FindPwRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
+import com.example.onlinenews.user.dto.MypageEditRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,4 +69,8 @@ public interface UserAPI {
     @GetMapping("/myPage")
     @Operation(summary = "마이페이지", description = "사용자(기자,일반회원)의 개인정보를 반환합니다.")
     ResponseEntity<?> myPage(HttpServletRequest httpServletRequest);
+
+    @PatchMapping("/myPage/edit")
+    @Operation(summary = "마이페이지 수정", description = "사용자(기자,일반회원)의 수정된 회원정보를 DB에 업데이트합니다.")
+    ResponseEntity<?> myPageEdit(HttpServletRequest httpServletRequest, @RequestBody MypageEditRequestDTO requestDTO);
 }

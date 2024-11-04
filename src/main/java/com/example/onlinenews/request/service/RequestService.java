@@ -56,8 +56,8 @@ public class RequestService {
 
     //요청 수락
     @Transactional
-    public RequestStatus requestAccept (Long userId, Long reqId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    public RequestStatus requestAccept (String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
@@ -76,8 +76,8 @@ public class RequestService {
 
     //보류
     @Transactional
-    public RequestStatus requestHold(Long userId, Long reqId, RequestCommentDto requestCommentDto){
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    public RequestStatus requestHold(String email, Long reqId, RequestCommentDto requestCommentDto){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
@@ -98,8 +98,8 @@ public class RequestService {
 
     //거절
     @Transactional
-    public RequestStatus requestReject(Long userId, Long reqId, RequestCommentDto requestCommentDto){
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+    public RequestStatus requestReject(String email, Long reqId, RequestCommentDto requestCommentDto){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }

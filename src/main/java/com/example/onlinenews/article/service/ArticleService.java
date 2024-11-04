@@ -4,6 +4,7 @@ import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.entity.RequestStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
+    private final NotificationService notificationService;
 
     //편집장 요청 처리 시 수정됨
     public void statusUpdate(Long articleId, RequestStatus newRequestStatus){
@@ -19,4 +21,7 @@ public class ArticleService {
         article.updateStatue(newRequestStatus);
     }
 
+    public void create(){
+        notificationService.createRequestNoti(2L,2L);
+    }
 }

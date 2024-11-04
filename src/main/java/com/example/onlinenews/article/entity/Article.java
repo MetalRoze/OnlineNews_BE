@@ -26,7 +26,7 @@ public class Article {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     @JsonIgnore
     private User user; 
 
@@ -44,11 +44,9 @@ public class Article {
     private String content;
 
     @Column
-    @CreatedDate
     private LocalDateTime createdAt;
 
     @Column
-    @LastModifiedDate
     private LocalDateTime modifiedAt;
 
     @Column
@@ -58,11 +56,10 @@ public class Article {
     private LocalDateTime approvedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RequestStatus state;
 
     @Column
-    private Boolean isPublic;
+    private Boolean isPublic = false;
 
     @Column(nullable = false)
     private int views = 0;

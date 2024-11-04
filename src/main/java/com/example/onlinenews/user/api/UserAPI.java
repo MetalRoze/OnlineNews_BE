@@ -3,9 +3,10 @@ package com.example.onlinenews.user.api;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
 import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
+import com.example.onlinenews.user.dto.FindIdRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
-import com.example.onlinenews.user.dto.LoginRequestDto;
+import com.example.onlinenews.user.dto.LoginRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,8 +51,10 @@ public interface UserAPI {
     Boolean emailCheck(@RequestParam String email);
 
     @PostMapping("/login")
-    @Operation(summary = "로그인 메서드", description = "사용자의 아이디, 패스워드를 받아 인증합니다. ")
-    ResponseEntity<JwtToken> login(@RequestBody LoginRequestDto requestDto);
+    @Operation(summary = "로그인", description = "사용자의 아이디, 패스워드를 받아 인증합니다. ")
+    ResponseEntity<JwtToken> login(@RequestBody LoginRequestDTO requestDto);
 
-
+    @GetMapping("/findId")
+    @Operation(summary = "아이디 찾기", description = "사용자의 이름과 휴대전화 번호를 받아 이메일을 찾아줍니다.")
+    ResponseEntity<?> findId(@RequestBody FindIdRequestDTO requestDTO);
 }

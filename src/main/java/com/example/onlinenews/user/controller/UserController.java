@@ -3,15 +3,15 @@ package com.example.onlinenews.user.controller;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.jwt.dto.JwtToken;
-import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.user.api.UserAPI;
 import com.example.onlinenews.user.dto.AdminCreateRequestDTO;
 import com.example.onlinenews.user.dto.EditorCreateRequestDTO;
+import com.example.onlinenews.user.dto.FindIdRequestDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
-import com.example.onlinenews.user.dto.LoginRequestDto;
+import com.example.onlinenews.user.dto.LoginRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.service.UserService;
@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController implements UserAPI {
     private final UserService userService;
-    private final PublisherService publisherService;
-
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -145,7 +143,12 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public ResponseEntity<JwtToken> login(LoginRequestDto requestDto) {
+    public ResponseEntity<JwtToken> login(LoginRequestDTO requestDto) {
         return new ResponseEntity<>(userService.login(requestDto), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findId(FindIdRequestDTO requestDTO) {
+        return new ResponseEntity<>(userService.getEmailWithUsernameAndCp(requestDTO), HttpStatus.OK);
     }
 }

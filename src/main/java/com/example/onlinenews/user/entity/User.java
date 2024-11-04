@@ -68,7 +68,27 @@ public class User {
     @Column
     private String nickname;
 
-    public void setPassword(String encodedPassword) {
+    public void updatePassword(String encodedPassword) {
         this.pw = encodedPassword;
+    }
+
+    public void updateBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateCp(String cp) {
+        this.cp = cp;
+    }
+
+    public String getSex() {
+        if (sex) {
+            return "남성";
+        } else {
+            return "여성";
+        }
     }
 }

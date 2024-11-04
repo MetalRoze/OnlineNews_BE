@@ -13,9 +13,12 @@ import com.example.onlinenews.user.dto.GeneralSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
+import com.example.onlinenews.user.dto.MypageEditRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
+import com.example.onlinenews.user.service.AuthService;
 import com.example.onlinenews.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController implements UserAPI {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     @Override
     public List<User> list() {
@@ -156,5 +160,18 @@ public class UserController implements UserAPI {
     @Override
     public ResponseEntity<?> findPassword(FindPwRequestDTO requestDTO) {
         return new ResponseEntity<>(userService.generateTemporaryPassword(requestDTO), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> myPage(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return new ResponseEntity<>(userService.getMypageInfo(email), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> myPageEdit(HttpServletRequest httpServletRequest, MypageEditRequestDTO requestDTO) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+
+        return new ResponseEntity<>(userService.updateUserInfo(requestDTO, email), HttpStatus.OK);
     }
 }

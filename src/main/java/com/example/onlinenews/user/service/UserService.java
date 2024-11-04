@@ -15,6 +15,9 @@ import com.example.onlinenews.user.dto.FindPwResponseDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
+import com.example.onlinenews.user.dto.MypageEditRequestDTO;
+import com.example.onlinenews.user.dto.MypageEditResponseDTO;
+import com.example.onlinenews.user.dto.MypageResponseDTO;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -247,7 +251,7 @@ public class UserService {
         String randomPassword = generateRandomPassword();
         String encodedPassword = passwordEncoder.encode(randomPassword);
 
-        user.setPassword(encodedPassword);
+        user.updatePassword(encodedPassword);
         userRepository.save(user);
 
         FindPwResponseDTO responseDTO = new FindPwResponseDTO();
@@ -258,5 +262,60 @@ public class UserService {
 
     private String generateRandomPassword() {
         return RandomStringUtils.random(12, true, true) + RandomStringUtils.random(3, true, true);
+    }
+
+    public MypageResponseDTO getMypageInfo(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = userOptional.get();
+
+        MypageResponseDTO responseDTO = new MypageResponseDTO();
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setName(user.getName());
+        responseDTO.setCp(user.getCp());
+        responseDTO.setNickname(user.getNickname());
+        responseDTO.setType(String.valueOf(user.getGrade()));
+        responseDTO.setSex(user.getSex());
+        responseDTO.setBio(user.getBio());
+
+        String maskedPassword = "*".repeat(12);
+        responseDTO.setEncodedPw(maskedPassword);
+
+        return responseDTO;
+    }
+
+    public MypageEditResponseDTO updateUserInfo(MypageEditRequestDTO requestDTO, String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+
+        MypageEditResponseDTO responseDTO = new MypageEditResponseDTO();
+
+        updateField(requestDTO.getNickname(), user::updateNickname, user.getNickname(), responseDTO::setNickname);
+        if (requestDTO.getPw() != null) {
+            String pw = passwordEncoder.encode(requestDTO.getPw());
+            user.updatePassword(pw);
+        }
+        responseDTO.setPw("*".repeat(12));
+        updateField(requestDTO.getBio(), user::updateBio, user.getBio(), responseDTO::setBio);
+        updateField(requestDTO.getCp(), user::updateCp, user.getCp(), responseDTO::setCp);
+
+        userRepository.save(user);
+        return responseDTO;
+    }
+
+    private <T> void updateField(T newValue, Consumer<T> updateAction, T existingValue, Consumer<T> responseSetter) {
+        if (newValue != null) {
+            updateAction.accept(newValue);
+            responseSetter.accept(newValue);
+        } else {
+            responseSetter.accept(existingValue);
+        }
     }
 }

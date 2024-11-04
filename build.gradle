@@ -52,10 +52,13 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    //mailing
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     //jackson 모듈 추가
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.17.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
 }
 
 tasks.named('test') {

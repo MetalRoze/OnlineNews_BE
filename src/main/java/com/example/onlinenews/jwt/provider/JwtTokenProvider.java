@@ -1,5 +1,7 @@
 package com.example.onlinenews.jwt.provider;
 
+import com.example.onlinenews.error.BusinessException;
+import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.service.JpaUserDetailService;
 import io.jsonwebtoken.Claims;
@@ -142,7 +144,7 @@ public class JwtTokenProvider {
 
         } catch (Exception e) {
             log.error("Invalid JWT token: {}", token, e);
-            return false;
+            throw new BusinessException(ExceptionCode.TOKEN_NOT_VALID);
         }
     }
 

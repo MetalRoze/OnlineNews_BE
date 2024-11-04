@@ -16,8 +16,11 @@ public class AuthService {
 
     public String getEmailFromToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new BusinessException(ExceptionCode.TOKEN_NOT_VALID); // 커스텀 예외 처리
+        if (token == null) {
+            throw new BusinessException(ExceptionCode.TOKEN_NOT_VALID);
+        }
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new BusinessException(ExceptionCode.TOKEN_EXPIRED);
         }
         return jwtTokenProvider.getAccount(token);
     }

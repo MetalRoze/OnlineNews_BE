@@ -8,17 +8,25 @@ import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
+import com.example.onlinenews.user.dto.FindIdRequestDTO;
+import com.example.onlinenews.user.dto.FindIdResponseDTO;
+import com.example.onlinenews.user.dto.FindPwRequestDTO;
+import com.example.onlinenews.user.dto.FindPwResponseDTO;
 import com.example.onlinenews.user.dto.GeneralCreateRequestDTO;
 import com.example.onlinenews.user.dto.JournallistCreateRequestDTO;
-import com.example.onlinenews.user.dto.LoginRequestDto;
+import com.example.onlinenews.user.dto.LoginRequestDTO;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -117,7 +125,7 @@ public class UserService {
         return fileUrl;
     }
 
-    public JwtToken login(LoginRequestDto requestDto) {
+    public JwtToken login(LoginRequestDTO requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
@@ -175,5 +183,80 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    public List<FindIdResponseDTO> getEmailWithUsernameAndCp(FindIdRequestDTO requestDTO) {
+        String name = requestDTO.getName();
+        String cp = requestDTO.getCp();
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM");
+
+        List<User> users = userRepository.findAllByNameAndCp(name, cp);
+
+        if (users.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        List<FindIdResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (User user : users) {
+            String email = user.getEmail();
+            String maskedEmail = maskingEmail(email);
+
+            FindIdResponseDTO respDTO = new FindIdResponseDTO();
+            respDTO.setEmail(maskedEmail);
+
+            String formattedCreatedAt = user.getCreatedAt().toString(formatter);
+            respDTO.setCreateAt(formattedCreatedAt);
+
+            responseDTOList.add(respDTO);
+        }
+
+        return responseDTOList;
+    }
+
+    public String maskingEmail(String email) {
+        int atIndex = email.indexOf("@");
+
+        if (atIndex <= 5) {
+            // 이메일 길이가 짧아 마스킹이 어려운 경우 그대로 반환
+            return email;
+        }
+
+        String username = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+
+        String maskedUsername = username.substring(0, 2) + "****" + username.substring(username.length() - 2);
+        return maskedUsername + domain;
+    }
+
+    public FindPwResponseDTO generateTemporaryPassword(FindPwRequestDTO requestDTO) {
+        String email = requestDTO.getEmail();
+        String name = requestDTO.getName();
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+
+        if (!user.getName().equals(name)) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        String randomPassword = generateRandomPassword();
+        String encodedPassword = passwordEncoder.encode(randomPassword);
+
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        FindPwResponseDTO responseDTO = new FindPwResponseDTO();
+        responseDTO.setTemporaryPw(randomPassword);
+
+        return responseDTO;
+    }
+
+    private String generateRandomPassword() {
+        return RandomStringUtils.random(12, true, true) + RandomStringUtils.random(3, true, true);
     }
 }

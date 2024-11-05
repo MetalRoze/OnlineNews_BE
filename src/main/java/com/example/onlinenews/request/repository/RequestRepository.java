@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository  extends JpaRepository<Request, Long> {
-    List<Request> findRequestsByStatus(RequestStatus requestStatus);
+    List<Request> findByArticleUserPublisherAndStatus(Publisher publisher, RequestStatus requestStatus);
 
     List<Request> findByArticleUserPublisher(Publisher publisher);
 }

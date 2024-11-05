@@ -50,9 +50,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestAccept (String email, Long reqId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
-            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
-        }
+        checkEditorPermission(user);
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         if(request.getStatus().equals(RequestStatus.APPROVED)){
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
@@ -69,10 +67,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestHold(String email, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
-            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
-        }
-
+        checkEditorPermission(user);
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         if(request.getStatus().equals(RequestStatus.HOLDING)){
             throw new BusinessException(ExceptionCode.ALREADY_HOLDING);
@@ -89,9 +84,7 @@ public class RequestService {
     @Transactional
     public RequestStatus requestReject(String email, Long reqId, RequestCommentDto requestCommentDto){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
-            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
-        }
+        checkEditorPermission(user);
         Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         if(request.getStatus().equals(RequestStatus.REJECTED)){
             throw new BusinessException(ExceptionCode.ALREADY_REJECTED);
@@ -105,16 +98,11 @@ public class RequestService {
 
     //상태로 요청조회
     @Transactional
-    public List<RequestDto> getByStatus(String keyword) {
-        RequestStatus enumStatus = switch (keyword.toLowerCase()) {
-            case "pending" -> RequestStatus.PENDING;
-            case "approved" -> RequestStatus.APPROVED;
-            case "holding" -> RequestStatus.HOLDING;
-            case "rejected" -> RequestStatus.REJECTED;
-            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
-        };
-
-        return requestRepository.findRequestsByStatus(enumStatus).stream()
+    public List<RequestDto> getByStatus(String email,String keyword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        RequestStatus enumStatus = getRequestStatusFromKeyword(keyword);
+        return requestRepository.findByArticleUserPublisherAndStatus(user.getPublisher(),enumStatus).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -122,13 +110,27 @@ public class RequestService {
     //편집장의 출판사 소속 직원들의 요청 확인
     public List<RequestDto> getRequestsForEditor(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
-            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
-        }
+        checkEditorPermission(user);
 
-        return requestRepository.findByArticleUserPublisher( user.getPublisher()).stream()
+        return requestRepository.findByArticleUserPublisher(user.getPublisher()).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    private void checkEditorPermission(User user) {
+        if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+    }
+
+    private RequestStatus getRequestStatusFromKeyword(String keyword) {
+        return switch (keyword.toLowerCase()) {
+            case "pending" -> RequestStatus.PENDING;
+            case "approved" -> RequestStatus.APPROVED;
+            case "holding" -> RequestStatus.HOLDING;
+            case "rejected" -> RequestStatus.REJECTED;
+            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
+        };
     }
 
 

@@ -38,6 +38,6 @@ public interface RequestApi {
 
     @GetMapping("/status")
     @Operation(summary = "상태별로 요청 조회", description = "상태를 입력(param)하여 해당 상태의 요청들을 조회합니다.")
-    List<RequestDto> getByStatus(@RequestParam String keyword);
+    List<RequestDto> getByStatus(HttpServletRequest request, @RequestParam String keyword);
 
 }

@@ -51,8 +51,9 @@ public class RequestController implements RequestApi {
     }
 
     @Override
-    public List<RequestDto> getByStatus(String keyword) {
-        return requestService.getByStatus(keyword);
+    public List<RequestDto> getByStatus(HttpServletRequest request, String keyword) {
+        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        return requestService.getByStatus(email, keyword);
     }
 
 }

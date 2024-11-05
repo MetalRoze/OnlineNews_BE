@@ -16,8 +16,9 @@ public class ArticleImg {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "article_id")
     private Article article;
 
-    @Column(nullable = false)
+    @Column
     private String imgUrl;
 }

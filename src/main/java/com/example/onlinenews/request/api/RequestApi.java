@@ -23,7 +23,7 @@ public interface RequestApi {
     @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
     RequestDto read(@PathVariable Long reqId);
 
-    @PatchMapping("/{reqId}/accept")
+    @PatchMapping("/{reqId}/approve")
     @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
     ResponseEntity<?> requestAccept(HttpServletRequest request, @PathVariable Long reqId);
 

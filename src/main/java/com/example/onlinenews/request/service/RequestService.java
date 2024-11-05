@@ -1,6 +1,7 @@
 package com.example.onlinenews.request.service;
 
-import com.example.onlinenews.article.service.ArticleService;
+import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.request.dto.RequestCommentDto;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,7 @@ import java.util.stream.Collectors;
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
-    private final ArticleService articleService;
+    private final ArticleRepository articleRepository;
 
     //전체 조회
     public List<RequestDto> list(){
@@ -39,20 +41,16 @@ public class RequestService {
     }
 
     //요청 생성 (article 생성 시 주석 해제)
-//    public RequestDto create(RequestCreateDto createDto){
-//        User user = userRepository.findById(createDto.getUserId()).orElseThrow(() -> new  BusinessException(ExceptionCode.USER_NOT_FOUND));
-//        Article article = articleRepository.findById(createDto.getArticleId()).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-////
-//        Request request  = Request.builder()
-//                .user(user)
-//                .article(article)
-//                .createdAt(LocalDateTime.now())
-//                .statue(RequestStatus.PENDING)
-//                .build();
-//
-//        requestRepository.save(request);
-//        return RequestDto.fromEntity(request);
-//    }
+    public RequestDto create(User user, Article article){
+        Request request  = Request.builder()
+                .user(user)
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .status(RequestStatus.PENDING)
+                .build();
+        requestRepository.save(request);
+        return RequestDto.fromEntity(request);
+    }
 
     //요청 수락
     @Transactional
@@ -68,8 +66,7 @@ public class RequestService {
         request.updateStatus(RequestStatus.APPROVED, null);
 
         //기사 상태 업데이트
-        Long articleId = request.getArticle().getId();
-        articleService.statusUpdate(articleId, request.getStatus());
+        request.getArticle().updateStatue(request.getStatus());
 
         return request.getStatus();
     }
@@ -89,9 +86,7 @@ public class RequestService {
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.HOLDING, comment);
 
-        //기사 상태 업데이트
-        Long articleId = request.getArticle().getId();
-        articleService.statusUpdate(articleId, request.getStatus());
+        request.getArticle().updateStatue(request.getStatus());
 
         return request.getStatus();
     }
@@ -110,10 +105,7 @@ public class RequestService {
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.REJECTED, comment);
 
-        //기사 상태 업데이트
-        Long articleId = request.getArticle().getId();
-        articleService.statusUpdate(articleId, request.getStatus());
-
+        request.getArticle().updateStatue(request.getStatus());
         return request.getStatus();
     }
 

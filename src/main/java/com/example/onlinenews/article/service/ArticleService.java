@@ -11,6 +11,7 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
-
+    private final RequestService requestService;
 
     // 기사 작성
     public ResponseEntity<ArticleResponseDTO> createArticle(ArticleRequestDTO requestDTO, String email) {
@@ -47,7 +48,7 @@ public class ArticleService {
                 .build();
 
         Article savedArticle = articleRepository.save(article);
-
+        requestService.create(user, savedArticle);
         return ResponseEntity.ok(convertToResponseDTO(savedArticle));
     }
 

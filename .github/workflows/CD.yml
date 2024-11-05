@@ -1,0 +1,26 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      # SSH를 통한 배포
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          script: |
+            cd /home/ubuntu/12th-be-ec2-seminar/
+            git pull origin main
+            ./gradlew build -x test
+            sudo systemctl stop demo.service
+            sudo cp build/libs/*.jar /opt/demo/demo.jar
+            sudo systemctl start demo.service

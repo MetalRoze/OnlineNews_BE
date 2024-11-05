@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/admin/request")
+@RequestMapping("/api/request")
 @Tag(name = "Request", description = "요청 API")
 public interface RequestApi {
 

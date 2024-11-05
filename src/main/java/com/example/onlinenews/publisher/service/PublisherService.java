@@ -7,20 +7,18 @@ import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.repository.PublisherRepository;
 import com.example.onlinenews.request.dto.RequestDto;
 import jakarta.persistence.Column;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PublisherService {
     private final PublisherRepository publisherRepository;
 
     public List<Publisher> getAllPublisher() {return publisherRepository.findAll();}
-
-    public PublisherService(PublisherRepository publisherRepository) {
-        this.publisherRepository = publisherRepository;
-    }
 
     public Publisher getPublisherByName(String publisher_name){
         return publisherRepository.findByName(publisher_name);

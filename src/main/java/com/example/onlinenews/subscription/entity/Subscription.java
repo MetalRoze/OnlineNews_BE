@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +33,9 @@ public class Subscription {
     private LocalDateTime createdAt; //구독 날짜
 
     @Builder
-    public Subscription(LocalDateTime created_at) {
-        this.createdAt = created_at;
+    public Subscription(User user, Publisher publisher, LocalDateTime createdAt) {
+        this.user = user;
+        this.publisher = publisher;
+        this.createdAt = createdAt;
     }
 }

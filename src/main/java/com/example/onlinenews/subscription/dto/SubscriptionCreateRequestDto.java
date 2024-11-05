@@ -3,7 +3,6 @@ package com.example.onlinenews.subscription.dto;
 import lombok.Data;
 
 @Data
-public class SubscriptionAddRequestDto {
-    private Long userId;
+public class SubscriptionCreateRequestDto {
     private Long publisherId;
 }

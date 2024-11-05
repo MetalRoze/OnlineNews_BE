@@ -23,7 +23,7 @@ public interface PublisherAPI {
     @Operation(summary = "신문사 종류 별 목록 조회", description = "신문사 종류 별로 목록을 조회합니다.")
     List<PublisherDto> getByType(@RequestParam String pub_type);
 
-    @PostMapping("/add")
+    @PostMapping("")
     @Operation(summary = "신문사 추가", description = "신문사를 추가합니다.")
     ResponseEntity<?> publisherCreate(@RequestBody PublisherCreateRequestDTO requestDTO);
 }

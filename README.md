@@ -44,5 +44,4 @@
 
 > `/api/{entity}/{api name}`
 
-예 : /api/user/signnup : 회원가입 API 
-  
+예 : /api/user/signnup : 회원가입 API

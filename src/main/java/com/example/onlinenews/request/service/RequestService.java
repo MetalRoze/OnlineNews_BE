@@ -4,6 +4,8 @@ import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.publisher.entity.Publisher;
+import com.example.onlinenews.publisher.repository.PublisherRepository;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
@@ -25,14 +27,6 @@ import java.util.stream.Collectors;
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
-    private final ArticleRepository articleRepository;
-
-    //전체 조회
-    public List<RequestDto> list(){
-        return requestRepository.findAll().stream()
-                .map(RequestDto::fromEntity)
-                .collect(Collectors.toList());
-    }
 
     //request id로 개별 조회
     public RequestDto read(Long reqId){
@@ -40,7 +34,7 @@ public class RequestService {
         return RequestDto.fromEntity(request);
     }
 
-    //요청 생성 (article 생성 시 주석 해제)
+    //요청 생성
     public RequestDto create(User user, Article article){
         Request request  = Request.builder()
                 .user(user)
@@ -124,5 +118,19 @@ public class RequestService {
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    //편집장의 출판사 소속 직원들의 요청 확인
+    public List<RequestDto> getRequestsForEditor(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        if(user.getGrade().getValue() < UserGrade.EDITOR.getValue()){
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+
+        return requestRepository.findByArticleUserPublisher( user.getPublisher()).stream()
+                .map(RequestDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 
 }

@@ -16,8 +16,8 @@ import java.util.List;
 public interface RequestApi {
 
     @GetMapping("")
-    @Operation(summary = "전체 요청 조회", description = "전체 요청 목록을 조회합니다.")
-    List<RequestDto> list();
+    @Operation(summary = "소속 직원 요청 조회", description = "편집장 밑에 소속된 직원들의 요청을 조회합니다")
+    List<RequestDto> getByPublisher(HttpServletRequest request);
 
     @GetMapping("/{reqId}")
     @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
@@ -39,4 +39,5 @@ public interface RequestApi {
     @GetMapping("/status")
     @Operation(summary = "상태별로 요청 조회", description = "상태를 입력(param)하여 해당 상태의 요청들을 조회합니다.")
     List<RequestDto> getByStatus(@RequestParam String keyword);
+
 }

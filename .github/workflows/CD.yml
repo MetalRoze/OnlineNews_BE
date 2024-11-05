@@ -18,7 +18,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd /home/ubuntu/12th-be-ec2-seminar/
+            cd /home/ubuntu/OnlineNews_BE
             git pull origin main
             ./gradlew build -x test
             sudo systemctl stop demo.service

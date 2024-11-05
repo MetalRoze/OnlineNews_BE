@@ -1,6 +1,7 @@
 package com.example.onlinenews.subscription.entity;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -27,7 +28,7 @@ public class Subscription {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     @JsonIgnore
-    private Article article;
+    private Publisher publisher;
 
     @Column(nullable = false)
     private LocalDateTime createdAt; //구독 날짜

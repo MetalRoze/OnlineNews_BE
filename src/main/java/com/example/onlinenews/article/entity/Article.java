@@ -37,10 +37,10 @@ public class Article {
     @Column
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String subtitle;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column

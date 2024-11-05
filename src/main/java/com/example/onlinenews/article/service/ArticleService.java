@@ -122,11 +122,25 @@ public class ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
 
-        // DTO에서 제공된 내용으로 기사 업데이트
-        article.setTitle(updateRequest.getTitle());
-        article.setSubtitle(updateRequest.getSubtitle());
-        article.setContent(updateRequest.getContent());
-        article.setCategory(updateRequest.getCategory());
+        if (updateRequest.getTitle() != null) {
+            article.setTitle(updateRequest.getTitle());
+        }
+        if (updateRequest.getSubtitle() != null) {
+            article.setSubtitle(updateRequest.getSubtitle());
+        }
+        if (updateRequest.getContent() != null) {
+            article.setContent(updateRequest.getContent());
+        }
+        if (updateRequest.getCategory() != null) {
+            article.setCategory(updateRequest.getCategory());
+        }
+        if (updateRequest.getImages() != null) {
+            article.setImages(updateRequest.getImages());
+        }
+        if (updateRequest.getIsPublic() != null) {
+            article.setIsPublic(updateRequest.getIsPublic());
+        }
+
         article.setModifiedAt(LocalDateTime.now());
 
         Article updatedArticle = articleRepository.save(article); // 변경사항 저장

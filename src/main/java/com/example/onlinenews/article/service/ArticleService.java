@@ -80,10 +80,10 @@ public class ArticleService {
             }
 
             String uniqueFilename = UUID.randomUUID() + fileExtension;
-            String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/profileImg/" + uniqueFilename;
+            String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
 
             try {
-                amazonS3.putObject(new PutObjectRequest(bucketName, "profileImg/" + uniqueFilename, file.getInputStream(), null));
+                amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to upload file to S3");
             }

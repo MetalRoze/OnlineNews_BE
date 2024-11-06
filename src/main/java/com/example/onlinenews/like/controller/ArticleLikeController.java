@@ -39,4 +39,12 @@ public class ArticleLikeController implements ArticleLikeApi {
         String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
         return ResponseEntity.ok(articleLikeService.deleteLike(email, articleLikeId));
     }
+
+    @Override
+    public boolean checkLike(HttpServletRequest request, Long articleId) {
+        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        return articleLikeService.checkLike(email, articleId);
+    }
+
+
 }

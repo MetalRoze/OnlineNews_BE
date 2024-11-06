@@ -8,10 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ArticleLikeRepository extends JpaRepository<ArticleLike, Long> {
    List< ArticleLike> findByUser(User user);
 
    List< ArticleLike> findByArticle(Article article);
+
+   Optional<ArticleLike> findByUserAndArticle(User user, Article article);
 }

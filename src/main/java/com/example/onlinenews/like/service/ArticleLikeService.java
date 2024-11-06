@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,5 +68,14 @@ public class ArticleLikeService {
         }
         articleLikeRepository.delete(articleLike);
         return StateResponse.builder().code("200").message("좋아요 취소 완료").build();
+    }
+
+    public boolean checkLike(String email, Long articleId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        Optional<ArticleLike> optionalArticleLike =articleLikeRepository.findByUserAndArticle(user, article);
+
+        return optionalArticleLike.isPresent();
+
     }
 }

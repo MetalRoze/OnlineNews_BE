@@ -28,4 +28,9 @@ public interface ArticleLikeApi {
 
     @DeleteMapping("/like/{articleLikeId}/unlike")
     ResponseEntity<?> deleteLike(HttpServletRequest request, @PathVariable Long articleLikeId);
+
+    @GetMapping("/{articleId}/like/check")
+    @Operation(summary = "좋아요 여부 체크", description = "좋아요 눌렀는 지 확인합니다")
+    boolean checkLike(HttpServletRequest request,  @PathVariable Long articleId);
+
 }

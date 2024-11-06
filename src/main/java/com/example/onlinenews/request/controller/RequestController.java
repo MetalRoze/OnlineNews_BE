@@ -22,8 +22,9 @@ public class RequestController implements RequestApi {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public List<RequestDto> list() {
-        return requestService.list();
+    public List<RequestDto> getByPublisher(HttpServletRequest request) {
+        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        return requestService.getRequestsForEditor(email);
     }
 
     @Override
@@ -50,8 +51,9 @@ public class RequestController implements RequestApi {
     }
 
     @Override
-    public List<RequestDto> getByStatus(String keyword) {
-        return requestService.getByStatus(keyword);
+    public List<RequestDto> getByStatus(HttpServletRequest request, String keyword) {
+        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        return requestService.getByStatus(email, keyword);
     }
 
 }

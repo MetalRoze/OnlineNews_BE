@@ -11,19 +11,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("/api/admin/request")
+@RequestMapping("/api/request")
 @Tag(name = "Request", description = "요청 API")
 public interface RequestApi {
 
     @GetMapping("")
-    @Operation(summary = "전체 요청 조회", description = "전체 요청 목록을 조회합니다.")
-    List<RequestDto> list();
+    @Operation(summary = "소속 직원 요청 조회", description = "편집장 밑에 소속된 직원들의 요청을 조회합니다")
+    List<RequestDto> getByPublisher(HttpServletRequest request);
 
     @GetMapping("/{reqId}")
     @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
     RequestDto read(@PathVariable Long reqId);
 
-    @PatchMapping("/{reqId}/accept")
+    @PatchMapping("/{reqId}/approve")
     @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
     ResponseEntity<?> requestAccept(HttpServletRequest request, @PathVariable Long reqId);
 
@@ -38,5 +38,6 @@ public interface RequestApi {
 
     @GetMapping("/status")
     @Operation(summary = "상태별로 요청 조회", description = "상태를 입력(param)하여 해당 상태의 요청들을 조회합니다.")
-    List<RequestDto> getByStatus(@RequestParam String keyword);
+    List<RequestDto> getByStatus(HttpServletRequest request, @RequestParam String keyword);
+
 }

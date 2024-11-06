@@ -23,4 +23,4 @@ jobs:
             ./gradlew build -x test
             sudo systemctl stop demo.service
             sudo cp build/libs/*.jar /opt/demo/demo.jar
-            sudo systemctl start demo.service
+            sudo systemctl restart demo.service

@@ -33,4 +33,10 @@ public class ArticleLikeController implements ArticleLikeApi {
     public List<ArticleLikeDto> articleLikes(Long articleId) {
         return articleLikeService.articleLikes(articleId);
     }
+
+    @Override
+    public ResponseEntity<?> deleteLike(HttpServletRequest request, Long articleLikeId) {
+        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        return ResponseEntity.ok(articleLikeService.deleteLike(email, articleLikeId));
+    }
 }

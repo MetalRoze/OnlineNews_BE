@@ -25,4 +25,7 @@ public interface ArticleLikeApi {
     @GetMapping("/{articleId}/like")
     @Operation(summary = "기사의 좋아요 내역 조회", description = "기사에 달린 좋아요를 조회합니다")
     List<ArticleLikeDto> articleLikes(@PathVariable Long articleId);
+
+    @DeleteMapping("/like/{articleLikeId}/unlike")
+    ResponseEntity<?> deleteLike(HttpServletRequest request, @PathVariable Long articleLikeId);
 }

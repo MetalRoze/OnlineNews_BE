@@ -16,6 +16,7 @@ import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,5 +56,16 @@ public class ArticleLikeService {
         return articleLikeRepository.findByArticle(article).stream()
                 .map(ArticleLikeDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public StateResponse deleteLike(String email, Long articleLikeId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        ArticleLike articleLike = articleLikeRepository.findById(articleLikeId).orElseThrow(()->new BusinessException(ExceptionCode.ARTICLE_LIKE_NOT_FOUND));
+        if(user.getId()!=articleLike.getUser().getId()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        articleLikeRepository.delete(articleLike);
+        return StateResponse.builder().code("200").message("좋아요 취소 완료").build();
     }
 }

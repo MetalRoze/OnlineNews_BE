@@ -8,7 +8,7 @@ public enum ExceptionCode {
 
     ARTICLE_NOT_FOUND(404, "ARTICLE_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
     REPLY_NOT_FOUND(404, "REPLY_001", "해당되는 id의 댓글을 찾을 수 없습니다."),
-    ALREADY_LIKED(400, "LIKE_001", "이미 '좋아요'를 누른 상태입니다."),
+
 
 
     USER_NOT_FOUND(404, "USER_004", "해당 유저를 찾을 수 없습니다."),
@@ -29,6 +29,9 @@ public enum ExceptionCode {
     ALREADY_REJECTED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
 
     NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_001", "해당되는 id 의 알림을 찾을 수 없습니다."),
+    ARTICLE_LIKE_NOT_FOUND(404,"ARTICLE_LIKE_001", "해당되는 id의 좋아요를 찾을 수 없습니다."),
+    USER_MISMATCH(400,"USER_010", "해당 행동을 한 사용자만 취소할 수 있습니다."),
+    ALREADY_LIKED(400, "LIKE_001", "이미 '좋아요'를 누른 상태입니다."),
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
     PASSWORD_MISMATCH(400, "PASSWORD_001", "비밀번호 확인이 틀렸습니다."),

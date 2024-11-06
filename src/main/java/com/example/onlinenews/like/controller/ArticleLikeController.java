@@ -28,4 +28,9 @@ public class ArticleLikeController implements ArticleLikeApi {
         String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
         return articleLikeService.myLikes(email);
     }
+
+    @Override
+    public List<ArticleLikeDto> articleLikes(Long articleId) {
+        return articleLikeService.articleLikes(articleId);
+    }
 }

@@ -49,4 +49,11 @@ public class ArticleLikeService {
                 .map(ArticleLikeDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    public List<ArticleLikeDto> articleLikes(Long articleId){
+        Article article = articleRepository.findById(articleId).orElseThrow(()->new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        return articleLikeRepository.findByArticle(article).stream()
+                .map(ArticleLikeDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 }

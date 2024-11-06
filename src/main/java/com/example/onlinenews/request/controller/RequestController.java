@@ -7,6 +7,7 @@ import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
+import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
@@ -19,11 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RequestController implements RequestApi {
     private final RequestService requestService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
     @Override
     public List<RequestDto> getByPublisher(HttpServletRequest request) {
-        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        String email = authService.getEmailFromToken(request);
         return requestService.getRequestsForEditor(email);
     }
 
@@ -34,25 +35,25 @@ public class RequestController implements RequestApi {
 
     @Override
     public ResponseEntity<?> requestAccept(HttpServletRequest request, Long reqId) {
-        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestAccept(email, reqId));
     }
 
     @Override
     public ResponseEntity<?> requestHold(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
-        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestHold(email, reqId, requestCommentDto));
     }
 
     @Override
     public ResponseEntity<?> requestReject(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
-        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestReject(email, reqId, requestCommentDto));
     }
 
     @Override
     public List<RequestDto> getByStatus(HttpServletRequest request, String keyword) {
-        String email = jwtTokenProvider.getAccount(jwtTokenProvider.resolveToken(request));
+        String email = authService.getEmailFromToken(request);
         return requestService.getByStatus(email, keyword);
     }
 

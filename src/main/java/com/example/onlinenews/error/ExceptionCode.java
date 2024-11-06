@@ -20,6 +20,7 @@ public enum ExceptionCode {
     USER_PASSWORD_INCORRECT(401, "USER_008", "비밀번호가 틀렸습니다."),
     INVITE_CODE_MISMATCH(400, "KEY_001", "올바르지 않는 초대코드 입니다."),
     PUBLISHER_NOT_FOUND(404, "PUB_001", "해당 이름의 신문사를 찾을 수 없습니다."),
+    SUB_NOT_FOUND(404, "SUB_001", "구독 정보를 찾을 수 없습니다."),
 
     EMAIL_CONFLICT(409, "EMAIL_009", "이미 존재하는 email입니다. "),
 
@@ -33,8 +34,13 @@ public enum ExceptionCode {
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),
     PASSWORD_MISMATCH(400, "PASSWORD_001", "비밀번호 확인이 틀렸습니다."),
 
+    SUB_NOT_MATCH_USER(400, "MATCH_001", "현재 구독 사용자와 일치하지 않습니다."),
+
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "Validation Exception 발생");
+
+
+
 
     // 1. status = 날려줄 상태코드
     // 2. code = 해당 오류가 어느부분과 관련있는지 카테고리화 해주는 코드. 예외 원인 식별하기 편하기에 추가

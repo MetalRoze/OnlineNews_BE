@@ -25,4 +25,6 @@ public class Publisher {
     @Column
     private String img; // 신문사 로고 URL
 
+    @Column
+    private String type; //신문사 종류 @@ 쓰는 사람 있는지 물어보ㅏ야됨 !!
 }

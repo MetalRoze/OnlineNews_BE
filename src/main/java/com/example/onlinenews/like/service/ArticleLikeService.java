@@ -5,6 +5,7 @@ import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
+import com.example.onlinenews.like.dto.ArticleLikeDto;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.request.dto.RequestDto;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +40,13 @@ public class ArticleLikeService {
 
         articleLikeRepository.save(articleLike);
         return StateResponse.builder().code("200").message("좋아요 완료").build();
+    }
+
+    //사용자가 좋아요 한 기사 내역 조회
+    public List<ArticleLikeDto> myLikes(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        return articleLikeRepository.findByUser(user).stream()
+                .map(ArticleLikeDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }

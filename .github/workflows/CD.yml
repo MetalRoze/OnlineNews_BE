@@ -38,6 +38,3 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
           EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}
-            ./gradlew build -x test
-            sudo systemctl stop demo.service
-            sudo systemctl restart demo.service

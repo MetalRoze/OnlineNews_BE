@@ -2,16 +2,26 @@ package com.example.onlinenews.user.entity;
 
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.joda.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.util.concurrent.Flow;
-
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -39,8 +49,9 @@ public class User {
     @Column
     private String img; //프로필 사진
 
+    @Enumerated(EnumType.STRING) // Enum을 문자열로 저장
     @Column(nullable = false)
-    private int grade; //사용자 등급
+    private UserGrade grade; //사용자 등급
 
     @CreatedDate
     @Column(nullable = false)
@@ -54,4 +65,30 @@ public class User {
     @JsonIgnore
     private Publisher publisher;
 
+    @Column
+    private String nickname;
+
+    public void updatePassword(String encodedPassword) {
+        this.pw = encodedPassword;
+    }
+
+    public void updateBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateCp(String cp) {
+        this.cp = cp;
+    }
+
+    public String getSex() {
+        if (sex) {
+            return "남성";
+        } else {
+            return "여성";
+        }
+    }
 }

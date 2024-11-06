@@ -45,13 +45,19 @@ dependencies {
 
     //s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.300'
 
     // security
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //jackson 모듈 추가
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.17.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }

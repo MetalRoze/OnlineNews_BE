@@ -25,7 +25,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04   
+    runs-on: ubuntu-22.04
     steps:
       # 1. Compare branch 코드 내려 받기
       - name: Checkout PR
@@ -44,41 +44,42 @@ jobs:
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
 
-      # # 4. 환경 변수 값 출력 (디버깅 용)
-      # - name: Print environment variables
-      #   env:
-      #     DB_URL: ${{ secrets.DB_URL }}
-      #     DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      #     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      #     AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      #     AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      #     JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      #     ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-      #     EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }} 
-
-      #   run: 
-      #     echo "DB_USERNAME=$DB_USERNAME"
-      #     echo "DB_PASSWORD=$DB_PASSWORD"
-      #     echo "DB_URL=$DB_URL"
-      #     echo "AWS_ACCESS_KEY=$AWS_ACCESS_KEY"
-      #     echo "JWT_SECRET=$JWT_SECRET"
-      #     echo "ADMIN_SECRET_KEY=$ADMIN_SECRET_KEY"
-      #     echo "EDITOR_SECRET_KEY=$EDITOR_SECRET_KEY"
-
-        # 환경 변수 설정 
-      - name: Configure application.yaml under test directory
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/test/resources/application.yml
+      # 4. 환경 변수 값 출력 (디버깅 용)
+      - name: Print environment variables
         env:
-          spring.datasource.url: ${{ secrets.DB_URL }}
-          spring.datasource.username: ${{ secrets.DB_USERNAME }}
-          spring.datasource.password: ${{ secrets.DB_PASSWORD }}
-          cloud.aws.credentials.access-key: ${{secrets.AWS_ACCESS_KEY}}
-          cloud.aws.credentials.secret-key: ${{secrets.AWS_SECRET_KEY}} 
-          jwt.secret : ${{secrets.JWT_SECRET}} 
-          secretKey.admin: ${{secrets.ADMIN_SECRET_KEY}}
-          secretKey.editor: ${secrets.EDITOR_SECRET_KEY}}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}
+
+        run: |
+          echo "DB_USERNAME=$DB_USERNAME"
+          echo "DB_PASSWORD=$DB_PASSWORD"
+          echo "DB_URL=$DB_URL"
+          echo "AWS_ACCESS_KEY=$AWS_ACCESS_KEY"
+          echo "JWT_SECRET=$JWT_SECRET"
+          echo "ADMIN_SECRET_KEY=$ADMIN_SECRET_KEY"
+          echo "EDITOR_SECRET_KEY=$EDITOR_SECRET_KEY"
+
+      #        # 환경 변수 설정
+      #      - name: Configure application.yaml under test directory
+      #        uses: microsoft/variable-substitution@v1
+      #        with:
+      #          files: ./src/test/resources/application
+      #
+      #        env:
+      #          spring.datasource.url: ${{ secrets.DB_URL }}
+      #          spring.datasource.username: ${{ secrets.DB_USERNAME }}
+      #          spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+      #          cloud.aws.credentials.access-key: ${{secrets.AWS_ACCESS_KEY}}
+      #          cloud.aws.credentials.secret-key: ${{secrets.AWS_SECRET_KEY}}
+      #          jwt.secret : ${{secrets.JWT_SECRET}}
+      #          secretKey.admin: ${{secrets.ADMIN_SECRET_KEY}}
+      #          secretKey.editor: ${{secrets.EDITOR_SECRET_KEY}}
 
       # 5. Gradle Test 실행
       - name: Build with Gradle

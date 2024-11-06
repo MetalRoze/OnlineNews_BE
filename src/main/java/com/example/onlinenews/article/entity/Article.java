@@ -2,6 +2,7 @@ package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.like.entity.UserLike;
+import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class Article {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     @JsonIgnore
     private User user; 
 
@@ -33,21 +34,19 @@ public class Article {
     @Column(nullable = false)
     private Category category;
 
-    @Column(nullable = false)
+    @Column
     private String title;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String subtitle;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    @CreatedDate
+    @Column
     private LocalDateTime createdAt;
 
     @Column
-    @LastModifiedDate
     private LocalDateTime modifiedAt;
 
     @Column
@@ -57,11 +56,10 @@ public class Article {
     private LocalDateTime approvedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private State state;
+    private RequestStatus state;
 
-    @Column(nullable = false)
-    private Boolean isPublic;
+    @Column
+    private Boolean isPublic = false;
 
     @Column(nullable = false)
     private int views = 0;
@@ -71,4 +69,8 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserLike> userLikes = new ArrayList<>();
+
+    public void updateStatue(RequestStatus newRequestStatus) {
+        this.state= newRequestStatus;
+    }
 }

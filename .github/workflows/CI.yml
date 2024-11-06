@@ -25,17 +25,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
-    env:
-      DB_URL: ${{ secrets.DB_URL }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-      EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}      
-
+    runs-on: ubuntu-22.04   
     steps:
       # 1. Compare branch 코드 내려 받기
       - name: Checkout PR
@@ -56,7 +46,19 @@ jobs:
 
       # 4. 환경 변수 값 출력 (디버깅 용)
       - name: Print environment variables
-        run: |
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }} 
+          OCCUPY_SECRET_DIR: ./application/src/main/resources 
+          OCCUPY_SECRET_DIR_FILE_NAME: application.yml						# 파일 이름
+        run: 
+          echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME 	
           echo "DB_USERNAME=$DB_USERNAME"
           echo "DB_PASSWORD=$DB_PASSWORD"
           echo "DB_URL=$DB_URL"
@@ -64,6 +66,12 @@ jobs:
           echo "JWT_SECRET=$JWT_SECRET"
           echo "ADMIN_SECRET_KEY=$ADMIN_SECRET_KEY"
           echo "EDITOR_SECRET_KEY=$EDITOR_SECRET_KEY"
+
+      # 환경 변수 설정 
+      - name : Compy To application module 
+        env : 
+          
+
 
       # 5. Gradle Test 실행
       - name: Build with Gradle

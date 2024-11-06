@@ -1,14 +1,12 @@
 package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
-import com.example.onlinenews.like.entity.UserLike;
+import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,7 +66,7 @@ public class Article {
     private List<ArticleImg> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserLike> userLikes = new ArrayList<>();
+    private List<ArticleLike> userLikes = new ArrayList<>();
 
     public void updateStatue(RequestStatus newRequestStatus) {
         this.state= newRequestStatus;

@@ -2,7 +2,7 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -22,5 +22,4 @@ jobs:
             git pull origin main
             ./gradlew build -x test
             sudo systemctl stop demo.service
-            sudo cp build/libs/*.jar /opt/demo/demo.jar
             sudo systemctl restart demo.service

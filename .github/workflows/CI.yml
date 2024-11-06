@@ -26,6 +26,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-22.04
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+      EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}      
 
     steps:
       # 1. Compare branch 코드 내려 받기
@@ -45,17 +54,19 @@ jobs:
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
 
-      # 4. Gradle Test 실행
+      # 4. 환경 변수 값 출력 (디버깅 용)
+      - name: Print environment variables
+        run: |
+          echo "DB_USERNAME=$DB_USERNAME"
+          echo "DB_PASSWORD=$DB_PASSWORD"
+          echo "DB_URL=$DB_URL"
+          echo "AWS_ACCESS_KEY=$AWS_ACCESS_KEY"
+          echo "JWT_SECRET=$JWT_SECRET"
+          echo "ADMIN_SECRET_KEY=$ADMIN_SECRET_KEY"
+          echo "EDITOR_SECRET_KEY=$EDITOR_SECRET_KEY"
+
+      # 5. Gradle Test 실행
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-          EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}
         with:
           arguments: build

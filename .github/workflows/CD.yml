@@ -2,7 +2,7 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -18,9 +18,9 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            cd /home/ubuntu/OnlineNews_BE
-            git pull origin main
-            ./gradlew build -x test
-            sudo systemctl stop demo.service
-            sudo cp build/libs/*.jar /opt/demo/demo.jar
-            sudo systemctl restart demo.service
+                    cd /home/ubuntu/OnlineNews_BE
+                    git pull origin main
+                    ./gradlew build -x test
+                    sudo systemctl stop demo.service
+            #            sudo cp build/libs/*.jar /opt/demo/demo.jar
+                    sudo systemctl restart demo.service

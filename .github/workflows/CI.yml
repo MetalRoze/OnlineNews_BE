@@ -79,7 +79,7 @@ jobs:
       #          cloud.aws.credentials.secret-key: ${{secrets.AWS_SECRET_KEY}}
       #          jwt.secret : ${{secrets.JWT_SECRET}}
       #          secretKey.admin: ${{secrets.ADMIN_SECRET_KEY}}
-      #          secretKey.editor: ${secrets.EDITOR_SECRET_KEY}}
+      #          secretKey.editor: ${{secrets.EDITOR_SECRET_KEY}}
 
       # 5. Gradle Test 실행
       - name: Build with Gradle

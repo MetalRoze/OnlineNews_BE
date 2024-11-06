@@ -17,22 +17,27 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_KEY }}
-          env: |
-            DB_URL: ${{ secrets.DB_URL }}
-            DB_USERNAME: ${{ secrets.DB_USERNAME }}
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-            AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-            AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
-            JWT_SECRET: ${{ secrets.JWT_SECRET }}
-            ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
-            EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}
-
           script: |
+            # 환경 변수 확인
             echo "DB_URL=$DB_URL"
             echo "DB_USERNAME=$DB_USERNAME"
             echo "DB_PASSWORD=$DB_PASSWORD"
+            
+            # 배포 스크립트
             cd /home/ubuntu/OnlineNews_BE
             git pull origin main
+            ./gradlew build -x test
+            sudo systemctl stop demo.service
+            sudo systemctl restart demo.service
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_SECRET_KEY: ${{ secrets.ADMIN_SECRET_KEY }}
+          EDITOR_SECRET_KEY: ${{ secrets.EDITOR_SECRET_KEY }}
             ./gradlew build -x test
             sudo systemctl stop demo.service
             sudo systemctl restart demo.service

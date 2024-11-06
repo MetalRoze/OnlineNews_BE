@@ -8,9 +8,12 @@ import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.request.api.RequestApi;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.article.service.ArticleService;
+import com.example.onlinenews.user.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,12 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArticleController implements ArticleAPI {
     private final ArticleService articleService;
+    private final AuthService authService;
 
     // 기사 작성
     @Override
-    public ResponseEntity<ArticleResponseDTO> createArticle(@RequestBody ArticleRequestDTO requestDTO, @RequestParam String email) {
-        return articleService.createArticle(requestDTO, email);
+    public ResponseEntity<ArticleResponseDTO> createArticle(HttpServletRequest httpServletRequest,
+                                                            @RequestPart("requestDTO") ArticleRequestDTO requestDTO,
+                                                            @RequestPart("images") List<MultipartFile> images) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return articleService.createArticle(requestDTO, email, images);
     }
+
 
     // 전체 기사 조회
     @Override

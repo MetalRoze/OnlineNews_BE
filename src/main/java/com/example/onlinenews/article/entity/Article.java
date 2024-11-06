@@ -31,7 +31,6 @@ public class Article {
     private User user; 
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Category category;
 
     @Column

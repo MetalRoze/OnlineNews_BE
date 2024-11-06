@@ -7,8 +7,10 @@ import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.request.entity.RequestStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,7 +20,9 @@ public interface ArticleAPI {
 
     @PostMapping("write")
     @Operation(summary = "기사 작성", description = "새 기사를 작성합니다.")
-    ResponseEntity<ArticleResponseDTO> createArticle(@RequestBody ArticleRequestDTO requestDTO, @RequestParam String email);
+    public ResponseEntity<ArticleResponseDTO> createArticle( HttpServletRequest httpServletRequest,
+                                                             @RequestPart("requestDTO") ArticleRequestDTO requestDTO,
+                                                             @RequestPart("images") List<MultipartFile> images) ;
 
     @GetMapping("selectAll")
     @Operation(summary = "기사 목록 조회", description = "모든 기사를 조회합니다.")

@@ -45,27 +45,8 @@ public class ArticleService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String saveImg(MultipartFile file){
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = "";
-
-        if (originalFilename != null && !originalFilename.isEmpty()) {
-            fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-        }
-
-        String uniqueFilename = UUID.randomUUID() + fileExtension;
-        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
-
-        try {
-            amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
-        } catch (IOException e) {
-            throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
-        }
-        return fileUrl;
-    }
-
     // 기사 작성
-    public ResponseEntity<ArticleResponseDTO> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
+    public ResponseEntity<String> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
@@ -85,7 +66,6 @@ public class ArticleService {
         Article savedArticle = articleRepository.save(article);
 
         if (images != null && !images.isEmpty()) {
-            // 이미지 업로드 및 ArticleImg 엔티티 생성
             List<ArticleImg> articleImgs = new ArrayList<>();
             for (MultipartFile file : images) {
                 if (file.isEmpty()) {
@@ -93,7 +73,6 @@ public class ArticleService {
                 }
                 String fileUrl=saveImg(file);
 
-                // S3 URL을 ArticleImg 엔티티에 저장
                 ArticleImg articleImg = ArticleImg.builder()
                         .article(savedArticle)
                         .imgUrl(fileUrl)
@@ -105,7 +84,7 @@ public class ArticleService {
             articleImgRepository.saveAll(articleImgs);
         }
 
-        return ResponseEntity.ok(convertToResponseDTO(savedArticle));
+        return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }
 
 
@@ -253,6 +232,26 @@ public class ArticleService {
                 .views(article.getViews())
                 .images(images.stream().map(img -> img.getImgUrl()).collect(Collectors.toList()))
                 .build();
+    }
+
+
+    public String saveImg(MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = "";
+
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        }
+
+        String uniqueFilename = UUID.randomUUID() + fileExtension;
+        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
+
+        try {
+            amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
+        } catch (IOException e) {
+            throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
+        }
+        return fileUrl;
     }
 
 }

@@ -25,7 +25,7 @@ public class ArticleController implements ArticleAPI {
 
     // 기사 작성
     @Override
-    public ResponseEntity<ArticleResponseDTO> createArticle(HttpServletRequest httpServletRequest,
+    public ResponseEntity<?> createArticle(HttpServletRequest httpServletRequest,
                                                             ArticleRequestDTO requestDTO,
                                                             List<MultipartFile> images) {
         String email = authService.getEmailFromToken(httpServletRequest);

@@ -20,7 +20,7 @@ public interface ArticleAPI {
 
     @PostMapping("write")
     @Operation(summary = "기사 작성", description = "새 기사를 작성합니다.")
-    public ResponseEntity<ArticleResponseDTO> createArticle( HttpServletRequest httpServletRequest,
+    public ResponseEntity<?> createArticle( HttpServletRequest httpServletRequest,
                                                              @RequestPart("requestDTO") ArticleRequestDTO requestDTO,
                                                              @RequestPart(value = "images", required = false) List<MultipartFile> images) ;
 

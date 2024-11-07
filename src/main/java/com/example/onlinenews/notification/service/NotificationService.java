@@ -1,15 +1,12 @@
 package com.example.onlinenews.notification.service;
 
 import com.example.onlinenews.article.entity.Article;
-import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
-import com.example.onlinenews.notification.dto.NotificationDto;
+import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
-import com.example.onlinenews.request.dto.RequestDto;
-import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -71,9 +68,9 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public NotificationDto read(Long notificationId){
+    public RequestNotificationDto read(Long notificationId){
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
-        return NotificationDto.fromEntity(notification);
+        return RequestNotificationDto.fromEntity(notification);
     }
     //알림 읽음
     @Transactional
@@ -84,7 +81,7 @@ public class NotificationService {
     }
 
     // 사용자의 알림 중에서 status 별로 조회
-    public List<NotificationDto> getByType(String email, String keyword) {
+    public List<RequestNotificationDto> getByType(String email, String keyword) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         Optional<Notification> optionalNotification = notificationRepository.findByUser(user);
@@ -94,12 +91,14 @@ public class NotificationService {
 
         NotificationType enumStatus = switch (keyword.toLowerCase()) {
             case "request" -> NotificationType.EDITOR_REQUEST;
-            case "enroll" -> NotificationType.EDITOR_ENROLL_REPORTER;
+            case "accepted" -> NotificationType.REPORTER_APPROVAL_ACCEPTED;
+            case "hold" -> NotificationType.REPORTER_APPROVAL_HELD;
+            case "rejected" ->NotificationType.REPORTER_APPROVAL_REJECTED;
             default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
         };
 
         return notificationRepository.findNotificationsByUserAndType(user, enumStatus).stream()
-                .map(NotificationDto::fromEntity)
+                .map(RequestNotificationDto::fromEntity)
                 .collect(Collectors.toList());
 
     }

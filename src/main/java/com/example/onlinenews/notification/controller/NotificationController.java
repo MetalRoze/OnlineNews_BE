@@ -1,7 +1,7 @@
 package com.example.onlinenews.notification.controller;
 
 import com.example.onlinenews.notification.api.NotificationApi;
-import com.example.onlinenews.notification.dto.NotificationDto;
+import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ public class NotificationController implements NotificationApi {
     private final AuthService authService;
 
     @Override
-    public NotificationDto read(Long notificationId) {
+    public RequestNotificationDto read(Long notificationId) {
         return notificationService.read(notificationId);
     }
 
@@ -28,7 +28,7 @@ public class NotificationController implements NotificationApi {
     }
 
     @Override
-    public List<NotificationDto> getByType(HttpServletRequest request, String keyword) {
+    public List<RequestNotificationDto> getByType(HttpServletRequest request, String keyword) {
         String email = authService.getEmailFromToken(request);
         return notificationService.getByType(email, keyword);
     }

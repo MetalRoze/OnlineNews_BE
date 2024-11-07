@@ -52,8 +52,8 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }}
             EDITOR_SECRET_KEY=${{ secrets.EDITOR_SECRET_KEY }} 
-            MAIL_USERNAME : ${{secrets.MAIL_USERNAME}}
-            MAIL_PASSWORD : ${{secrets.MAIL_PASSWORD}}
+            MAIL_USERNAME=${{secrets.MAIL_USERNAME}}
+            MAIL_PASSWORD=${{secrets.MAIL_PASSWORD}}
             
             # 환경 변수 확인
             echo "DB_URL=$DB_URL"

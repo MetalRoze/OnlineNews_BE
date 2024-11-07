@@ -68,6 +68,7 @@ jobs:
             
             # 배포 스크립트
             cd /home/ubuntu/OnlineNews_BE
+            chmod +x ./gradlew
             git pull origin main
             ./gradlew build -x test
             sudo systemctl stop demo.service

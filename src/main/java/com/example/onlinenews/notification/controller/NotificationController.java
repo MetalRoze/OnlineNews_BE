@@ -3,6 +3,7 @@ package com.example.onlinenews.notification.controller;
 import com.example.onlinenews.notification.api.NotificationApi;
 import com.example.onlinenews.notification.dto.NotificationDto;
 import com.example.onlinenews.notification.service.NotificationService;
+import com.example.onlinenews.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController implements NotificationApi {
     private final NotificationService notificationService;
+    private final AuthService authService;
+
 
     @Override
     public List<NotificationDto> list() {

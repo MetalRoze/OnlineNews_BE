@@ -28,10 +28,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     //기자가 기사 작성 -> 편집장한테 승인요청 알림
-    public void createRequestNoti (Long userId, Long articleId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-
+    public void createRequestNoti (User user, Article article){
         Notification notification = Notification.builder()
                 .user(user)
                 .article(article)

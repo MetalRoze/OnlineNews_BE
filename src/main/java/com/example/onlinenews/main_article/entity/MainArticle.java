@@ -1,21 +1,22 @@
-package com.example.onlinenews.request.entity;
-
+package com.example.onlinenews.main_article.entity;
 
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Request {
+@NoArgsConstructor
+public class MainArticle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 요청 아이디 (PK)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -30,25 +31,15 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RequestStatus status;
-
+    //1번이 헤드라인 기사임
     @Column
-    private String comment;
+    private int order;
 
     @Builder
-    public Request(User user, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
+    public MainArticle(User user, Article article, LocalDateTime createdAt, int order) {
         this.user = user;
         this.article = article;
         this.createdAt = createdAt;
-        this.status = status;
-        this.comment = comment;
-    }
-
-    //상태 업데이트
-    public void updateStatus(RequestStatus newStatus, String comment){
-        this.status = newStatus;
-        this.comment = comment;
+        this.order = order;
     }
 }

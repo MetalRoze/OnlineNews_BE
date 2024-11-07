@@ -5,6 +5,7 @@ import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
+import com.example.onlinenews.main_article.dto.MainArticleDto;
 import com.example.onlinenews.main_article.dto.SelectArticleDto;
 import com.example.onlinenews.main_article.entity.MainArticle;
 import com.example.onlinenews.main_article.repository.MainArticleRepository;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,6 @@ public class MainArticleService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
 
-        System.out.println(selectArticleDto.getArticleId()+" "+selectArticleDto.getDisplayOrder());
         Article article = articleRepository.findById(selectArticleDto.getArticleId()).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
 
         MainArticle mainArticle = MainArticle.builder()
@@ -40,6 +42,11 @@ public class MainArticleService {
         return StateResponse.builder().code("200").message("success").build();
     }
 
+    public List<MainArticleDto> mainArticleList(){
+        return mainArticleRepository.findAllByOrderByDisplayOrderAsc().stream()
+                .map(MainArticleDto::fromEntity)
+                .collect(Collectors.toList());
+    }
     private void checkEditorPermission(User user) {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);

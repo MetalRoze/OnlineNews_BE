@@ -49,9 +49,9 @@ jobs:
           key: ${{ secrets.SERVER_KEY }}
           script: |
             # 환경 변수 확인
-            echo "DB_URL=$DB_URL"
-            echo "DB_USERNAME=$DB_USERNAME"
-            echo "DB_PASSWORD=$DB_PASSWORD"
+            echo "DB_URL=${DB_URL}"
+            echo "DB_USERNAME=${DB_USERNAME}"
+            echo "DB_PASSWORD=${DB_PASSWORD}"
             
             # 배포 스크립트
             cd /home/ubuntu/OnlineNews_BE

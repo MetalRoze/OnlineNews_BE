@@ -1,5 +1,7 @@
 package com.example.onlinenews.article.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleResponseDTO;
 import com.example.onlinenews.article.dto.ArticleUpdateRequestDTO;
@@ -7,20 +9,26 @@ import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.article_img.entity.ArticleImg;
+import com.example.onlinenews.article_img.repository.ArticleImgRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.entity.RequestStatus;
-import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +37,20 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
-    private final RequestService requestService;
+
+    @Autowired
+    private final AmazonS3 amazonS3;
+    private final ArticleImgRepository articleImgRepository;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
     // 기사 작성
-    public ResponseEntity<ArticleResponseDTO> createArticle(ArticleRequestDTO requestDTO, String email) {
+    public ResponseEntity<String> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
+        // Article 엔티티 생성
         Article article = Article.builder()
                 .user(user)
                 .category(requestDTO.getCategory())
@@ -44,15 +59,37 @@ public class ArticleService {
                 .content(requestDTO.getContent())
                 .state(RequestStatus.PENDING)
                 .createdAt(LocalDateTime.now())
-                .isPublic(requestDTO.getIsPublic())
+                .isPublic(false)
                 .build();
 
+        // Article을 먼저 저장하여 ID를 생성
         Article savedArticle = articleRepository.save(article);
-        requestService.create(user, savedArticle);
-        return ResponseEntity.ok(convertToResponseDTO(savedArticle));
+
+        if (images != null && !images.isEmpty()) {
+            List<ArticleImg> articleImgs = new ArrayList<>();
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new BusinessException(ExceptionCode.FILE_NOT_FOUND);
+                }
+                String fileUrl=saveImg(file);
+
+                ArticleImg articleImg = ArticleImg.builder()
+                        .article(savedArticle)
+                        .imgUrl(fileUrl)
+                        .build();
+                articleImgs.add(articleImg);
+            }
+
+            // ArticleImg 엔티티 저장
+            articleImgRepository.saveAll(articleImgs);
+        }
+
+        return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }
 
+
     // 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> getAllArticles() {
         List<Article> articles = articleRepository.findAll();
 
@@ -65,6 +102,7 @@ public class ArticleService {
 
 
     // 기사 상세 조회
+    @Transactional
     public ResponseEntity<ArticleResponseDTO> getArticleById(Long id) {
         incrementViewCount(id); // 조회수 증가
         Article article = articleRepository.findById(id)
@@ -73,6 +111,7 @@ public class ArticleService {
     }
 
     // 카테고리 별 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> listArticlesByCategory(Category category) {
         List<Article> articles = articleRepository.findByCategory(category);
         List<ArticleResponseDTO> responseDTOS = articles.stream()
@@ -83,6 +122,7 @@ public class ArticleService {
     }
 
     // 제목 또는 내용을 포함하는 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> searchArticles(String title, String content) {
         List<Article> articles = articleRepository.findByTitleContainingOrContentContaining(title, content);
         List<ArticleResponseDTO> responseDTOs = articles.stream()
@@ -92,6 +132,7 @@ public class ArticleService {
     }
 
     // 사용자 ID로 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> getArticlesByUserId(Long userId) {
         List<Article> articles = articleRepository.findByUserId(userId);
         List<ArticleResponseDTO> responseDTOs = articles.stream()
@@ -101,6 +142,7 @@ public class ArticleService {
     }
 
     // 공개된 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> getPublicArticles() {
         List<Article> articles = articleRepository.findByIsPublicTrue();
         List<ArticleResponseDTO> responseDTOs = articles.stream()
@@ -110,6 +152,7 @@ public class ArticleService {
     }
 
     // 상태에 따른 기사 목록 조회
+    @Transactional
     public ResponseEntity<List<ArticleResponseDTO>> getArticlesByState(RequestStatus state) {
         List<Article> articles = articleRepository.findByState(state); // 상태에 따라 기사 조회
         List<ArticleResponseDTO> responseDTOs = articles.stream()
@@ -119,6 +162,7 @@ public class ArticleService {
     }
 
     // 기사 수정
+    @Transactional
     public ResponseEntity<ArticleResponseDTO> updateArticle(Long id, ArticleUpdateRequestDTO updateRequest) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
@@ -167,7 +211,6 @@ public class ArticleService {
     }
 
 
-
     private ArticleResponseDTO convertToResponseDTO(Article article) {
         List<ArticleImg> images = article.getImages();
         if (images == null) {
@@ -189,6 +232,26 @@ public class ArticleService {
                 .views(article.getViews())
                 .images(images.stream().map(img -> img.getImgUrl()).collect(Collectors.toList()))
                 .build();
+    }
+
+
+    public String saveImg(MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = "";
+
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        }
+
+        String uniqueFilename = UUID.randomUUID() + fileExtension;
+        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
+
+        try {
+            amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
+        } catch (IOException e) {
+            throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
+        }
+        return fileUrl;
     }
 
 }

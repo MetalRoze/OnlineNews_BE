@@ -23,6 +23,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -62,25 +65,31 @@ public class ArticleService {
                 .isPublic(false)
                 .build();
 
-        // Article을 먼저 저장하여 ID를 생성
-        Article savedArticle = articleRepository.save(article);
-
+        // 이미지 저장
+        List<String> imageUrls = new ArrayList<>();
         if (images != null && !images.isEmpty()) {
-            List<ArticleImg> articleImgs = new ArrayList<>();
             for (MultipartFile file : images) {
                 if (file.isEmpty()) {
                     throw new BusinessException(ExceptionCode.FILE_NOT_FOUND);
                 }
-                String fileUrl=saveImg(file);
+                imageUrls.add(saveImg(file));
+            }
+            article.setContent(replaceImgUrl(requestDTO.getContent(), imageUrls));
+        }
 
+        // Article을 먼저 저장하여 ID를 생성
+        Article savedArticle = articleRepository.save(article);
+
+        // Article_Img 저장
+        if (!imageUrls.isEmpty()) {
+            List<ArticleImg> articleImgs = new ArrayList<>();
+            for (String url : imageUrls) {
                 ArticleImg articleImg = ArticleImg.builder()
                         .article(savedArticle)
-                        .imgUrl(fileUrl)
+                        .imgUrl(url)
                         .build();
-                articleImgs.add(articleImg);
-            }
+                articleImgs.add(articleImg);}
 
-            // ArticleImg 엔티티 저장
             articleImgRepository.saveAll(articleImgs);
         }
 
@@ -252,6 +261,22 @@ public class ArticleService {
             throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
         }
         return fileUrl;
+    }
+
+    public String replaceImgUrl(String content, List<String> imgUrls) {
+        Document document = Jsoup.parse(content);
+        List<Element> images = document.select("img");
+
+        int urlIndex = 0;
+        for (Element img : images) {
+            if (urlIndex < imgUrls.size()) {
+                img.attr("src", imgUrls.get(urlIndex));
+                urlIndex++;
+            } else {
+                break;
+            }
+        }
+        return document.body().html();
     }
 
 }

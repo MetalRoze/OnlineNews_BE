@@ -60,7 +60,7 @@ public class RequestService {
         request.getArticle().updateStatue(request.getStatus());
 
         //승인 알림
-        notificationService.createApprovedNoti(request.getUser(), request.getArticle());
+        notificationService.createApprovedNoti(request);
         return request.getStatus();
     }
 
@@ -78,7 +78,7 @@ public class RequestService {
 
         request.getArticle().updateStatue(request.getStatus());
         //보류 알림
-        notificationService.createHeldNoti(request.getUser(), request.getArticle());
+        notificationService.createHeldNoti(request);
         return request.getStatus();
     }
 
@@ -97,7 +97,7 @@ public class RequestService {
         request.getArticle().updateStatue(request.getStatus());
 
         //거절 알림
-        notificationService.createRejectedNoti(request.getUser(), request.getArticle());
+        notificationService.createRejectedNoti(request);
         return request.getStatus();
     }
 

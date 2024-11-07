@@ -2,7 +2,6 @@ package com.example.onlinenews.notification.dto;
 
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
-import com.example.onlinenews.request.entity.Request;
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,13 +25,11 @@ public class RequestStatusNotificationDto {
         this.isRead = isRead;
         this.notificationType = notificationType;
     }
-
-
-    public static RequestStatusNotificationDto fromEntity(Notification notification, Request request){
+    public static RequestStatusNotificationDto fromEntity(Notification notification){
         return new RequestStatusNotificationDto(
                 notification.getId(),
-                request.getComment(),
                 notification.getArticle().getTitle() + " " + notification.getType().getMessage(),
+                notification.getRequest().getComment(),
                 notification.getCreatedAt(),
                 notification.isRead(),
                 notification.getType()

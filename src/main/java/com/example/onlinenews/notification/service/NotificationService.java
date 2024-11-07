@@ -7,6 +7,7 @@ import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,30 +38,33 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void createApprovedNoti (User user, Article article){
+    public void createApprovedNoti (Request request){
         Notification notification = Notification.builder()
-                .user(user)
-                .article(article)
+                .user(request.getUser())
+                .article(request.getArticle())
+                .request(request)
                 .createdAt(LocalDateTime.now())
                 .type(NotificationType.REPORTER_APPROVAL_ACCEPTED)
                 .isRead(false)
                 .build();
         notificationRepository.save(notification);
     }
-    public void createHeldNoti (User user, Article article){
+    public void createHeldNoti (Request request){
         Notification notification = Notification.builder()
-                .user(user)
-                .article(article)
+                .user(request.getUser())
+                .article(request.getArticle())
+                .request(request)
                 .createdAt(LocalDateTime.now())
                 .type(NotificationType.REPORTER_APPROVAL_HELD)
                 .isRead(false)
                 .build();
         notificationRepository.save(notification);
     }
-    public void createRejectedNoti (User user, Article article){
+    public void createRejectedNoti (Request request){
         Notification notification = Notification.builder()
-                .user(user)
-                .article(article)
+                .user(request.getUser())
+                .article(request.getArticle())
+                .request(request)
                 .createdAt(LocalDateTime.now())
                 .type(NotificationType.REPORTER_APPROVAL_REJECTED)
                 .isRead(false)

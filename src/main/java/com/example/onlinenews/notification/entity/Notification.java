@@ -1,6 +1,7 @@
 package com.example.onlinenews.notification.entity;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,6 +32,11 @@ public class Notification {
     @JsonIgnore
     private Article article;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
+    @JsonIgnore
+    private Request request;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType type;
@@ -43,9 +49,10 @@ public class Notification {
     private boolean isRead;
 
     @Builder
-    public Notification(User user, Article article, NotificationType type, LocalDateTime createdAt, boolean isRead) {
+    public Notification(User user, Article article, Request request, NotificationType type, LocalDateTime createdAt, boolean isRead) {
         this.user= user;
         this.article = article;
+        this.request = request;
         this.type = type;
         this.createdAt = createdAt;
         this.isRead = isRead;

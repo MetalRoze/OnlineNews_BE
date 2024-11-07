@@ -45,6 +45,24 @@ public class ArticleService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    public String saveImg(MultipartFile file){
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = "";
+
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        }
+
+        String uniqueFilename = UUID.randomUUID() + fileExtension;
+        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
+
+        try {
+            amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
+        } catch (IOException e) {
+            throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
+        }
+        return fileUrl;
+    }
 
     // 기사 작성
     public ResponseEntity<ArticleResponseDTO> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
@@ -66,38 +84,26 @@ public class ArticleService {
         // Article을 먼저 저장하여 ID를 생성
         Article savedArticle = articleRepository.save(article);
 
-        // 이미지 업로드 및 ArticleImg 엔티티 생성
-        List<ArticleImg> articleImgs = new ArrayList<>();
-        for (MultipartFile file : images) {
-            if (file.isEmpty()) {
-                throw new IllegalArgumentException("파일이 비어 있습니다.");
-            }
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = "";
+        if (images != null && !images.isEmpty()) {
+            // 이미지 업로드 및 ArticleImg 엔티티 생성
+            List<ArticleImg> articleImgs = new ArrayList<>();
+            for (MultipartFile file : images) {
+                if (file.isEmpty()) {
+                    throw new BusinessException(ExceptionCode.FILE_NOT_FOUND);
+                }
+                String fileUrl=saveImg(file);
 
-            if (originalFilename != null && !originalFilename.isEmpty()) {
-                fileExtension = "." + originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            }
-
-            String uniqueFilename = UUID.randomUUID() + fileExtension;
-            String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/articleImg/" + uniqueFilename;
-
-            try {
-                amazonS3.putObject(new PutObjectRequest(bucketName, "articleImg/" + uniqueFilename, file.getInputStream(), null));
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to upload file to S3");
+                // S3 URL을 ArticleImg 엔티티에 저장
+                ArticleImg articleImg = ArticleImg.builder()
+                        .article(savedArticle)
+                        .imgUrl(fileUrl)
+                        .build();
+                articleImgs.add(articleImg);
             }
 
-            // S3 URL을 ArticleImg 엔티티에 저장
-            ArticleImg articleImg = ArticleImg.builder()
-                    .article(savedArticle)
-                    .imgUrl(fileUrl)
-                    .build();
-            articleImgs.add(articleImg);
+            // ArticleImg 엔티티 저장
+            articleImgRepository.saveAll(articleImgs);
         }
-
-        // ArticleImg 엔티티 저장
-        articleImgRepository.saveAll(articleImgs);
 
         return ResponseEntity.ok(convertToResponseDTO(savedArticle));
     }

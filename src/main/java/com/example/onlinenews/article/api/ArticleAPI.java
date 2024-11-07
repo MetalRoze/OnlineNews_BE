@@ -22,7 +22,7 @@ public interface ArticleAPI {
     @Operation(summary = "기사 작성", description = "새 기사를 작성합니다.")
     public ResponseEntity<ArticleResponseDTO> createArticle( HttpServletRequest httpServletRequest,
                                                              @RequestPart("requestDTO") ArticleRequestDTO requestDTO,
-                                                             @RequestPart("images") List<MultipartFile> images) ;
+                                                             @RequestPart(value = "images", required = false) List<MultipartFile> images) ;
 
     @GetMapping("selectAll")
     @Operation(summary = "기사 목록 조회", description = "모든 기사를 조회합니다.")

@@ -40,7 +40,10 @@ public enum ExceptionCode {
     SUB_NOT_MATCH_USER(400, "MATCH_001", "현재 구독 사용자와 일치하지 않습니다."),
 
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
-    NOT_VALID_ERROR(404, "G011", "Validation Exception 발생");
+    NOT_VALID_ERROR(404, "G011", "Validation Exception 발생"),
+
+    S3_UPLOAD_FAILED( 500, "Article_002", "이미지 업로드에 실패했습니다."),
+    FILE_NOT_FOUND(400, "Article_001", "존재하지 않는 파일입니다.");
 
 
 

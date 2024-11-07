@@ -33,13 +33,13 @@ public class MainArticle {
 
     //1번이 헤드라인 기사임
     @Column
-    private int order;
+    private int displayOrder;
 
     @Builder
-    public MainArticle(User user, Article article, LocalDateTime createdAt, int order) {
+    public MainArticle(User user, Article article, LocalDateTime createdAt, int displayOrder) {
         this.user = user;
         this.article = article;
         this.createdAt = createdAt;
-        this.order = order;
+        this.displayOrder = displayOrder;
     }
 }

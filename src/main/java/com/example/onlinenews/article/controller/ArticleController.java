@@ -77,7 +77,7 @@ public class ArticleController implements ArticleAPI {
 
     // 기사 수정
     @Override
-    public ResponseEntity<ArticleResponseDTO> updateArticle(@PathVariable Long id, @RequestBody ArticleUpdateRequestDTO updateRequest) {
-        return articleService.updateArticle(id, updateRequest);
+    public ResponseEntity<?> updateArticle(Long id, ArticleUpdateRequestDTO updateRequest, List<MultipartFile> images) {
+        return articleService.updateArticle(id, updateRequest, images);
     }
 }

@@ -29,9 +29,7 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -172,7 +170,7 @@ public class ArticleService {
 
     // 기사 수정
     @Transactional
-    public ResponseEntity<ArticleResponseDTO> updateArticle(Long id, ArticleUpdateRequestDTO updateRequest) {
+    public ResponseEntity<?> updateArticle(Long id, ArticleUpdateRequestDTO updateRequest, List<MultipartFile> images ) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
 
@@ -182,23 +180,43 @@ public class ArticleService {
         if (updateRequest.getSubtitle() != null) {
             article.setSubtitle(updateRequest.getSubtitle());
         }
-        if (updateRequest.getContent() != null) {
-            article.setContent(updateRequest.getContent());
-        }
         if (updateRequest.getCategory() != null) {
             article.setCategory(updateRequest.getCategory());
-        }
-        if (updateRequest.getImages() != null) {
-            article.setImages(updateRequest.getImages());
         }
         if (updateRequest.getIsPublic() != null) {
             article.setIsPublic(updateRequest.getIsPublic());
         }
 
-        article.setModifiedAt(LocalDateTime.now());
+        if (updateRequest.getContent() != null) {
 
-        Article updatedArticle = articleRepository.save(article); // 변경사항 저장
-        return ResponseEntity.ok(convertToResponseDTO(updatedArticle));
+            List<String> imageUrls = new ArrayList<>();
+            if (images != null && !images.isEmpty()) {
+                for (MultipartFile file : images) {
+                    if (file.isEmpty()) {
+                        throw new BusinessException(ExceptionCode.FILE_NOT_FOUND);
+                    }
+                    imageUrls.add(saveImg(file));
+
+                    List<ArticleImg> articleImgs = new ArrayList<>();
+                    for (String url : imageUrls) {
+                        ArticleImg articleImg = ArticleImg.builder()
+                                .article(article)
+                                .imgUrl(url)
+                                .build();
+                        articleImgs.add(articleImg);
+                        articleImgRepository.saveAll(articleImgs);
+                    }
+                }
+                article.setContent(replaceImgUrl(updateRequest.getContent(), imageUrls));
+
+            }
+            else article.setContent(updateRequest.getContent());
+        }
+
+        article.setModifiedAt(LocalDateTime.now());
+        articleRepository.save(article);
+
+        return ResponseEntity.ok("기사가 수정되었습니다. 편집장의 승인 후 게시됩니다.");
     }
 
     public void incrementViewCount(Long articleId) {

@@ -94,7 +94,7 @@ public class ArticleService {
             articleImgRepository.saveAll(articleImgs);
         }
 
-        //그냥 기자 밑에 말단 기자들은 요청간다.
+        //그냥 기자 밑에 인턴기자, 시민기자들은 요청 받아야함
         if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
             requestService.create(user, savedArticle);
             notificationService.createRequestNoti(user, savedArticle);

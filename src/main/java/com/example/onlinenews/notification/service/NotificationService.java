@@ -18,13 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
     private final UserRepository userRepository;
-    private final ArticleRepository articleRepository;
     private final NotificationRepository notificationRepository;
 
     //기자가 기사 작성 -> 편집장한테 승인요청 알림
@@ -33,17 +33,13 @@ public class NotificationService {
                 .user(user)
                 .article(article)
                 .createdAt(LocalDateTime.now())
-                .type(NotificationType.EDITOR)
+                .type(NotificationType.EDITOR_REQUEST)
                 .isRead(false)
                 .build();
 
         notificationRepository.save(notification);
     }
-    public List<NotificationDto> list(){
-        return notificationRepository.findAll().stream()
-                .map(NotificationDto::fromEntity)
-                .collect(Collectors.toList());
-    }
+
     public NotificationDto read(Long notificationId){
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
         return NotificationDto.fromEntity(notification);
@@ -55,17 +51,25 @@ public class NotificationService {
         notification.updateIsRead(true);
         return notification.isRead();
     }
-    //스위치케이스 덜적은거입니다...
-    public List<NotificationDto> getByType(String keyword) {
+
+    // 사용자의 알림 중에서 status 별로 조회
+    public List<NotificationDto> getByType(String email, String keyword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        Optional<Notification> optionalNotification = notificationRepository.findByUser(user);
+        if(optionalNotification.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+
         NotificationType enumStatus = switch (keyword.toLowerCase()) {
-            case "request" -> NotificationType.EDITOR;
-            case "comment" -> NotificationType.REPORTER_COMMENT;
-            case "reply" -> NotificationType.USER_REPLY;
+            case "request" -> NotificationType.EDITOR_REQUEST;
+            case "enroll" -> NotificationType.EDITOR_ENROLL_REPORTER;
             default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
         };
 
-        return notificationRepository.findNotificationsByType(enumStatus).stream()
+        return notificationRepository.findNotificationsByUserAndType(user, enumStatus).stream()
                 .map(NotificationDto::fromEntity)
                 .collect(Collectors.toList());
+
     }
 }

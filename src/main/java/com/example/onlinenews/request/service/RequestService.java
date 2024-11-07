@@ -1,11 +1,9 @@
 package com.example.onlinenews.request.service;
 
 import com.example.onlinenews.article.entity.Article;
-import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
-import com.example.onlinenews.publisher.entity.Publisher;
-import com.example.onlinenews.publisher.repository.PublisherRepository;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
@@ -27,6 +25,7 @@ import java.util.stream.Collectors;
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     //request id로 개별 조회
     public RequestDto read(Long reqId){
@@ -60,6 +59,8 @@ public class RequestService {
         //기사 상태 업데이트
         request.getArticle().updateStatue(request.getStatus());
 
+        //승인 알림
+        notificationService.createApprovedNoti(request.getUser(), request.getArticle());
         return request.getStatus();
     }
 
@@ -76,7 +77,8 @@ public class RequestService {
         request.updateStatus(RequestStatus.HOLDING, comment);
 
         request.getArticle().updateStatue(request.getStatus());
-
+        //보류 알림
+        notificationService.createHeldNoti(request.getUser(), request.getArticle());
         return request.getStatus();
     }
 
@@ -93,6 +95,9 @@ public class RequestService {
         request.updateStatus(RequestStatus.REJECTED, comment);
 
         request.getArticle().updateStatue(request.getStatus());
+
+        //거절 알림
+        notificationService.createRejectedNoti(request.getUser(), request.getArticle());
         return request.getStatus();
     }
 

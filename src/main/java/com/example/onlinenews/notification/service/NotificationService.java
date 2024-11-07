@@ -40,6 +40,37 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    public void createApprovedNoti (User user, Article article){
+        Notification notification = Notification.builder()
+                .user(user)
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_ACCEPTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createHeldNoti (User user, Article article){
+        Notification notification = Notification.builder()
+                .user(user)
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_HELD)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createRejectedNoti (User user, Article article){
+        Notification notification = Notification.builder()
+                .user(user)
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_REJECTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+
     public NotificationDto read(Long notificationId){
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
         return NotificationDto.fromEntity(notification);

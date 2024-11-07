@@ -1,11 +1,12 @@
 package com.example.onlinenews.article.dto;
 
 import com.example.onlinenews.article.entity.Category;
-import com.example.onlinenews.request.entity.RequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -16,5 +17,4 @@ public class ArticleRequestDTO {
     private String title;
     private String subtitle;
     private String content;
-    private Boolean isPublic;
 }

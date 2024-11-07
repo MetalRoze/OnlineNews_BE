@@ -47,7 +47,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${cloud.aws.s3.bucket}")
-    private String buketName;
+    private String bucketName;
 
     @Value("${secretKey.admin}")
     private String adminSecretKey;
@@ -118,10 +118,11 @@ public class UserService {
         }
 
         String uniqueFilename = UUID.randomUUID() + fileExtension;
-        String fileUrl = "https://" + buketName + ".s3.amazonaws.com/profileImg/" + uniqueFilename;
+        String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/profileImg/" + uniqueFilename;
 
         try {
-            amazonS3.putObject(new PutObjectRequest(buketName, uniqueFilename, file.getInputStream(), null));
+            amazonS3.putObject(
+                    new PutObjectRequest(bucketName, "profileImg/" + uniqueFilename, file.getInputStream(), null));
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file to S3");
         }

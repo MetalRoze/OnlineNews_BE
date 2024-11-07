@@ -12,5 +12,5 @@ import java.util.Optional;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findNotificationsByUserAndType(User user, NotificationType notificationType);
-    Optional<Notification> findByUser(User user);
+    List<Notification> findByUser(User user);
 }

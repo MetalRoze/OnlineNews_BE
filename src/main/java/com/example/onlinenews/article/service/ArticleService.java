@@ -59,7 +59,7 @@ public class ArticleService {
                 .content(requestDTO.getContent())
                 .state(RequestStatus.PENDING)
                 .createdAt(LocalDateTime.now())
-                .isPublic(requestDTO.getIsPublic())
+                .isPublic(false)
                 .build();
 
         // Article을 먼저 저장하여 ID를 생성

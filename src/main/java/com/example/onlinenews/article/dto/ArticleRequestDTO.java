@@ -17,5 +17,4 @@ public class ArticleRequestDTO {
     private String title;
     private String subtitle;
     private String content;
-    private Boolean isPublic;
 }

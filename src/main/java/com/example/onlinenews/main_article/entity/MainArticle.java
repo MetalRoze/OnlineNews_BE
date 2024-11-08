@@ -1,6 +1,7 @@
 package com.example.onlinenews.main_article.entity;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -31,15 +32,14 @@ public class MainArticle {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    //1번이 헤드라인 기사임
-    @Column
-    private int displayOrder;
+    @Column(nullable = false)
+    private Category category;
 
     @Builder
-    public MainArticle(User user, Article article, LocalDateTime createdAt, int displayOrder) {
+    public MainArticle(User user, Article article, LocalDateTime createdAt, Category category) {
         this.user = user;
         this.article = article;
         this.createdAt = createdAt;
-        this.displayOrder = displayOrder;
+        this.category = category;
     }
 }

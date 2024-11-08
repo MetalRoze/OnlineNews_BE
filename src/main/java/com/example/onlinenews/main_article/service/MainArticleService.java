@@ -36,14 +36,14 @@ public class MainArticleService {
                 .user(user)
                 .article(article)
                 .createdAt(LocalDateTime.now())
-                .displayOrder(selectArticleDto.getDisplayOrder())
+                .category(selectArticleDto.getCategory())
                 .build();
         mainArticleRepository.save(mainArticle);
         return StateResponse.builder().code("200").message("success").build();
     }
 
     public List<MainArticleDto> mainArticleList(){
-        return mainArticleRepository.findAllByOrderByDisplayOrderAsc().stream()
+        return mainArticleRepository.findAll().stream()
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }

@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface MainArticleRepository extends JpaRepository<MainArticle, Long> {
-    List<MainArticle> findAllByOrderByDisplayOrderAsc();
 }

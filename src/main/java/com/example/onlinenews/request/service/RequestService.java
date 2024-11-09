@@ -34,7 +34,7 @@ public class RequestService {
     }
 
     //요청 생성
-    public RequestDto create(User user, Article article){
+    public void create(User user, Article article){
         Request request  = Request.builder()
                 .user(user)
                 .article(article)
@@ -43,11 +43,10 @@ public class RequestService {
                 .build();
         requestRepository.save(request);
         notificationService.createRequestNoti(request);
-        return RequestDto.fromEntity(request);
     }
 
     //시민 기자 등록 요청
-    public RequestDto createEnrollRequest(User user, User citizenUser){
+    public void createEnrollRequest(User user, User citizenUser){
         Request request = Request.builder()
                 .user(user)
                 .citizenUser(citizenUser)
@@ -55,7 +54,7 @@ public class RequestService {
                 .status(RequestStatus.PENDING)
                 .build();
         requestRepository.save(request);
-        return RequestDto.fromEntity(request);
+        notificationService.createEnrollNoti(request);
     }
 
     //요청 수락

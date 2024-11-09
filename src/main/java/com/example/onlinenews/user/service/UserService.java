@@ -58,11 +58,12 @@ public class UserService {
     private String editorSecretKey;
 
     @Autowired
-    public UserService(UserRepository userRepository, PublisherService publisherService,
+    public UserService(UserRepository userRepository, PublisherService publisherService, RequestService requestService,
                        PasswordEncoder passwordEncoder, AmazonS3 amazonS3,
                        JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.publisherService = publisherService;
+        this.requestService = requestService;
         this.passwordEncoder = passwordEncoder;
         this.amazonS3 = amazonS3;
         this.jwtTokenProvider = jwtTokenProvider;

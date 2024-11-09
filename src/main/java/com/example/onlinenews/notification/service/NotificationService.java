@@ -3,6 +3,7 @@ package com.example.onlinenews.notification.service;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
+import com.example.onlinenews.notification.dto.JournalistNotificationDto;
 import com.example.onlinenews.notification.entity.EditorNotification;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
@@ -88,6 +89,14 @@ public class NotificationService {
         return notificationRepository.findByUser(user).stream()
                 .filter(notification -> notification instanceof EditorNotification)
                 .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
+                .collect(Collectors.toList());
+    }
+    public List<JournalistNotificationDto> journalistNotiList(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUser(user).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 

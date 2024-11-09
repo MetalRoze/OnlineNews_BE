@@ -2,6 +2,7 @@ package com.example.onlinenews.notification.controller;
 
 import com.example.onlinenews.notification.api.NotificationApi;
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
+import com.example.onlinenews.notification.dto.JournalistNotificationDto;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,12 @@ public class NotificationController implements NotificationApi {
     public List<EditorNotificationDto> editorNotiList(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
         return notificationService.editorNotiList(email);
+    }
+
+    @Override
+    public List<JournalistNotificationDto> journalistNotiList(HttpServletRequest request) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.journalistNotiList(email);
     }
 //
 //    @Override

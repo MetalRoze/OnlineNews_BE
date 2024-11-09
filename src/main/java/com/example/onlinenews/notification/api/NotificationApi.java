@@ -1,6 +1,7 @@
 package com.example.onlinenews.notification.api;
 
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
+import com.example.onlinenews.notification.dto.JournalistNotificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,10 @@ public interface NotificationApi {
     @GetMapping("/editor")
     @Operation(summary = "편집장이 알림 조회", description = "편집장이 알림 전체를 조회합니다")
     List<EditorNotificationDto> editorNotiList(HttpServletRequest request);
+
+    @GetMapping("/journalist")
+    @Operation(summary = "기자가 알림 조회", description = "기자가 알림 전체를 조회합니다")
+    List<JournalistNotificationDto> journalistNotiList(HttpServletRequest request);
 
 //
 //    @GetMapping("/editor/type")

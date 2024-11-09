@@ -1,13 +1,7 @@
 package com.example.onlinenews.notification.entity;
 
-import com.example.onlinenews.article.entity.Article;
-import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.joda.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,8 +10,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "notification_type")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public abstract class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 알림 아이디 (PK)
@@ -25,17 +21,7 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id")
-    @JsonIgnore
-    private Article article;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id")
-    @JsonIgnore
-    private Request request;
+    private User user; //알림 받는 사람
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,10 +35,8 @@ public class Notification {
     private boolean isRead;
 
     @Builder
-    public Notification(User user, Article article, Request request, NotificationType type, LocalDateTime createdAt, boolean isRead) {
+    public Notification(User user, NotificationType type, LocalDateTime createdAt, boolean isRead) {
         this.user= user;
-        this.article = article;
-        this.request = request;
         this.type = type;
         this.createdAt = createdAt;
         this.isRead = isRead;

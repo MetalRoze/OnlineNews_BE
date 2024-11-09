@@ -4,6 +4,7 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.entity.EditorNotification;
 import com.example.onlinenews.notification.entity.JournalistNotification;
+import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
 import com.example.onlinenews.request.entity.Request;
@@ -12,6 +13,7 @@ import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -68,13 +70,17 @@ public class NotificationService {
 //        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
 //        return RequestNotificationDto.fromEntity(notification);
 //    }
-//    //알림 읽음
-//    @Transactional
-//    public boolean updateIsRead(Long notificationId){
-//        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
-//        notification.updateIsRead(true);
-//        return notification.isRead();
-//    }
+
+    //알림 읽음
+    @Transactional
+    public boolean updateIsRead(String email, Long notificationId){
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
+        if(!notification.getUser().getEmail().equals(email)){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        notification.updateIsRead(true);
+        return notification.isRead();
+    }
 //
 //    public List<RequestNotificationDto> getByType(String email, String keyword) {
 //        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));

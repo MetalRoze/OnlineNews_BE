@@ -30,7 +30,7 @@ public enum ExceptionCode {
 
     NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_001", "해당되는 id 의 알림을 찾을 수 없습니다."),
     ARTICLE_LIKE_NOT_FOUND(404,"ARTICLE_LIKE_001", "해당되는 id의 좋아요를 찾을 수 없습니다."),
-    USER_MISMATCH(400,"USER_010", "해당 행동을 한 사용자만 취소할 수 있습니다."),
+    USER_MISMATCH(400,"USER_010", "본인에게 속하지 않은 항목에 대한 작업은 허용되지 않습니다."),
     ALREADY_LIKED(400, "LIKE_001", "이미 '좋아요'를 누른 상태입니다."),
 
     NULL_POINT_ERROR(404, "G010", "NullPointerException 발생"),

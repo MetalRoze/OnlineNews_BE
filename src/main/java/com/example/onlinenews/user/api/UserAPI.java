@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,11 +37,11 @@ public interface UserAPI {
 
     @PostMapping("/signup/general")
     @Operation(summary = "일반회원 회원가입", description = "일반회원 회원가입을 수행합니다.")
-    ResponseEntity<?> generalSignup(@RequestBody GeneralSignupRequestDTO requestDTO);
+    ResponseEntity<?> generalSignup(@ModelAttribute GeneralSignupRequestDTO requestDTO);
 
     @PostMapping("/signup/journalist")
     @Operation(summary = "시민기자 회원가입", description = "시민기자 회원가입을 수행합니다.")
-    ResponseEntity<?> journalistSignup(@RequestBody JournalistSignupRequestDTO requestDTO);
+    ResponseEntity<?> journalistSignup(@ModelAttribute JournalistSignupRequestDTO requestDTO);
 
     @PostMapping("/signup/admin")
     @Operation(summary = "시스템 관리자 계정 생성(회원가입)", description = "시스템 관리자의 회원가입을 수행합니다")

@@ -2,8 +2,6 @@ package com.example.onlinenews.publisher.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +23,7 @@ public class Publisher {
     @Column
     private String img; // 신문사 로고 URL
 
-    @Column
-    private String type; //신문사 종류 @@ 쓰는 사람 있는지 물어보ㅏ야됨 !!
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Type type; //신문사 종류
 }

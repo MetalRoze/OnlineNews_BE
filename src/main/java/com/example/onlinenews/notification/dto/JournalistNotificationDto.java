@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 
 @Data
 public class JournalistNotificationDto {
-    private Long notificationId;
+    private Long id;
     private String notificationContent;
     private String comment;
     private LocalDateTime createdAt;
 
-    public JournalistNotificationDto(Long notificationId, String notificationContent, String comment, LocalDateTime createdAt) {
-        this.notificationId = notificationId;
+    public JournalistNotificationDto(Long id, String notificationContent, String comment, LocalDateTime createdAt) {
+        this.id = id;
         this.notificationContent = notificationContent;
         this.comment = comment;
         this.createdAt = createdAt;

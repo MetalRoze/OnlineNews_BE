@@ -99,45 +99,31 @@ public class NotificationService {
                 .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
+    public List<EditorNotificationDto> editorNotiListByType(String email, NotificationType notificationType) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
+        List <Notification> notifications = notificationRepository.findByUser(user);
+        if(notifications.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        return notificationRepository.findNotificationsByUserAndType(user, notificationType).stream()
+                .filter(notification -> notification instanceof EditorNotification)
+                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
+                .collect(Collectors.toList());
 
-//
-//    public List<RequestNotificationDto> getByType(String email, String keyword) {
-//        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-//
-//        List <Notification> notifications = notificationRepository.findByUser(user);
-//        if(notifications.isEmpty()){
-//            throw new BusinessException(ExceptionCode.USER_MISMATCH);
-//        }
-//        NotificationType enumStatus = switch (keyword.toLowerCase()) {
-//            case "request" -> NotificationType.EDITOR_REQUEST;
-//            case "enroll" -> NotificationType.EDITOR_ENROLL_REPORTER;
-//            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
-//        };
-//
-//        return notificationRepository.findNotificationsByUserAndType(user, enumStatus).stream()
-//                .map(RequestNotificationDto::fromEntity)
-//                .collect(Collectors.toList());
-//
-//    }
-//
-//    public List<RequestStatusNotificationDto> getRequestStatusNotiesByType(String email, String keyword) {
-//        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-//
-//        List <Notification> notifications = notificationRepository.findByUser(user);
-//        if(notifications.isEmpty()){
-//            throw new BusinessException(ExceptionCode.USER_MISMATCH);
-//        }
-//        NotificationType enumStatus = switch (keyword.toLowerCase()) {
-//            case "accepted" -> NotificationType.REPORTER_APPROVAL_ACCEPTED;
-//            case "hold" -> NotificationType.REPORTER_APPROVAL_HELD;
-//            case "rejected" ->NotificationType.REPORTER_APPROVAL_REJECTED;
-//            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
-//        };
-//
-//        return notificationRepository.findNotificationsByUserAndType(user,enumStatus).stream()
-//                .map(RequestStatusNotificationDto::fromEntity)
-//                .collect(Collectors.toList());
-//
-//    }
+    }
+
+    public List<JournalistNotificationDto> journalNotiListByType(String email, NotificationType notificationType) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        List <Notification> notifications = notificationRepository.findByUser(user);
+        if(notifications.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        return notificationRepository.findNotificationsByUserAndType(user,notificationType).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
+                .collect(Collectors.toList());
+
+    }
 }

@@ -2,6 +2,7 @@ package com.example.onlinenews.notification.api;
 
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
 import com.example.onlinenews.notification.dto.JournalistNotificationDto;
+import com.example.onlinenews.notification.entity.NotificationType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,13 +32,13 @@ public interface NotificationApi {
     @Operation(summary = "기자가 알림 조회", description = "기자가 알림 전체를 조회합니다")
     List<JournalistNotificationDto> journalistNotiList(HttpServletRequest request);
 
-//
-//    @GetMapping("/editor/type")
-//    @Operation(summary = "편집장이 요청 type별로 요청 조회", description = "편집장이 타입을 입력(param)하여 해당 상태의 알림들을 조회합니다.")
-//    List<RequestNotificationDto> getByType(HttpServletRequest request, @RequestParam String keyword);
-//
-//    @GetMapping("/reporter/type")
-//    @Operation(summary = "기자가 요청 type별로 요청 조회", description = "기자가 타입을 입력(param)하여 해당 상태의 알림들을 조회합니다.")
-//    List<RequestStatusNotificationDto> getRequestStatusNotiesByType(HttpServletRequest request, @RequestParam String keyword);
+
+    @GetMapping("/editor/type")
+    @Operation(summary = "편집장이 요청 type별로 요청 조회", description = "편집장이 타입을 입력(param)하여 해당 상태의 알림들을 조회합니다.")
+    List<EditorNotificationDto> editorNotiListByType(HttpServletRequest request, @RequestParam NotificationType type);
+
+    @GetMapping("/journalist/type")
+    @Operation(summary = "기자가 요청 type별로 요청 조회", description = "기자가 타입을 입력(param)하여 해당 상태의 알림들을 조회합니다.")
+    List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, @RequestParam NotificationType type);
 
 }

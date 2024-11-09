@@ -1,6 +1,7 @@
 package com.example.onlinenews.main_article.service;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
@@ -43,6 +44,13 @@ public class MainArticleService {
 
     public List<MainArticleDto> mainArticles(){
         return mainArticleRepository.findAllByOrderByArticleViewsDesc().stream()
+                .limit(7)
+                .map(MainArticleDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<MainArticleDto> mainArticlesByCategory(Category category){
+        return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
                 .limit(7)
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());

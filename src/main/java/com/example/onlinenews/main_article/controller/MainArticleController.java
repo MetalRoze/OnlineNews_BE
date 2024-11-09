@@ -1,5 +1,6 @@
 package com.example.onlinenews.main_article.controller;
 
+import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.main_article.api.MainArticleApi;
 import com.example.onlinenews.main_article.dto.MainArticleDto;
 import com.example.onlinenews.main_article.service.MainArticleService;
@@ -25,5 +26,10 @@ public class MainArticleController implements MainArticleApi {
     @Override
     public List<MainArticleDto> mainArticleList() {
         return mainArticleService.mainArticles();
+    }
+
+    @Override
+    public List<MainArticleDto> mainArticlesByCategory(Category category) {
+        return mainArticleService.mainArticlesByCategory(category);
     }
 }

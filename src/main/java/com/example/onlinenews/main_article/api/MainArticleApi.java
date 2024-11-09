@@ -1,5 +1,6 @@
 package com.example.onlinenews.main_article.api;
 
+import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.main_article.dto.MainArticleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,5 +20,9 @@ public interface MainArticleApi {
     @GetMapping("")
     @Operation(summary = "조회수로 정렬된 헤드라인 기사 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
     List<MainArticleDto> mainArticleList();
+
+    @GetMapping("/category")
+    @Operation(summary = "조회수로 정렬된 헤드라인 기사 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
+    List<MainArticleDto> mainArticlesByCategory(@RequestParam Category category);
 
 }

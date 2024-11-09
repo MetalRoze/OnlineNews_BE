@@ -49,6 +49,7 @@ public enum ExceptionCode {
 
 
 
+
     // 1. status = 날려줄 상태코드
     // 2. code = 해당 오류가 어느부분과 관련있는지 카테고리화 해주는 코드. 예외 원인 식별하기 편하기에 추가
     // 3. message = 발생한 예외에 대한 설명.

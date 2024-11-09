@@ -24,14 +24,21 @@ public class JournalistNotificationDto {
     public static JournalistNotificationDto fromEntity(JournalistNotification notification){
         NotificationType notificationType = notification.getType();
         String sentBy="";
-        if(notificationType.getMessage().equals("REPORTER_LIKE")){
+        String content="";
+        String comment="";
+        if(notificationType.equals(NotificationType.REPORTER_LIKE)){
             sentBy= notification.getArticleLike().getUser().getName();
+            content=notification.getArticleLike().getArticle().getTitle()+ " "+notification.getType().getMessage();
+        }
+        else{
+            content=notification.getRequest().getArticle().getTitle() + " " + notification.getType().getMessage();
+            comment = notification.getRequest().getComment();
         }
         return new JournalistNotificationDto(
                 notification.getId(),
                 sentBy,
-                notification.getRequest().getArticle().getTitle() + " " + notification.getType().getMessage(),
-                notification.getRequest().getComment(),
+                content,
+                comment,
                 notification.getCreatedAt()
         );
     }

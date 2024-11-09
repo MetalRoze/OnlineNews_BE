@@ -2,6 +2,7 @@ package com.example.onlinenews.notification.service;
 
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
 import com.example.onlinenews.notification.dto.JournalistNotificationDto;
 import com.example.onlinenews.notification.entity.EditorNotification;
@@ -64,6 +65,16 @@ public class NotificationService {
                 .request(request)
                 .createdAt(LocalDateTime.now())
                 .type(NotificationType.REPORTER_APPROVAL_REJECTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createLikeNoti (ArticleLike articleLike){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(articleLike.getArticle().getUser())
+                .articleLike(articleLike)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_LIKE)
                 .isRead(false)
                 .build();
         notificationRepository.save(notification);

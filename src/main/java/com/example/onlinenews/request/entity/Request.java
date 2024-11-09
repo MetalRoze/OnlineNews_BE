@@ -23,6 +23,11 @@ public class Request {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "citizen_user_id")
+    @JsonIgnore
+    private User citizenUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     @JsonIgnore
     private Article article;
@@ -38,8 +43,9 @@ public class Request {
     private String comment;
 
     @Builder
-    public Request(User user, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
+    public Request(User user, User citizenUser, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
         this.user = user;
+        this.citizenUser=citizenUser;
         this.article = article;
         this.createdAt = createdAt;
         this.status = status;

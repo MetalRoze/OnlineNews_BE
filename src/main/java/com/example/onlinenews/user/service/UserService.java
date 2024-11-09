@@ -8,6 +8,7 @@ import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
+import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.dto.FindIdRequestDTO;
 import com.example.onlinenews.user.dto.FindIdResponseDTO;
 import com.example.onlinenews.user.dto.FindPwRequestDTO;
@@ -42,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final PublisherService publisherService;
+    private final RequestService requestService;
     private final PasswordEncoder passwordEncoder;
     private final AmazonS3 amazonS3;
     private final JwtTokenProvider jwtTokenProvider;
@@ -107,6 +109,9 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
 
+        //시민 기자 등록 요청
+        User editor = userRepository.findByPublisherAndGrade(user.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        requestService.createEnrollRequest(editor, user);
         userRepository.save(user);
     }
 

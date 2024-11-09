@@ -46,6 +46,18 @@ public class RequestService {
         return RequestDto.fromEntity(request);
     }
 
+    //시민 기자 등록 요청
+    public RequestDto createEnrollRequest(User user, User citizenUser){
+        Request request = Request.builder()
+                .user(user)
+                .citizenUser(citizenUser)
+                .createdAt(LocalDateTime.now())
+                .status(RequestStatus.PENDING)
+                .build();
+        requestRepository.save(request);
+        return RequestDto.fromEntity(request);
+    }
+
     //요청 수락
     @Transactional
     public RequestStatus requestAccept (String email, Long reqId){
@@ -122,6 +134,9 @@ public class RequestService {
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    //시민기자 등록 요청
+
 
     private void checkEditorPermission(User user) {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {

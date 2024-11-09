@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final RequestService requestService;
 
@@ -97,7 +96,6 @@ public class ArticleService {
         //그냥 기자 밑에 인턴기자, 시민기자들은 요청 받아야함
         if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
             requestService.create(user, savedArticle);
-            notificationService.createRequestNoti(user, savedArticle);
         }
         return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }

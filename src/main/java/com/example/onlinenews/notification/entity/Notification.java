@@ -4,6 +4,7 @@ import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "notification_type")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
 public abstract class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,14 +36,12 @@ public abstract class Notification {
     @Column(nullable = false)
     private boolean isRead;
 
-    @Builder
     public Notification(User user, NotificationType type, LocalDateTime createdAt, boolean isRead) {
-        this.user= user;
-        this.type = type;
+        this.user =user;
+        this.type=type;
         this.createdAt = createdAt;
-        this.isRead = isRead;
+        this.isRead=isRead;
     }
-
     public void updateIsRead(boolean newIsRead){
         this.isRead = newIsRead;
     }

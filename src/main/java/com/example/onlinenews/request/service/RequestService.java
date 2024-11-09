@@ -42,6 +42,7 @@ public class RequestService {
                 .status(RequestStatus.PENDING)
                 .build();
         requestRepository.save(request);
+        notificationService.createRequestNoti(request);
         return RequestDto.fromEntity(request);
     }
 

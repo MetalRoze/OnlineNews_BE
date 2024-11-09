@@ -17,6 +17,7 @@ public interface MainArticleApi {
     ResponseEntity<?> selectArticle(HttpServletRequest request, @PathVariable Long articleId);
 
     @GetMapping("")
-    @Operation(summary = "헤드라인 기사 전체 조회", description = "각 회사에서 헤드라인으로 지정된 기사를 전체 조회합니다.")
+    @Operation(summary = "조회수로 정렬된 헤드라인 기사 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
     List<MainArticleDto> mainArticleList();
+
 }

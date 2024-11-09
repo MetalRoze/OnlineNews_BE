@@ -24,6 +24,6 @@ public class MainArticleController implements MainArticleApi {
 
     @Override
     public List<MainArticleDto> mainArticleList() {
-        return mainArticleService.mainArticleList();
+        return mainArticleService.mainArticles();
     }
 }

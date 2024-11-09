@@ -11,14 +11,16 @@ public class MainArticleDto {
     private Category category;
     private String articleTitle;
     private String articleSubTitle;
+    private int views;
     private String publisherName;
 
     @Builder
-    public MainArticleDto(Long id, Category category, String articleTitle, String articleSubTitle, String publisherName) {
+    public MainArticleDto(Long id, Category category, String articleTitle, String articleSubTitle, int views, String publisherName) {
         this.id = id;
         this.category = category;
         this.articleTitle = articleTitle;
         this.articleSubTitle = articleSubTitle;
+        this.views = views;
         this.publisherName = publisherName;
     }
 
@@ -28,6 +30,7 @@ public class MainArticleDto {
                 mainArticle.getCategory(),
                 mainArticle.getArticle().getTitle(),
                 mainArticle.getArticle().getSubtitle(),
+                mainArticle.getArticle().getViews(),
                 mainArticle.getPublisher().getName()
         );
     }

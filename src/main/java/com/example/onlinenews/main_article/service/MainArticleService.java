@@ -41,8 +41,9 @@ public class MainArticleService {
         return StateResponse.builder().code("200").message("success").build();
     }
 
-    public List<MainArticleDto> mainArticleList(){
-        return mainArticleRepository.findAll().stream()
+    public List<MainArticleDto> mainArticles(){
+        return mainArticleRepository.findAllByOrderByArticleViewsDesc().stream()
+                .limit(7)
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }

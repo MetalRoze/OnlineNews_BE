@@ -2,6 +2,7 @@ package com.example.onlinenews.main_article.entity;
 
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.entity.Category;
+import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -20,9 +21,9 @@ public class MainArticle {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "publisher_id")
     @JsonIgnore
-    private User user;
+    private Publisher publisher;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
@@ -36,8 +37,8 @@ public class MainArticle {
     private Category category;
 
     @Builder
-    public MainArticle(User user, Article article, LocalDateTime createdAt, Category category) {
-        this.user = user;
+    public MainArticle(Publisher publisher, Article article, LocalDateTime createdAt, Category category) {
+        this.publisher = publisher;
         this.article = article;
         this.createdAt = createdAt;
         this.category = category;

@@ -6,7 +6,6 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.main_article.dto.MainArticleDto;
-import com.example.onlinenews.main_article.dto.SelectArticleDto;
 import com.example.onlinenews.main_article.entity.MainArticle;
 import com.example.onlinenews.main_article.repository.MainArticleRepository;
 import com.example.onlinenews.user.entity.User;
@@ -26,17 +25,17 @@ public class MainArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
-    public StateResponse selectArticle(String email, SelectArticleDto selectArticleDto){
+    public StateResponse selectArticle(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
 
-        Article article = articleRepository.findById(selectArticleDto.getArticleId()).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
 
         MainArticle mainArticle = MainArticle.builder()
-                .user(user)
+                .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
-                .category(selectArticleDto.getCategory())
+                .category(article.getCategory())
                 .build();
         mainArticleRepository.save(mainArticle);
         return StateResponse.builder().code("200").message("success").build();

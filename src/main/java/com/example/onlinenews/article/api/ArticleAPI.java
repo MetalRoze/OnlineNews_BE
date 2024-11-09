@@ -54,6 +54,7 @@ public interface ArticleAPI {
 
     @PatchMapping("update/{id}")
     @Operation(summary = "기사 수정", description = "기사를 수정합니다.")
-    ResponseEntity<ArticleResponseDTO> updateArticle(@PathVariable Long id, @RequestBody ArticleUpdateRequestDTO updateRequest);
-
+    ResponseEntity<?> updateArticle(@PathVariable Long id,
+                                                     @RequestPart("requestDTO") ArticleUpdateRequestDTO updateRequest,
+                                                     @RequestPart(value = "images", required = false) List<MultipartFile> images);
 }

@@ -6,10 +6,7 @@ import lombok.Getter;
 public enum ExceptionCode {
 
 
-    ARTICLE_NOT_FOUND(404, "ARTICLE_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
     REPLY_NOT_FOUND(404, "REPLY_001", "해당되는 id의 댓글을 찾을 수 없습니다."),
-
-
 
     USER_NOT_FOUND(404, "USER_004", "해당 유저를 찾을 수 없습니다."),
     TOKEN_EXPIRED(401, "TOKEN_001", "토큰이 만료되었습니다. 다시 로그인 해주세요."),
@@ -45,8 +42,9 @@ public enum ExceptionCode {
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "Validation Exception 발생"),
 
-    S3_UPLOAD_FAILED( 500, "Article_002", "이미지 업로드에 실패했습니다."),
-    FILE_NOT_FOUND(400, "Article_001", "존재하지 않는 파일입니다.");
+    ARTICLE_NOT_FOUND(404, "ARTICLE_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
+    S3_UPLOAD_FAILED( 500, "ARTICLE_002", "이미지 업로드에 실패했습니다."),
+    FILE_NOT_FOUND(400, "ARTICLE_003", "존재하지 않는 파일입니다.");
 
 
 

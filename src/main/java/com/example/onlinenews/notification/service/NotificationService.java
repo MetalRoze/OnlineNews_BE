@@ -2,6 +2,7 @@ package com.example.onlinenews.notification.service;
 
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.notification.dto.EditorNotificationDto;
 import com.example.onlinenews.notification.entity.EditorNotification;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,12 +68,6 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-//
-//    public RequestNotificationDto read(Long notificationId){
-//        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
-//        return RequestNotificationDto.fromEntity(notification);
-//    }
-
     //알림 읽음
     @Transactional
     public boolean updateIsRead(String email, Long notificationId){
@@ -81,6 +78,20 @@ public class NotificationService {
         notification.updateIsRead(true);
         return notification.isRead();
     }
+
+    public List<EditorNotificationDto> editorNotiList(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        if(user.getGrade().getValue()<9){
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+
+        return notificationRepository.findByUser(user).stream()
+                .filter(notification -> notification instanceof EditorNotification)
+                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
+                .collect(Collectors.toList());
+    }
+
+
 //
 //    public List<RequestNotificationDto> getByType(String email, String keyword) {
 //        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));

@@ -24,6 +24,8 @@ public enum ExceptionCode {
 
     EMAIL_CONFLICT(409, "EMAIL_009", "이미 존재하는 email입니다. "),
 
+    HISTORY_NOT_FOUND(400,"HIS_001","존재하지 않는 검색 기록입니다."),
+
     REQUEST_NOT_FOUND(404, "REQUEST_001", "해당되는 id 의 요청을 찾을 수 없습니다."),
     ALREADY_APPROVED(400, "REQUEST_002", "이미 '승인' 한 상태입니다."),
     ALREADY_HOLDING(400, "REQUEST_003", "이미 '보류' 한 상태입니다."),
@@ -38,6 +40,7 @@ public enum ExceptionCode {
     PASSWORD_MISMATCH(400, "PASSWORD_001", "비밀번호 확인이 틀렸습니다."),
 
     SUB_NOT_MATCH_USER(400, "MATCH_001", "현재 구독 사용자와 일치하지 않습니다."),
+    HIS_NOT_MATCH_USER(400, "MATCH_002", "현재 검색 사용자와 일치하지 않습니다."),
 
     // @RequestBody 및 @RequestParam, @PathVariable 값이 유효하지 않음
     NOT_VALID_ERROR(404, "G011", "Validation Exception 발생"),

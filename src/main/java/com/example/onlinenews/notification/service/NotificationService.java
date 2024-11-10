@@ -60,7 +60,16 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
-
+    public void createEnrollRejectedNoti(Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.ENROLL_REJECTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
     public void createApprovedNoti (Request request){
         JournalistNotification notification = JournalistNotification.builder()
                 .user(request.getUser())

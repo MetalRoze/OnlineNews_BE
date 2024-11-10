@@ -27,6 +27,10 @@ public interface RequestApi {
     @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
     ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, @PathVariable Long reqId);
 
+    @PatchMapping("/{reqId}/enroll/reject")
+    @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
+    ResponseEntity<?> enrollRequestReject(HttpServletRequest request, @PathVariable Long reqId);
+
     @PatchMapping("/{reqId}/approve")
     @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
     ResponseEntity<?> requestAccept(HttpServletRequest request, @PathVariable Long reqId);

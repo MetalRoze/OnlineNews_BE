@@ -72,8 +72,22 @@ public class RequestService {
 
         //출판사 수정
         request.getUser().updatePublisher(user.getPublisher());
-        System.out.println(request.getStatus()+ " "+user.getPublisher().getId());
         notificationService.createEnrollApprovedNoti(request);
+        return request.getStatus();
+    }
+
+    //시민 기자 등록 거절
+    public RequestStatus enrollRequestReject(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getStatus().equals(RequestStatus.REJECTED)){
+            throw new BusinessException(ExceptionCode.ALREADY_REJECTED);
+        }
+        request.updateStatus(RequestStatus.REJECTED, null);
+
+        notificationService.createEnrollRejectedNoti(request);
         return request.getStatus();
     }
 

@@ -21,6 +21,7 @@ import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,6 +114,72 @@ public class ArticleService {
         return ResponseEntity.ok(responseDTOs);
     }
 
+    @Transactional
+    public ResponseEntity<?> getArticles(
+            Long id,
+            Category category,
+            String title,
+            String content,
+            Long userId,
+            RequestStatus state,
+            Boolean isPublic,
+            String sortBy,          // 추가: 정렬 기준
+            String sortDirection) {
+
+        List<Article> articles;
+
+        // 정렬 조건 처리
+        Sort sort = null;
+        if (sortBy != null && sortDirection != null) {
+            if ("asc".equalsIgnoreCase(sortDirection)) {
+                sort = Sort.by(Sort.Order.asc(sortBy));
+            } else if ("desc".equalsIgnoreCase(sortDirection)) {
+                sort = Sort.by(Sort.Order.desc(sortBy));
+            }
+        }
+
+        if (id != null) {
+            // ID로 단일 조회
+            Article article = articleRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+            incrementViewCount(id); // 조회수 증가
+            articles = List.of(article);
+        } else {
+            // 복합 조건 조회
+            if (sort != null) {
+                // 정렬 기준이 있을 경우, 해당 조건을 적용하여 조회
+                articles = articleRepository.findAll(sort).stream()
+                        .filter(article -> category == null || article.getCategory().equals(category))
+                        .filter(article -> title == null || article.getTitle().contains(title))
+                        .filter(article -> content == null || article.getContent().contains(content))
+                        .filter(article -> userId == null || (article.getUser() != null && Objects.equals(article.getUser().getId(), userId)))
+                        .filter(article -> state == null || article.getState().equals(state))
+                        .filter(article -> isPublic == null || article.getIsPublic().equals(isPublic))
+                        .collect(Collectors.toList());
+            } else {
+                // 정렬 기준이 없으면 그냥 모든 데이터를 필터링
+                articles = articleRepository.findAll().stream()
+                        .filter(article -> category == null || article.getCategory().equals(category))
+                        .filter(article -> title == null || article.getTitle().contains(title))
+                        .filter(article -> content == null || article.getContent().contains(content))
+                        .filter(article -> userId == null || (article.getUser() != null && Objects.equals(article.getUser().getId(), userId)))
+                        .filter(article -> state == null || article.getState().equals(state))
+                        .filter(article -> isPublic == null || article.getIsPublic().equals(isPublic))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        List<ArticleResponseDTO> responseDTOs = articles.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+
+        if (articles.isEmpty()) {
+            return ResponseEntity.ok("검색 결과가 없습니다.");
+
+        }
+
+        return ResponseEntity.ok(responseDTOs);
+    }
 
     // 기사 상세 조회
     @Transactional

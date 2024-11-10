@@ -28,6 +28,21 @@ public interface ArticleAPI {
     @Operation(summary = "기사 목록 조회", description = "모든 기사를 조회합니다.")
     ResponseEntity<List<ArticleResponseDTO>> getAllArticles();
 
+    @GetMapping("select")
+    @Operation(summary = "기사 조회", description = "조건에 따라 기사를 조회합니다.")
+    ResponseEntity<?> getArticles(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Category category,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) RequestStatus state,
+            @RequestParam(required = false) Boolean isPublic,
+            @RequestParam(required = false) String sortBy,          // 추가: 정렬 기준
+            @RequestParam(required = false) String sortDirection
+    );
+
+
     @GetMapping("select/{id}")
     @Operation(summary = "기사 상세 조회", description = "특정 기사를 조회합니다.")
     ResponseEntity<ArticleResponseDTO> getArticleById(@PathVariable Long id);

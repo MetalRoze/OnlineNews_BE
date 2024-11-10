@@ -39,6 +39,11 @@ public class ArticleController implements ArticleAPI {
         return articleService.getAllArticles();
     }
 
+    @Override
+    public ResponseEntity<?> getArticles(Long id, Category category, String title, String content, Long userId, RequestStatus state, Boolean isPublic, String sortBy, String sortDirection) {
+        return articleService.getArticles(id, category, title, content, userId, state, isPublic, sortBy, sortDirection);
+    }
+
     // 기사 상세 조회
     @Override
     public ResponseEntity<ArticleResponseDTO> getArticleById(@PathVariable Long id) {

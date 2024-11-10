@@ -2,16 +2,15 @@ package com.example.onlinenews.article.dto;
 
 import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.request.entity.RequestStatus;
-import com.example.onlinenews.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
+@Data
 @Builder
 public class ArticleResponseDTO {
     private Long id;
@@ -26,5 +25,6 @@ public class ArticleResponseDTO {
     private RequestStatus state;
     private Boolean isPublic;
     private int views;
+    private int likes;
     private List<String> images;
 }

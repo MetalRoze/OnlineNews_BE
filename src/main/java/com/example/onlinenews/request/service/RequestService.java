@@ -38,6 +38,7 @@ public class RequestService {
     public void create(User user, Article article){
         Request request  = Request.builder()
                 .user(user)
+                .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
@@ -47,9 +48,10 @@ public class RequestService {
     }
 
     //시민 기자 등록 요청
-    public void createEnrollRequest(User citizenUser){
+    public void createEnrollRequest(User user, Publisher publisher){
         Request request = Request.builder()
-                .user(citizenUser)
+                .user(user)
+                .publisher(publisher)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
                 .build();
@@ -67,8 +69,11 @@ public class RequestService {
         }
         request.updateStatus(RequestStatus.APPROVED, null);
 
-        //기사 상태 업데이트
-        request.getCitizenUser().updatePublisher(user.getPublisher());
+
+        //출판사 수정
+        request.getUser().updatePublisher(user.getPublisher());
+        System.out.println(request.getStatus()+ " "+user.getPublisher().getId());
+        notificationService.createEnrollApprovedNoti(request);
         return request.getStatus();
     }
 
@@ -134,7 +139,7 @@ public class RequestService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
         RequestStatus enumStatus = getRequestStatusFromKeyword(keyword);
-        return requestRepository.findByArticleUserPublisherAndStatus(user.getPublisher(),enumStatus).stream()
+        return requestRepository.findByPublisherAndStatus(user.getPublisher(),enumStatus).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -144,7 +149,7 @@ public class RequestService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
 
-        return requestRepository.findByArticleUserPublisher(user.getPublisher()).stream()
+        return requestRepository.findByPublisher(user.getPublisher()).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }

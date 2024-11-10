@@ -112,8 +112,7 @@ public class UserService {
         userRepository.save(user);
 
         //시민 기자 등록 요청
-        User editor = userRepository.findByPublisherAndGrade(publisher, UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        requestService.createEnrollRequest(user);
+        requestService.createEnrollRequest(user, publisher);
 
     }
 

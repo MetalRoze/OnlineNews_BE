@@ -40,7 +40,7 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
     public void createEnrollNoti (Request request){
-        User editorUser = userRepository.findByPublisherAndGrade(request.getUser().getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        User editorUser = userRepository.findByPublisherAndGrade(request.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         EditorNotification notification = EditorNotification.builder()
                 .user(editorUser)
                 .request(request)
@@ -50,6 +50,18 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
+    public void createEnrollApprovedNoti (Request request){
+        User editorUser = userRepository.findByPublisherAndGrade(request.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        EditorNotification notification = EditorNotification.builder()
+                .user(editorUser)
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.ENROLL_ACCEPTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+
     public void createApprovedNoti (Request request){
         JournalistNotification notification = JournalistNotification.builder()
                 .user(request.getUser())

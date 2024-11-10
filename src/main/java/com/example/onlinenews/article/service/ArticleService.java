@@ -12,7 +12,6 @@ import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.article_img.repository.ArticleImgRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
-import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
@@ -101,19 +100,7 @@ public class ArticleService {
         return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }
 
-
-    // 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getAllArticles() {
-        List<Article> articles = articleRepository.findAll();
-
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO) // 변환 메서드 호출
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseDTOs);
-    }
-
+    // 기사 검색
     @Transactional
     public ResponseEntity<?> getArticles(
             Long id,
@@ -123,7 +110,7 @@ public class ArticleService {
             Long userId,
             RequestStatus state,
             Boolean isPublic,
-            String sortBy,          // 추가: 정렬 기준
+            String sortBy,
             String sortDirection) {
 
         List<Article> articles;
@@ -139,7 +126,7 @@ public class ArticleService {
         }
 
         if (id != null) {
-            // ID로 단일 조회
+            // 기사 상세 보기
             Article article = articleRepository.findById(id)
                     .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
             incrementViewCount(id); // 조회수 증가
@@ -157,7 +144,7 @@ public class ArticleService {
                         .filter(article -> isPublic == null || article.getIsPublic().equals(isPublic))
                         .collect(Collectors.toList());
             } else {
-                // 정렬 기준이 없으면 그냥 모든 데이터를 필터링
+                // 정렬 기준이 없으면 모든 데이터 보여줌
                 articles = articleRepository.findAll().stream()
                         .filter(article -> category == null || article.getCategory().equals(category))
                         .filter(article -> title == null || article.getTitle().contains(title))
@@ -179,66 +166,6 @@ public class ArticleService {
         }
 
         return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 기사 상세 조회
-    @Transactional
-    public ResponseEntity<ArticleResponseDTO> getArticleById(Long id) {
-        incrementViewCount(id); // 조회수 증가
-        Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-        return ResponseEntity.ok(convertToResponseDTO(article));
-    }
-
-    // 카테고리 별 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> listArticlesByCategory(Category category) {
-        List<Article> articles = articleRepository.findByCategory(category);
-        List<ArticleResponseDTO> responseDTOS = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseDTOS);
-    }
-
-    // 제목 또는 내용을 포함하는 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> searchArticles(String title, String content) {
-        List<Article> articles = articleRepository.findByTitleContainingOrContentContaining(title, content);
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 사용자 ID로 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getArticlesByUserId(Long userId) {
-        List<Article> articles = articleRepository.findByUserId(userId);
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 공개된 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getPublicArticles() {
-        List<Article> articles = articleRepository.findByIsPublicTrue();
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 상태에 따른 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getArticlesByState(RequestStatus state) {
-        List<Article> articles = articleRepository.findByState(state); // 상태에 따라 기사 조회
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO) // DTO로 변환
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs); // 변환된 DTO 리스트 반환
     }
 
     // 기사 수정
@@ -292,6 +219,7 @@ public class ArticleService {
         return ResponseEntity.ok("기사가 수정되었습니다. 편집장의 승인 후 게시됩니다.");
     }
 
+    // 조회수 처리
     public void incrementViewCount(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
@@ -305,6 +233,7 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         article.updateStatue(newRequestStatus);
     }
+
 
     private ArticleResponseDTO convertToResponseDTO(Article article) {
         List<ArticleImg> images = article.getImages();

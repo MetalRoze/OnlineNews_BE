@@ -2,7 +2,6 @@ package com.example.onlinenews.article.dto;
 
 import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.request.entity.RequestStatus;
-import com.example.onlinenews.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

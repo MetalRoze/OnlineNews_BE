@@ -30,6 +30,9 @@ public class JournalistNotificationDto {
             sentBy= notification.getArticleLike().getUser().getName();
             content=notification.getArticleLike().getArticle().getTitle()+ " "+notification.getType().getMessage();
         }
+        else if(notificationType.equals(NotificationType.ENROLL_ACCEPTED)){
+            content=notification.getType().getMessage();
+        }
         else{
             content=notification.getRequest().getArticle().getTitle() + " " + notification.getType().getMessage();
             comment = notification.getRequest().getComment();

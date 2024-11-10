@@ -51,9 +51,8 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
     public void createEnrollApprovedNoti (Request request){
-        User editorUser = userRepository.findByPublisherAndGrade(request.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        EditorNotification notification = EditorNotification.builder()
-                .user(editorUser)
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
                 .request(request)
                 .createdAt(LocalDateTime.now())
                 .type(NotificationType.ENROLL_ACCEPTED)

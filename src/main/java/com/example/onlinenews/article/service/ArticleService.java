@@ -12,6 +12,8 @@ import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.article_img.repository.ArticleImgRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.like.repository.ArticleLikeRepository;
+import com.example.onlinenews.like.service.ArticleLikeService;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
@@ -40,6 +42,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
     private final RequestService requestService;
+    private final ArticleLikeService articleLikeService;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -157,14 +160,17 @@ public class ArticleService {
         }
 
         List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
+                .map(article -> {
+                    ArticleResponseDTO dto = convertToResponseDTO(article);
+                    int likesCount = articleLikeService.articleLikes(article.getId()).size(); // 좋아요 개수 가져오기
+                    dto.setLikes(likesCount); // DTO에 좋아요 개수 설정
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         if (articles.isEmpty()) {
             return ResponseEntity.ok("검색 결과가 없습니다.");
-
         }
-
         return ResponseEntity.ok(responseDTOs);
     }
 

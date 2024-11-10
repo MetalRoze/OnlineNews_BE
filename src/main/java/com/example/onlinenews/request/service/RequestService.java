@@ -4,6 +4,7 @@ import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.service.NotificationService;
+import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
@@ -46,15 +47,29 @@ public class RequestService {
     }
 
     //시민 기자 등록 요청
-    public void createEnrollRequest(User user, User citizenUser){
+    public void createEnrollRequest(User citizenUser){
         Request request = Request.builder()
-                .user(user)
-                .citizenUser(citizenUser)
+                .user(citizenUser)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
                 .build();
         requestRepository.save(request);
         notificationService.createEnrollNoti(request);
+    }
+    //시민 기자 등록 수락
+    public RequestStatus enrollRequestAccept(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getStatus().equals(RequestStatus.APPROVED)){
+            throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
+        }
+        request.updateStatus(RequestStatus.APPROVED, null);
+
+        //기사 상태 업데이트
+        request.getCitizenUser().updatePublisher(user.getPublisher());
+        return request.getStatus();
     }
 
     //요청 수락

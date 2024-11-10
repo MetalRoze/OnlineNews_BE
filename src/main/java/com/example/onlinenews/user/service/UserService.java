@@ -98,6 +98,7 @@ public class UserService {
     }
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
+        Publisher publisher = publisherService.getPublisherByName(requestDTO.getPublisher());
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -106,14 +107,14 @@ public class UserService {
                 .name(requestDTO.getUser_name())
                 .img(requestDTO.getUser_img())
                 .bio(null)
-                .publisher(publisherService.getPublisherByName(requestDTO.getPublisher()))
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
+        userRepository.save(user);
 
         //시민 기자 등록 요청
-        User editor = userRepository.findByPublisherAndGrade(user.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        requestService.createEnrollRequest(editor, user);
-        userRepository.save(user);
+        User editor = userRepository.findByPublisherAndGrade(publisher, UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        requestService.createEnrollRequest(user);
+
     }
 
     public String saveProfileImg(MultipartFile file) {

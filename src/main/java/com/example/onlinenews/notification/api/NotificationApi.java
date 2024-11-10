@@ -41,4 +41,6 @@ public interface NotificationApi {
     @Operation(summary = "기자가 요청 type별로 요청 조회", description = "기자가 타입을 입력(param)하여 해당 상태의 알림들을 조회합니다.")
     List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, @RequestParam NotificationType type);
 
+
+
 }

@@ -1,6 +1,7 @@
 package com.example.onlinenews.notification.dto;
 
 import com.example.onlinenews.notification.entity.EditorNotification;
+import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.user.entity.UserGrade;
 import lombok.Data;
 
@@ -25,12 +26,18 @@ public class EditorNotificationDto {
     }
 
     public static EditorNotificationDto fromEntity(EditorNotification editorNotification){
+        String content ="";
+        if(editorNotification.getType().equals(NotificationType.EDITOR_REQUEST)){
+            content = editorNotification.getRequest().getArticle().getTitle();
+        }
+        content +=editorNotification.getType().getMessage();
+
         return new EditorNotificationDto(
                 editorNotification.getId(),
                 editorNotification.getRequest().getId(),
                 editorNotification.getRequest().getUser().getName(),
                 editorNotification.getRequest().getUser().getGrade(),
-                editorNotification.getRequest().getArticle().getTitle()+" "+editorNotification.getType().getMessage(),
+                content,
                 editorNotification.getCreatedAt()
         );
     }

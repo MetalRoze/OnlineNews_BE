@@ -14,7 +14,9 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final RequestService requestService;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -91,6 +93,10 @@ public class ArticleService {
             articleImgRepository.saveAll(articleImgs);
         }
 
+        //그냥 기자 밑에 인턴기자, 시민기자들은 요청 받아야함
+        if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
+            requestService.create(user, savedArticle);
+        }
         return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }
 
@@ -232,11 +238,6 @@ public class ArticleService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         article.updateStatue(newRequestStatus);
     }
-
-    public void create(){
-        notificationService.createRequestNoti(2L,2L);
-    }
-
 
     private ArticleResponseDTO convertToResponseDTO(Article article) {
         List<ArticleImg> images = article.getImages();

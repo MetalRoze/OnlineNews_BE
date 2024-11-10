@@ -1,6 +1,7 @@
 package com.example.onlinenews.article.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleResponseDTO;
@@ -219,6 +220,15 @@ public class ArticleService {
             else article.setContent(updateRequest.getContent());
         }
 
+        // 이미지 삭제
+        List<String> deleteImages = updateRequest.getDeleteImages();
+        if (deleteImages != null && !deleteImages.isEmpty()) {
+            for (String imgUrl : deleteImages) {
+                deleteImg(imgUrl);
+                articleImgRepository.deleteByImgUrl(imgUrl);
+            }
+        }
+
         article.setModifiedAt(LocalDateTime.now());
         articleRepository.save(article);
 
@@ -282,6 +292,27 @@ public class ArticleService {
             throw new BusinessException(ExceptionCode.S3_UPLOAD_FAILED);
         }
         return fileUrl;
+    }
+
+    public void deleteImg(String imgUrl) {
+        try {
+            String fileName = extractFileNameFromUrl(imgUrl);
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(
+                    bucketName,
+                    "articleImg/" + fileName
+            );
+
+            // S3에서 이미지 삭제
+            amazonS3.deleteObject(deleteObjectRequest);
+        } catch (Exception e) {
+            System.out.println("Error during delete operation: " + e.getMessage());
+            throw new BusinessException(ExceptionCode.FILE_DELETE_FAILED);
+        }
+    }
+
+    public String extractFileNameFromUrl(String url) {
+        String[] urlParts = url.split("/");
+        return urlParts[urlParts.length - 1];
     }
 
     public String replaceImgUrl(String content, List<String> imgUrls) {

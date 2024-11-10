@@ -44,7 +44,8 @@ public enum ExceptionCode {
 
     ARTICLE_NOT_FOUND(404, "ARTICLE_001", "해당되는 id 의 기사를 찾을 수 없습니다."),
     S3_UPLOAD_FAILED( 500, "ARTICLE_002", "이미지 업로드에 실패했습니다."),
-    FILE_NOT_FOUND(400, "ARTICLE_003", "존재하지 않는 파일입니다.");
+    FILE_NOT_FOUND(400, "ARTICLE_003", "존재하지 않는 파일입니다."),
+    FILE_DELETE_FAILED(400, "ARTICLE_004", "이미지 삭제에 실패했습니다.");
 
 
 

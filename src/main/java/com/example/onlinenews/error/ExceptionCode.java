@@ -27,6 +27,8 @@ public enum ExceptionCode {
     ALREADY_APPROVED(400, "REQUEST_002", "이미 '승인' 한 상태입니다."),
     ALREADY_HOLDING(400, "REQUEST_003", "이미 '보류' 한 상태입니다."),
     ALREADY_REJECTED(400, "REQUEST_004", "이미 '거절' 한 상태입니다."),
+    ALREADY_PUBLIC(400, "REQUEST_005", "이미 공개상태입니다."),
+    ALREADY_PRIVATE(400, "REQUEST_006", "이미 비공개 상태입니다."),
 
     NOTIFICATION_NOT_FOUND(404, "NOTIFICATION_001", "해당되는 id 의 알림을 찾을 수 없습니다."),
     ARTICLE_LIKE_NOT_FOUND(404,"ARTICLE_LIKE_001", "해당되는 id의 좋아요를 찾을 수 없습니다."),

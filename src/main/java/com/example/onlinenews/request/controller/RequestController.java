@@ -64,6 +64,23 @@ public class RequestController implements RequestApi {
     }
 
     @Override
+    public boolean convertToPrivate(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return requestService.convertToPrivate(email,reqId);
+    }
+
+    @Override
+    public boolean convertToPublic(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return  requestService.convertToPublic(email,reqId);
+    }
+
+    @Override
+    public boolean getPublicStatus(Long reqId) {
+        return  requestService.getPublicStatus(reqId);
+    }
+
+    @Override
     public List<RequestDto> getByStatus(HttpServletRequest request, String keyword) {
         String email = authService.getEmailFromToken(request);
         return requestService.getByStatus(email, keyword);

@@ -70,4 +70,7 @@ public class Article {
     public void updateStatue(RequestStatus newRequestStatus) {
         this.state= newRequestStatus;
     }
+    public void updateIsPublic(Boolean newIsPublic){
+        this.isPublic = newIsPublic;
+    }
 }

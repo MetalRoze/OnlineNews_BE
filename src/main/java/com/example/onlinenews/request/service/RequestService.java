@@ -104,6 +104,7 @@ public class RequestService {
 
         //기사 상태 업데이트
         request.getArticle().updateStatue(request.getStatus());
+        request.getArticle().updateIsPublic(true);
 
         //승인 알림
         notificationService.createApprovedNoti(request);
@@ -145,6 +146,35 @@ public class RequestService {
         //거절 알림
         notificationService.createRejectedNoti(request);
         return request.getStatus();
+    }
+
+    //승인된 요청은 공개 비공개 설정가능
+    @Transactional
+    public boolean convertToPrivate(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(!request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        request.getArticle().updateIsPublic(false);
+        return request.getArticle().getIsPublic();
+    }
+    @Transactional
+    public boolean convertToPublic(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
+        }
+        request.getArticle().updateIsPublic(true);
+        return request.getArticle().getIsPublic();
+    }
+
+    public boolean getPublicStatus(Long reqId){
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        return request.getArticle().getIsPublic();
     }
 
     //상태로 요청조회

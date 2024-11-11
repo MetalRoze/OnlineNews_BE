@@ -222,6 +222,11 @@ public class ArticleService {
         article.setModifiedAt(LocalDateTime.now());
         articleRepository.save(article);
 
+        //승인요청
+        if(article.getUser().getGrade().getValue() < UserGrade.REPORTER.getValue()){
+            requestService.create(article.getUser(), article);
+        }
+
         return ResponseEntity.ok("기사가 수정되었습니다. 편집장의 승인 후 게시됩니다.");
     }
 
@@ -234,11 +239,6 @@ public class ArticleService {
         articleRepository.save(article); // 변경사항 저장
     }
 
-    //편집장 요청 처리 시 수정됨
-    public void statusUpdate(Long articleId, RequestStatus newRequestStatus){
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-        article.updateStatue(newRequestStatus);
-    }
 
 
     private ArticleResponseDTO convertToResponseDTO(Article article) {

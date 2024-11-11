@@ -26,6 +26,11 @@ public class RssController implements RssApi {
         return rssService.getRssFeedsByCategoryName(categoryName);
     }
 
+    @Override
+    public List<RssArticleDto> getRssFeedsByPublisher(Long pubId) {
+        return rssService.getRssFeedsByPublisher(pubId);
+    }
+
 
     @Override
     public ResponseEntity<?> create(RssCreateDto rssCreateDto) {

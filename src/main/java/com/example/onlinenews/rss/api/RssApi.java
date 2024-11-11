@@ -21,6 +21,10 @@ public interface RssApi {
     @Operation(summary = "rss 피드 카테고리 별로 조회", description = "카테고리 별로 rss 주소를 파싱합니다.")
     List<RssArticleDto> getRssFeedsByCategoryName(@RequestParam String categoryName);
 
+    @GetMapping("/{pubId}")
+    @Operation(summary = "rss 피드 카테고리 별로 조회", description = "카테고리 별로 rss 주소를 파싱합니다.")
+    List<RssArticleDto> getRssFeedsByPublisher(@PathVariable Long pubId);
+
     @PostMapping("")
     ResponseEntity<?> create(@RequestBody RssCreateDto rssCreateDto);
 

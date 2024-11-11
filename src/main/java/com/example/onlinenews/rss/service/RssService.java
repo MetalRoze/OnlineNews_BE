@@ -44,6 +44,7 @@ public class RssService {
         rssRepository.save(rss);
         return StateResponse.builder().code("200").message("success").build();
     }
+
     public List<RssArticleDto> getRssFeedsByCategoryName(String categoryName) {
         List<Rss> allRssRecords = rssRepository.findAll();
         List<RssArticleDto> allRssArticles = new ArrayList<>();
@@ -57,6 +58,22 @@ public class RssService {
             }
         }
         return allRssArticles;
+    }
+    //출판사의 전체 기사 조회
+    public List<RssArticleDto> getRssFeedsByPublisher(Long publisherId) {
+        Publisher publisher  = publisherRepository.findById(publisherId).orElseThrow(()->new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND));
+        Rss rss = rssRepository.findByPublisher(publisher);
+        List<RssArticleDto> allArticles = new ArrayList<>();
+        List<String> rssFeedUrls = getAllCategoryUrls(rss);
+
+        for (String rssFeedUrl : rssFeedUrls) {
+            if (rssFeedUrl != null) {
+                List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl, rss.getPublisher().getId(), rss.getPublisher().getName());
+                allArticles.addAll(rssArticles);
+            }
+        }
+
+        return allArticles;
     }
 
     private List<RssArticleDto> fetchRssFeed(String rssUrl, Long pubId, String publisherName) {
@@ -96,6 +113,7 @@ public class RssService {
         }
     }
 
+
     private String fetchPublishedDateFromHtml(int index, String rssFeedUrl) {
         try {
             Document doc = Jsoup.connect(rssFeedUrl).get();
@@ -107,23 +125,27 @@ public class RssService {
     }
 
     private String getCategoryUrlByName(Rss rss, String categoryName) {
-        switch (categoryName.toLowerCase()) {
-            case "economy":
-                return rss.getEconomyUrl();
-            case "politics":
-                return rss.getPoliticsUrl();
-            case "society":
-                return rss.getSocietyUrl();
-            case "entertainment":
-                return rss.getEntertainmentUrl();
-            case "culture":
-                return rss.getCultureUrl();
-            case "technology":
-                return rss.getTechnologyUrl();
-            case "opinion":
-                return rss.getOpinionUrl();
-            default:
-                return null;
-        }
+        return switch (categoryName.toLowerCase()) {
+            case "economy" -> rss.getEconomyUrl();
+            case "politics" -> rss.getPoliticsUrl();
+            case "society" -> rss.getSocietyUrl();
+            case "entertainment" -> rss.getEntertainmentUrl();
+            case "culture" -> rss.getCultureUrl();
+            case "technology" -> rss.getTechnologyUrl();
+            case "opinion" -> rss.getOpinionUrl();
+            default -> null;
+        };
     }
+    private List<String> getAllCategoryUrls(Rss rss) {
+        List<String> urls = new ArrayList<>();
+        urls.add(rss.getEconomyUrl());
+        urls.add(rss.getPoliticsUrl());
+        urls.add(rss.getSocietyUrl());
+        urls.add(rss.getEntertainmentUrl());
+        urls.add(rss.getCultureUrl());
+        urls.add(rss.getTechnologyUrl());
+        urls.add(rss.getOpinionUrl());
+        return urls;
+    }
+
 }

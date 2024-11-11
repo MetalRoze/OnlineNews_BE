@@ -222,6 +222,11 @@ public class ArticleService {
         article.setModifiedAt(LocalDateTime.now());
         articleRepository.save(article);
 
+        //승인요청
+        if(article.getUser().getGrade().getValue() < UserGrade.REPORTER.getValue()){
+            requestService.create(article.getUser(), article);
+        }
+
         return ResponseEntity.ok("기사가 수정되었습니다. 편집장의 승인 후 게시됩니다.");
     }
 

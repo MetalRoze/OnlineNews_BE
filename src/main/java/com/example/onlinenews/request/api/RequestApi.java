@@ -23,6 +23,14 @@ public interface RequestApi {
     @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
     RequestDto read(@PathVariable Long reqId);
 
+    @PatchMapping("/{reqId}/enroll")
+    @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
+    ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, @PathVariable Long reqId);
+
+    @PatchMapping("/{reqId}/enroll/reject")
+    @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
+    ResponseEntity<?> enrollRequestReject(HttpServletRequest request, @PathVariable Long reqId);
+
     @PatchMapping("/{reqId}/approve")
     @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
     ResponseEntity<?> requestAccept(HttpServletRequest request, @PathVariable Long reqId);
@@ -33,8 +41,20 @@ public interface RequestApi {
     ResponseEntity<?> requestHold(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
 
     @PutMapping("/{reqId}/reject")
-    @Operation(summary = "요청 id로 요청 조회", description = "편집장이 id에 해당하는 요청을 거절하고 커멘트를 남깁니다.")
+    @Operation(summary = "요청 거절", description = "편집장이 id에 해당하는 요청을 거절하고 커멘트를 남깁니다.")
     ResponseEntity<?> requestReject(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
+
+    @PatchMapping("/{reqId}/private")
+    @Operation(summary = "기사 비공개 ", description = "편집장이 기사를 비공개합니다.")
+    boolean convertToPrivate(HttpServletRequest request, @PathVariable Long reqId);
+
+    @PatchMapping("/{reqId}/public")
+    @Operation(summary = "기사 공개 ", description = "편집장이 기사를 공개합니다.")
+    boolean convertToPublic(HttpServletRequest request, @PathVariable Long reqId);
+
+    @GetMapping("/{reqId}/public-status")
+    @Operation(summary = "요청 id로 요청 조회", description = "요청아이디(path)로 해당 요청을 조회합니다.")
+    boolean getPublicStatus(@PathVariable Long reqId);
 
     @GetMapping("/status")
     @Operation(summary = "상태별로 요청 조회", description = "상태를 입력(param)하여 해당 상태의 요청들을 조회합니다.")

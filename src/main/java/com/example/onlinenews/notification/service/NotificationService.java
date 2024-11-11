@@ -1,16 +1,18 @@
 package com.example.onlinenews.notification.service;
 
-import com.example.onlinenews.article.entity.Article;
-import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
-import com.example.onlinenews.notification.dto.NotificationDto;
+import com.example.onlinenews.like.entity.ArticleLike;
+import com.example.onlinenews.notification.dto.EditorNotificationDto;
+import com.example.onlinenews.notification.dto.JournalistNotificationDto;
+import com.example.onlinenews.notification.entity.EditorNotification;
+import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
-import com.example.onlinenews.request.dto.RequestDto;
-import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,51 +26,146 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationService {
     private final UserRepository userRepository;
-    private final ArticleRepository articleRepository;
     private final NotificationRepository notificationRepository;
 
-    //기자가 기사 작성 -> 편집장한테 승인요청 알림
-    public void createRequestNoti (Long userId, Long articleId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-
-        Notification notification = Notification.builder()
-                .user(user)
-                .article(article)
+    public void createRequestNoti (Request request){
+        User editorUser = userRepository.findByPublisherAndGrade(request.getUser().getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        EditorNotification notification = EditorNotification.builder()
+                .user(editorUser)
+                .request(request)
                 .createdAt(LocalDateTime.now())
-                .type(NotificationType.EDITOR)
+                .type(NotificationType.EDITOR_REQUEST)
                 .isRead(false)
                 .build();
-
         notificationRepository.save(notification);
     }
-    public List<NotificationDto> list(){
-        return notificationRepository.findAll().stream()
-                .map(NotificationDto::fromEntity)
-                .collect(Collectors.toList());
+    public void createEnrollNoti (Request request){
+        User editorUser = userRepository.findByPublisherAndGrade(request.getPublisher(), UserGrade.EDITOR).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        EditorNotification notification = EditorNotification.builder()
+                .user(editorUser)
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.EDITOR_ENROLL_REPORTER)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
     }
-    public NotificationDto read(Long notificationId){
-        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
-        return NotificationDto.fromEntity(notification);
+    public void createEnrollApprovedNoti (Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.ENROLL_ACCEPTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
     }
+    public void createEnrollRejectedNoti(Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.ENROLL_REJECTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createApprovedNoti (Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_ACCEPTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createHeldNoti (Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_HELD)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createRejectedNoti (Request request){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(request.getUser())
+                .request(request)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_APPROVAL_REJECTED)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+    public void createLikeNoti (ArticleLike articleLike){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(articleLike.getArticle().getUser())
+                .articleLike(articleLike)
+                .createdAt(LocalDateTime.now())
+                .type(NotificationType.REPORTER_LIKE)
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+
     //알림 읽음
     @Transactional
-    public boolean updateIsRead(Long notificationId){
+    public boolean updateIsRead(String email, Long notificationId){
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new BusinessException(ExceptionCode.NOTIFICATION_NOT_FOUND));
+        if(!notification.getUser().getEmail().equals(email)){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
         notification.updateIsRead(true);
         return notification.isRead();
     }
-    //스위치케이스 덜적은거입니다...
-    public List<NotificationDto> getByType(String keyword) {
-        NotificationType enumStatus = switch (keyword.toLowerCase()) {
-            case "request" -> NotificationType.EDITOR;
-            case "comment" -> NotificationType.REPORTER_COMMENT;
-            case "reply" -> NotificationType.USER_REPLY;
-            default -> throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
-        };
 
-        return notificationRepository.findNotificationsByType(enumStatus).stream()
-                .map(NotificationDto::fromEntity)
+    public List<EditorNotificationDto> editorNotiList(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        if(user.getGrade().getValue()<9){
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+
+        return notificationRepository.findByUser(user).stream()
+                .filter(notification -> notification instanceof EditorNotification)
+                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
                 .collect(Collectors.toList());
+    }
+    public List<JournalistNotificationDto> journalistNotiList(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUser(user).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
+                .collect(Collectors.toList());
+    }
+    public List<EditorNotificationDto> editorNotiListByType(String email, NotificationType notificationType) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        List <Notification> notifications = notificationRepository.findByUser(user);
+        if(notifications.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        return notificationRepository.findNotificationsByUserAndType(user, notificationType).stream()
+                .filter(notification -> notification instanceof EditorNotification)
+                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
+                .collect(Collectors.toList());
+
+    }
+
+    public List<JournalistNotificationDto> journalNotiListByType(String email, NotificationType notificationType) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        List <Notification> notifications = notificationRepository.findByUser(user);
+        if(notifications.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_MISMATCH);
+        }
+        return notificationRepository.findNotificationsByUserAndType(user,notificationType).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
+                .collect(Collectors.toList());
+
     }
 }

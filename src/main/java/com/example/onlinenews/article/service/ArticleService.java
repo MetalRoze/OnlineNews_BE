@@ -12,13 +12,17 @@ import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.article_img.repository.ArticleImgRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
-import com.example.onlinenews.notification.service.NotificationService;
+import com.example.onlinenews.like.repository.ArticleLikeRepository;
+import com.example.onlinenews.like.service.ArticleLikeService;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +40,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArticleService {
     private final ArticleRepository articleRepository;
-    private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final RequestService requestService;
+    private final ArticleLikeService articleLikeService;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -91,81 +96,82 @@ public class ArticleService {
             articleImgRepository.saveAll(articleImgs);
         }
 
+        //그냥 기자 밑에 인턴기자, 시민기자들은 요청 받아야함
+        if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
+            requestService.create(user, savedArticle);
+        }
         return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
     }
 
-
-    // 기사 목록 조회
+    // 기사 검색
     @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getAllArticles() {
-        List<Article> articles = articleRepository.findAll();
+    public ResponseEntity<?> getArticles(
+            Long id,
+            Category category,
+            String title,
+            String content,
+            Long userId,
+            RequestStatus state,
+            Boolean isPublic,
+            String sortBy,
+            String sortDirection) {
+
+        List<Article> articles;
+
+        // 정렬 조건 처리
+        Sort sort = null;
+        if (sortBy != null && sortDirection != null) {
+            if ("asc".equalsIgnoreCase(sortDirection)) {
+                sort = Sort.by(Sort.Order.asc(sortBy));
+            } else if ("desc".equalsIgnoreCase(sortDirection)) {
+                sort = Sort.by(Sort.Order.desc(sortBy));
+            }
+        }
+
+        if (id != null) {
+            // 기사 상세 보기
+            Article article = articleRepository.findById(id)
+                    .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+            incrementViewCount(id); // 조회수 증가
+            articles = List.of(article);
+        } else {
+            // 복합 조건 조회
+            if (sort != null) {
+                // 정렬 기준이 있을 경우, 해당 조건을 적용하여 조회
+                articles = articleRepository.findAll(sort).stream()
+                        .filter(article -> category == null || article.getCategory().equals(category))
+                        .filter(article -> title == null || article.getTitle().contains(title))
+                        .filter(article -> content == null || article.getContent().contains(content))
+                        .filter(article -> userId == null || (article.getUser() != null && Objects.equals(article.getUser().getId(), userId)))
+                        .filter(article -> state == null || article.getState().equals(state))
+                        .filter(article -> isPublic == null || article.getIsPublic().equals(isPublic))
+                        .collect(Collectors.toList());
+            } else {
+                // 정렬 기준이 없으면 모든 데이터 보여줌
+                articles = articleRepository.findAll().stream()
+                        .filter(article -> category == null || article.getCategory().equals(category))
+                        .filter(article -> title == null || article.getTitle().contains(title))
+                        .filter(article -> content == null || article.getContent().contains(content))
+                        .filter(article -> userId == null || (article.getUser() != null && Objects.equals(article.getUser().getId(), userId)))
+                        .filter(article -> state == null || article.getState().equals(state))
+                        .filter(article -> isPublic == null || article.getIsPublic().equals(isPublic))
+                        .collect(Collectors.toList());
+            }
+        }
 
         List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO) // 변환 메서드 호출
+                .map(article -> {
+                    ArticleResponseDTO dto = convertToResponseDTO(article);
+                    int likesCount = articleLikeService.articleLikes(article.getId()).size(); // 좋아요 개수 가져오기
+                    dto.setLikes(likesCount); // DTO에 좋아요 개수 설정
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
+        if (articles.isEmpty()) {
+            return ResponseEntity.ok("검색 결과가 없습니다.");
+        }
         return ResponseEntity.ok(responseDTOs);
-    }
-
-
-    // 기사 상세 조회
-    @Transactional
-    public ResponseEntity<ArticleResponseDTO> getArticleById(Long id) {
-        incrementViewCount(id); // 조회수 증가
-        Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-        return ResponseEntity.ok(convertToResponseDTO(article));
-    }
-
-    // 카테고리 별 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> listArticlesByCategory(Category category) {
-        List<Article> articles = articleRepository.findByCategory(category);
-        List<ArticleResponseDTO> responseDTOS = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseDTOS);
-    }
-
-    // 제목 또는 내용을 포함하는 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> searchArticles(String title, String content) {
-        List<Article> articles = articleRepository.findByTitleContainingOrContentContaining(title, content);
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 사용자 ID로 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getArticlesByUserId(Long userId) {
-        List<Article> articles = articleRepository.findByUserId(userId);
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 공개된 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getPublicArticles() {
-        List<Article> articles = articleRepository.findByIsPublicTrue();
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs);
-    }
-
-    // 상태에 따른 기사 목록 조회
-    @Transactional
-    public ResponseEntity<List<ArticleResponseDTO>> getArticlesByState(RequestStatus state) {
-        List<Article> articles = articleRepository.findByState(state); // 상태에 따라 기사 조회
-        List<ArticleResponseDTO> responseDTOs = articles.stream()
-                .map(this::convertToResponseDTO) // DTO로 변환
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(responseDTOs); // 변환된 DTO 리스트 반환
     }
 
     // 기사 수정
@@ -216,9 +222,15 @@ public class ArticleService {
         article.setModifiedAt(LocalDateTime.now());
         articleRepository.save(article);
 
+        //승인요청
+        if(article.getUser().getGrade().getValue() < UserGrade.REPORTER.getValue()){
+            requestService.create(article.getUser(), article);
+        }
+
         return ResponseEntity.ok("기사가 수정되었습니다. 편집장의 승인 후 게시됩니다.");
     }
 
+    // 조회수 처리
     public void incrementViewCount(Long articleId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
@@ -227,15 +239,6 @@ public class ArticleService {
         articleRepository.save(article); // 변경사항 저장
     }
 
-    //편집장 요청 처리 시 수정됨
-    public void statusUpdate(Long articleId, RequestStatus newRequestStatus){
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-        article.updateStatue(newRequestStatus);
-    }
-
-    public void create(){
-        notificationService.createRequestNoti(2L,2L);
-    }
 
 
     private ArticleResponseDTO convertToResponseDTO(Article article) {

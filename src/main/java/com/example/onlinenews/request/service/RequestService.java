@@ -1,11 +1,10 @@
 package com.example.onlinenews.request.service;
 
 import com.example.onlinenews.article.entity.Article;
-import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.publisher.entity.Publisher;
-import com.example.onlinenews.publisher.repository.PublisherRepository;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     //request id로 개별 조회
     public RequestDto read(Long reqId){
@@ -35,15 +35,60 @@ public class RequestService {
     }
 
     //요청 생성
-    public RequestDto create(User user, Article article){
+    public void create(User user, Article article){
         Request request  = Request.builder()
                 .user(user)
+                .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
                 .build();
         requestRepository.save(request);
-        return RequestDto.fromEntity(request);
+        notificationService.createRequestNoti(request);
+    }
+
+    //시민 기자 등록 요청
+    public void createEnrollRequest(User user, Publisher publisher){
+        Request request = Request.builder()
+                .user(user)
+                .publisher(publisher)
+                .createdAt(LocalDateTime.now())
+                .status(RequestStatus.PENDING)
+                .build();
+        requestRepository.save(request);
+        notificationService.createEnrollNoti(request);
+    }
+    //시민 기자 등록 수락
+    public RequestStatus enrollRequestAccept(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getStatus().equals(RequestStatus.APPROVED)){
+            throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
+        }
+        request.updateStatus(RequestStatus.APPROVED, null);
+
+
+        //출판사 수정
+        request.getUser().updatePublisher(user.getPublisher());
+        notificationService.createEnrollApprovedNoti(request);
+        return request.getStatus();
+    }
+
+    //시민 기자 등록 거절
+    public RequestStatus enrollRequestReject(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getStatus().equals(RequestStatus.REJECTED)){
+            throw new BusinessException(ExceptionCode.ALREADY_REJECTED);
+        }
+        request.updateStatus(RequestStatus.REJECTED, null);
+
+        notificationService.createEnrollRejectedNoti(request);
+        return request.getStatus();
     }
 
     //요청 수락
@@ -59,7 +104,10 @@ public class RequestService {
 
         //기사 상태 업데이트
         request.getArticle().updateStatue(request.getStatus());
+        request.getArticle().updateIsPublic(true);
 
+        //승인 알림
+        notificationService.createApprovedNoti(request);
         return request.getStatus();
     }
 
@@ -76,7 +124,8 @@ public class RequestService {
         request.updateStatus(RequestStatus.HOLDING, comment);
 
         request.getArticle().updateStatue(request.getStatus());
-
+        //보류 알림
+        notificationService.createHeldNoti(request);
         return request.getStatus();
     }
 
@@ -93,7 +142,39 @@ public class RequestService {
         request.updateStatus(RequestStatus.REJECTED, comment);
 
         request.getArticle().updateStatue(request.getStatus());
+
+        //거절 알림
+        notificationService.createRejectedNoti(request);
         return request.getStatus();
+    }
+
+    //승인된 요청은 공개 비공개 설정가능
+    @Transactional
+    public boolean convertToPrivate(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(!request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        request.getArticle().updateIsPublic(false);
+        return request.getArticle().getIsPublic();
+    }
+    @Transactional
+    public boolean convertToPublic(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
+        }
+        request.getArticle().updateIsPublic(true);
+        return request.getArticle().getIsPublic();
+    }
+
+    public boolean getPublicStatus(Long reqId){
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        return request.getArticle().getIsPublic();
     }
 
     //상태로 요청조회
@@ -102,7 +183,7 @@ public class RequestService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
         RequestStatus enumStatus = getRequestStatusFromKeyword(keyword);
-        return requestRepository.findByArticleUserPublisherAndStatus(user.getPublisher(),enumStatus).stream()
+        return requestRepository.findByPublisherAndStatus(user.getPublisher(),enumStatus).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -112,10 +193,13 @@ public class RequestService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
 
-        return requestRepository.findByArticleUserPublisher(user.getPublisher()).stream()
+        return requestRepository.findByPublisher(user.getPublisher()).stream()
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    //시민기자 등록 요청
+
 
     private void checkEditorPermission(User user) {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {

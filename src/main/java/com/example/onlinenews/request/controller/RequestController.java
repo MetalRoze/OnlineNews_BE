@@ -34,6 +34,18 @@ public class RequestController implements RequestApi {
     }
 
     @Override
+    public ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return ResponseEntity.ok(requestService.enrollRequestAccept(email, reqId));
+    }
+
+    @Override
+    public ResponseEntity<?> enrollRequestReject(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return ResponseEntity.ok(requestService.enrollRequestReject(email, reqId));
+    }
+
+    @Override
     public ResponseEntity<?> requestAccept(HttpServletRequest request, Long reqId) {
         String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestAccept(email, reqId));
@@ -49,6 +61,23 @@ public class RequestController implements RequestApi {
     public ResponseEntity<?> requestReject(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
         String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestReject(email, reqId, requestCommentDto));
+    }
+
+    @Override
+    public boolean convertToPrivate(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return requestService.convertToPrivate(email,reqId);
+    }
+
+    @Override
+    public boolean convertToPublic(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return  requestService.convertToPublic(email,reqId);
+    }
+
+    @Override
+    public boolean getPublicStatus(Long reqId) {
+        return  requestService.getPublicStatus(reqId);
     }
 
     @Override

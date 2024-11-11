@@ -61,7 +61,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     
     //사용하려는 Jsoup 버전 
-    implementation 'org.jsoup:jsoup:1.15.4' 
+    implementation 'org.jsoup:jsoup:1.15.4'
+
+    //rss
+    implementation 'com.rometools:rome:1.15.0'
+
 }
 
 test {

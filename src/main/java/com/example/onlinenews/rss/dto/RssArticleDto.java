@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 public class RssArticleDto {
+    private Long pubId;
+    private String publisherName;
     private String title;
     private String subtitle;
     private String url;
@@ -13,7 +15,9 @@ public class RssArticleDto {
     private String imgUrl;
 
     @Builder
-    public RssArticleDto(String title, String subtitle, String url, String author, String createdAt, String imgUrl) {
+    public RssArticleDto(Long pubId, String publisherName, String title, String subtitle, String url, String author, String createdAt, String imgUrl) {
+        this.pubId=pubId;
+        this.publisherName = publisherName;
         this.title = title;
         this.subtitle = subtitle;
         this.url = url;

@@ -27,21 +27,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RssService {
     private final PublisherRepository publisherRepository;
-    private final RssRepository repository;
-    //경제 rss
-    private static final String[] RSS_FEED_URLS = {
-            "https://www.khan.co.kr/rss/rssdata/economy_news.xml", // 경향신문
-            "https://www.kmib.co.kr/rss/data/kmibEcoRss.xml",            // 국민
-            "https://rss.donga.com/economy.xml",            // 동아일보
-            "https://www.segye.com/Articles/RSSList/segye_economy.xml", //세계
-            "https://www.newsis.com/RSS/international.xml",//뉴시스
-            "https://www.mediatoday.co.kr/rss/S1N3.xml",  //미디어오늘
-            "https://www.sisajournal.com/rss/S1N54.xml", //시사저널
-            "https://www.imaeil.com/rss?cate=nations" //매일신문
-    };
+    private final RssRepository rssRepository;
+
     public StateResponse create(RssCreateDto rssCreateDto) {
         Publisher publisher  = publisherRepository.findById(rssCreateDto.getPubId()).orElseThrow(()->new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND));
-
         Rss rss = Rss.builder()
                 .economyUrl(rssCreateDto.getEconomyUrl())
                 .politicsUrl(rssCreateDto.getPoliticsUrl())
@@ -52,19 +41,25 @@ public class RssService {
                 .opinionUrl(rssCreateDto.getOpinionUrl())
                 .publisher(publisher)
                 .build();
-        repository.save(rss);
+        rssRepository.save(rss);
         return StateResponse.builder().code("200").message("success").build();
     }
-    public List<RssArticleDto> fetchAllRssFeeds() {
+    public List<RssArticleDto> getRssFeedsByCategoryName(String categoryName) {
+        List<Rss> allRssRecords = rssRepository.findAll();
         List<RssArticleDto> allRssArticles = new ArrayList<>();
-        for (String rssFeedUrl : RSS_FEED_URLS) {
-            List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl);
-            allRssArticles.addAll(rssArticles);
+
+        for (Rss rss : allRssRecords) {
+            String rssFeedUrl = getCategoryUrlByName(rss, categoryName);
+
+            if (rssFeedUrl != null) {
+                List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl, rss.getPublisher().getId(), rss.getPublisher().getName());
+                allRssArticles.addAll(rssArticles);
+            }
         }
         return allRssArticles;
     }
 
-    private List<RssArticleDto> fetchRssFeed(String rssUrl) {
+    private List<RssArticleDto> fetchRssFeed(String rssUrl, Long pubId, String publisherName) {
         try {
             URL url = new URL(rssUrl);
             SyndFeedInput input = new SyndFeedInput();
@@ -84,6 +79,8 @@ public class RssService {
                 }
 
                 RssArticleDto rssArticleDto = RssArticleDto.builder()
+                        .pubId(pubId)
+                        .publisherName(publisherName)
                         .title(entry.getTitle())
                         .subtitle(subtitle)
                         .url(entry.getLink())
@@ -106,6 +103,27 @@ public class RssService {
             return item.select("pubDate").text();
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    private String getCategoryUrlByName(Rss rss, String categoryName) {
+        switch (categoryName.toLowerCase()) {
+            case "economy":
+                return rss.getEconomyUrl();
+            case "politics":
+                return rss.getPoliticsUrl();
+            case "society":
+                return rss.getSocietyUrl();
+            case "entertainment":
+                return rss.getEntertainmentUrl();
+            case "culture":
+                return rss.getCultureUrl();
+            case "technology":
+                return rss.getTechnologyUrl();
+            case "opinion":
+                return rss.getOpinionUrl();
+            default:
+                return null;
         }
     }
 }

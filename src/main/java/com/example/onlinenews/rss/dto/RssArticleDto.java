@@ -10,13 +10,15 @@ public class RssArticleDto {
     private String url;
     private String author;
     private String createdAt;
+    private String imgUrl;
 
     @Builder
-    public RssArticleDto(String title, String subtitle, String url, String author, String createdAt) {
+    public RssArticleDto(String title, String subtitle, String url, String author, String createdAt, String imgUrl) {
         this.title = title;
         this.subtitle = subtitle;
         this.url = url;
         this.author = author;
         this.createdAt=createdAt;
+        this.imgUrl=imgUrl;
     }
 }

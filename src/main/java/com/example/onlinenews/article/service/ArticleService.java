@@ -1,6 +1,7 @@
 package com.example.onlinenews.article.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleResponseDTO;
@@ -219,6 +220,15 @@ public class ArticleService {
             else article.setContent(updateRequest.getContent());
         }
 
+        // 이미지 삭제
+        List<String> deleteImages = updateRequest.getDeleteImages();
+        if (deleteImages != null && !deleteImages.isEmpty()) {
+            for (String imgUrl : deleteImages) {
+                deleteImg(imgUrl);
+                articleImgRepository.deleteByImgUrl(imgUrl);
+            }
+        }
+
         article.setModifiedAt(LocalDateTime.now());
         articleRepository.save(article);
 
@@ -265,6 +275,7 @@ public class ArticleService {
     }
 
 
+    // 서버에 이미지 저장
     public String saveImg(MultipartFile file){
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
@@ -284,6 +295,25 @@ public class ArticleService {
         return fileUrl;
     }
 
+    // 서버에서 이미지 삭제
+    public void deleteImg(String imgUrl) {
+        try {
+            String fileName = extractFileNameFromUrl(imgUrl);
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(
+                    bucketName,
+                    "articleImg/" + fileName
+            );
+            amazonS3.deleteObject(deleteObjectRequest);
+        } catch (Exception e) {
+            throw new BusinessException(ExceptionCode.FILE_DELETE_FAILED);
+        }
+    }
+    public String extractFileNameFromUrl(String url) {
+        String[] urlParts = url.split("/");
+        return urlParts[urlParts.length - 1];
+    }
+
+    // 서버에 올라간 url으로 변경
     public String replaceImgUrl(String content, List<String> imgUrls) {
         Document document = Jsoup.parse(content);
         List<Element> images = document.select("img");

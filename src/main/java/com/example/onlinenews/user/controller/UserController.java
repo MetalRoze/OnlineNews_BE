@@ -149,7 +149,8 @@ public class UserController implements UserAPI {
 
     @Override
     public ResponseEntity<JwtToken> login(LoginRequestDTO requestDto) {
-        return new ResponseEntity<>(userService.login(requestDto), HttpStatus.OK);
+        JwtToken jwtToken = userService.login(requestDto);
+        return new ResponseEntity<>(jwtToken, HttpStatus.OK);
     }
 
     @Override
@@ -166,6 +167,12 @@ public class UserController implements UserAPI {
     public ResponseEntity<?> myPage(HttpServletRequest httpServletRequest) {
         String email = authService.getEmailFromToken(httpServletRequest);
         return new ResponseEntity<>(userService.getMypageInfo(email), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<UserGrade> checkUserType(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return new ResponseEntity<>(userService.getUserGrade(email), HttpStatus.OK);
     }
 
     @Override

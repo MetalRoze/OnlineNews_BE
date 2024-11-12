@@ -299,6 +299,9 @@ public class UserService {
         responseDTO.setType(String.valueOf(user.getGrade()));
         responseDTO.setSex(user.getSex());
         responseDTO.setBio(user.getBio());
+        if (user.getPublisher() != null) {
+            responseDTO.setPublisher(user.getPublisher().getName());
+        }
 
         String maskedPassword = "*".repeat(12);
         responseDTO.setEncodedPw(maskedPassword);
@@ -336,5 +339,15 @@ public class UserService {
         } else {
             responseSetter.accept(existingValue);
         }
+    }
+
+    public UserGrade getUserGrade(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        return user.getGrade();
     }
 }

@@ -76,7 +76,7 @@ jobs:
 
             # 클린 빌드
             chmod +x ./gradlew
-            ./gradlew clean build -x test
+            ./gradlew clean build --no-daemon
             
             sudo systemctl stop demo.service
             sudo systemctl restart demo.service

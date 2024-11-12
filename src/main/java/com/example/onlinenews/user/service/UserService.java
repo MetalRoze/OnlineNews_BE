@@ -99,6 +99,11 @@ public class UserService {
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
         Publisher publisher = publisherService.getPublisherByName(requestDTO.getPublisher());
+
+        if (publisher == null) {
+            throw new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND);
+        }
+
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -109,11 +114,12 @@ public class UserService {
                 .bio(null)
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
-        userRepository.save(user);
 
         //시민 기자 등록 요청
         requestService.createEnrollRequest(user, publisher);
 
+        //요청 완료 후 저장하기
+        userRepository.save(user);
     }
 
     public String saveProfileImg(MultipartFile file) {

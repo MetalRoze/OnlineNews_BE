@@ -77,6 +77,6 @@ jobs:
             # 클린 빌드
             chmod +x ./gradlew
             ./gradlew clean build --no-daemon -x test
-            
+            chmod +x /home/ubuntu/OnlineNews_BE/build/libs/OnlineNews-0.0.1-SNAPSHOT.jar
             sudo systemctl stop demo.service
             sudo systemctl restart demo.service

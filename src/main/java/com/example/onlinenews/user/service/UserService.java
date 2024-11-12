@@ -115,11 +115,17 @@ public class UserService {
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
 
-        //시민 기자 등록 요청
-        requestService.createEnrollRequest(user, publisher);
-
-        //요청 완료 후 저장하기
         userRepository.save(user);
+
+        try {
+            //시민 기자 등록 요청
+            requestService.createEnrollRequest(user, publisher);
+        } catch (Exception e) {
+            // 오류 발생 시 유저 정보 삭제
+            userRepository.delete(user);
+            throw e;
+        }
+
     }
 
     public String saveProfileImg(MultipartFile file) {

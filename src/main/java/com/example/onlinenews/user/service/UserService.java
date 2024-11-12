@@ -99,6 +99,11 @@ public class UserService {
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
         Publisher publisher = publisherService.getPublisherByName(requestDTO.getPublisher());
+
+        if (publisher == null) {
+            throw new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND);
+        }
+
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -109,10 +114,17 @@ public class UserService {
                 .bio(null)
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
+
         userRepository.save(user);
 
-        //시민 기자 등록 요청
-        requestService.createEnrollRequest(user, publisher);
+        try {
+            //시민 기자 등록 요청
+            requestService.createEnrollRequest(user, publisher);
+        } catch (Exception e) {
+            // 오류 발생 시 유저 정보 삭제
+            userRepository.delete(user);
+            throw e;
+        }
 
     }
 
@@ -287,6 +299,9 @@ public class UserService {
         responseDTO.setType(String.valueOf(user.getGrade()));
         responseDTO.setSex(user.getSex());
         responseDTO.setBio(user.getBio());
+        if (user.getPublisher() != null) {
+            responseDTO.setPublisher(user.getPublisher().getName());
+        }
 
         String maskedPassword = "*".repeat(12);
         responseDTO.setEncodedPw(maskedPassword);
@@ -324,5 +339,15 @@ public class UserService {
         } else {
             responseSetter.accept(existingValue);
         }
+    }
+
+    public UserGrade getUserGrade(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        return user.getGrade();
     }
 }

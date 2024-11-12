@@ -12,4 +12,5 @@ public class MypageResponseDTO {
     private String sex;
     private String bio;
     private String type;
+    private String publisher;
 }

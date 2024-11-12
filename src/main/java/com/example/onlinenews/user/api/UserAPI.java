@@ -10,6 +10,7 @@ import com.example.onlinenews.user.dto.JournalistSignupRequestDTO;
 import com.example.onlinenews.user.dto.LoginRequestDTO;
 import com.example.onlinenews.user.dto.MypageEditRequestDTO;
 import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.entity.UserGrade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,6 +71,10 @@ public interface UserAPI {
     @GetMapping("/myPage")
     @Operation(summary = "마이페이지", description = "사용자(기자,일반회원)의 개인정보를 반환합니다.")
     ResponseEntity<?> myPage(HttpServletRequest httpServletRequest);
+
+    @GetMapping("/checkUserType")
+    @Operation(summary = "회원 유형 확인", description = "현재 로그인한 사용자의 회원 종류를 반환합니다.")
+    ResponseEntity<UserGrade> checkUserType(HttpServletRequest httpServletRequest);
 
     @PatchMapping("/myPage/edit")
     @Operation(summary = "마이페이지 수정", description = "사용자(기자,일반회원)의 수정된 회원정보를 DB에 업데이트합니다.")

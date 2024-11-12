@@ -68,8 +68,15 @@ jobs:
             
             # 배포 스크립트
             cd /home/ubuntu/OnlineNews_BE
-            chmod +x ./gradlew
+
+            # git 병합 전략 설정 (merge 전략)
+            git config pull.rebase false
             git pull origin main
-            ./gradlew build -x test
+            git status  # 병합 상태 확인
+
+            # 클린 빌드
+            chmod +x ./gradlew
+            ./gradlew clean build -x test
+            
             sudo systemctl stop demo.service
             sudo systemctl restart demo.service

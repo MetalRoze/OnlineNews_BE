@@ -39,7 +39,6 @@ public class KeywordService {
                 .collect(Collectors.toList());
     }
 
-
     public StateResponse keywordCreate(String email, KeywordCreateRequestDto requestDto){
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if(!optionalUser.isPresent()){
@@ -51,6 +50,6 @@ public class KeywordService {
                 .user(user)
                 .keyword(requestDto.getKeyword()).build();
         keywordRepository.save(keyword);
-        return StateResponse.builder().code("").message("").build();
+        return StateResponse.builder().code("키워드 추가").message("키워드 생성").build();
     }
 }

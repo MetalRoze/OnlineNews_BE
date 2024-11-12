@@ -275,6 +275,7 @@ public class ArticleService {
     }
 
 
+    // 서버에 이미지 저장
     public String saveImg(MultipartFile file){
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
@@ -294,6 +295,7 @@ public class ArticleService {
         return fileUrl;
     }
 
+    // 서버에서 이미지 삭제
     public void deleteImg(String imgUrl) {
         try {
             String fileName = extractFileNameFromUrl(imgUrl);
@@ -301,20 +303,17 @@ public class ArticleService {
                     bucketName,
                     "articleImg/" + fileName
             );
-
-            // S3에서 이미지 삭제
             amazonS3.deleteObject(deleteObjectRequest);
         } catch (Exception e) {
-            System.out.println("Error during delete operation: " + e.getMessage());
             throw new BusinessException(ExceptionCode.FILE_DELETE_FAILED);
         }
     }
-
     public String extractFileNameFromUrl(String url) {
         String[] urlParts = url.split("/");
         return urlParts[urlParts.length - 1];
     }
 
+    // 서버에 올라간 url으로 변경
     public String replaceImgUrl(String content, List<String> imgUrls) {
         Document document = Jsoup.parse(content);
         List<Element> images = document.select("img");

@@ -83,6 +83,9 @@ public class User {
     public void updateCp(String cp) {
         this.cp = cp;
     }
+    public void updatePublisher(Publisher publisher){
+        this.publisher = publisher;
+    }
 
     public String getSex() {
         if (sex) {

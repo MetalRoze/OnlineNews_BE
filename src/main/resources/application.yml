@@ -10,9 +10,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL} 
-    username: ${DB_USERNAME}  
-    password: ${DB_PASSWORD} 
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   servlet:
     multipart:
@@ -40,18 +40,18 @@ cloud:
       bucket: onlinen-news-bucket
 
     credentials:
-      access-key: ${AWS_ACCESS_KEY}  
-      secret-key: ${AWS_SECRET_KEY} 
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
 
 jwt:
-  secret: ${JWT_SECRET} 
+  secret: ${JWT_SECRET}
   accessExpiration: 3600000
   refreshExpiration: 1209600000
   issuer: metalroze
 
 secretKey:
-  admin: ${ADMIN_SECRET_KEY} 
-  editor: ${EDITOR_SECRET_KEY} 
+  admin: ${ADMIN_SECRET_KEY}
+  editor: ${EDITOR_SECRET_KEY}
 
 server:
   port: 8080

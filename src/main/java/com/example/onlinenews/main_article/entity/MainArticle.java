@@ -1,30 +1,28 @@
-package com.example.onlinenews.request.entity;
-
+package com.example.onlinenews.main_article.entity;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Request {
+@NoArgsConstructor
+public class MainArticle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 요청 아이디 (PK)
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
+    @JsonIgnore
     private Publisher publisher;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,26 +33,14 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RequestStatus status;
-
-    @Column
-    private String comment;
+    private Category category;
 
     @Builder
-    public Request(User user, Publisher publisher, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
-        this.user = user;
+    public MainArticle(Publisher publisher, Article article, LocalDateTime createdAt, Category category) {
         this.publisher = publisher;
         this.article = article;
         this.createdAt = createdAt;
-        this.status = status;
-        this.comment = comment;
-    }
-
-    //상태 업데이트
-    public void updateStatus(RequestStatus newStatus, String comment){
-        this.status = newStatus;
-        this.comment = comment;
+        this.category = category;
     }
 }

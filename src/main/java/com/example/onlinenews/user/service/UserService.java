@@ -8,6 +8,7 @@ import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
+import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.dto.FindIdRequestDTO;
 import com.example.onlinenews.user.dto.FindIdResponseDTO;
 import com.example.onlinenews.user.dto.FindPwRequestDTO;
@@ -42,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final PublisherService publisherService;
+    private final RequestService requestService;
     private final PasswordEncoder passwordEncoder;
     private final AmazonS3 amazonS3;
     private final JwtTokenProvider jwtTokenProvider;
@@ -56,11 +58,12 @@ public class UserService {
     private String editorSecretKey;
 
     @Autowired
-    public UserService(UserRepository userRepository, PublisherService publisherService,
+    public UserService(UserRepository userRepository, PublisherService publisherService, RequestService requestService,
                        PasswordEncoder passwordEncoder, AmazonS3 amazonS3,
                        JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.publisherService = publisherService;
+        this.requestService = requestService;
         this.passwordEncoder = passwordEncoder;
         this.amazonS3 = amazonS3;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -95,6 +98,7 @@ public class UserService {
     }
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
+        Publisher publisher = publisherService.getPublisherByName(requestDTO.getPublisher());
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -103,11 +107,13 @@ public class UserService {
                 .name(requestDTO.getUser_name())
                 .img(requestDTO.getUser_img())
                 .bio(null)
-                .publisher(publisherService.getPublisherByName(requestDTO.getPublisher()))
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
-
         userRepository.save(user);
+
+        //시민 기자 등록 요청
+        requestService.createEnrollRequest(user, publisher);
+
     }
 
     public String saveProfileImg(MultipartFile file) {

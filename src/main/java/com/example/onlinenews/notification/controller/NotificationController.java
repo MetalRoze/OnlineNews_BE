@@ -1,8 +1,12 @@
 package com.example.onlinenews.notification.controller;
 
 import com.example.onlinenews.notification.api.NotificationApi;
-import com.example.onlinenews.notification.dto.NotificationDto;
+import com.example.onlinenews.notification.dto.EditorNotificationDto;
+import com.example.onlinenews.notification.dto.JournalistNotificationDto;
+import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.service.NotificationService;
+import com.example.onlinenews.user.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,24 +17,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationController implements NotificationApi {
     private final NotificationService notificationService;
+    private final AuthService authService;
 
     @Override
-    public List<NotificationDto> list() {
-        return notificationService.list();
+    public ResponseEntity<?> updateIsRead(HttpServletRequest request, Long notificationId) {
+        String email = authService.getEmailFromToken(request);
+        return ResponseEntity.ok(notificationService.updateIsRead(email, notificationId));
     }
 
     @Override
-    public NotificationDto read(Long notificationId) {
-        return notificationService.read(notificationId);
+    public List<EditorNotificationDto> editorNotiList(HttpServletRequest request) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.editorNotiList(email);
     }
 
     @Override
-    public ResponseEntity<?> updateIsRead(Long notificationId) {
-        return ResponseEntity.ok(notificationService.updateIsRead(notificationId));
+    public List<JournalistNotificationDto> journalistNotiList(HttpServletRequest request) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.journalistNotiList(email);
     }
 
     @Override
-    public List<NotificationDto> getByType(String keyword) {
-        return notificationService.getByType(keyword);
+    public List<EditorNotificationDto> editorNotiListByType(HttpServletRequest request, NotificationType type) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.editorNotiListByType(email, type);
+    }
+
+    @Override
+    public List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, NotificationType type) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.journalNotiListByType(email, type);
     }
 }

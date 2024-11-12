@@ -8,6 +8,7 @@ import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.like.dto.ArticleLikeDto;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.request.dto.RequestDto;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.entity.RequestStatus;
@@ -29,11 +30,15 @@ public class ArticleLikeService {
     private final ArticleLikeRepository articleLikeRepository;
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public StateResponse likeCreate(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
-
+        Optional<ArticleLike> optionalArticleLike= articleLikeRepository.findByUserAndArticle(user,article);
+        if(optionalArticleLike.isPresent()){
+            throw new BusinessException(ExceptionCode.ALREADY_LIKED);
+        }
         ArticleLike articleLike = ArticleLike.builder()
                 .user(user)
                 .article(article)
@@ -41,6 +46,7 @@ public class ArticleLikeService {
                 .build();
 
         articleLikeRepository.save(articleLike);
+        notificationService.createLikeNoti(articleLike);
         return StateResponse.builder().code("200").message("좋아요 완료").build();
     }
 

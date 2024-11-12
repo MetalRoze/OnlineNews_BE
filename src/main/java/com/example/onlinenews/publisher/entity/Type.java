@@ -10,7 +10,8 @@ public enum Type {
     INTERNET("인터넷"),
     IT("IT"),
     MAGAZINE("매거진"),
-    SPECIALIZED("전문지");
+    SPECIALIZED("전문지"),
+    LOCAL("지역지");
 
     private final String description;
 

@@ -78,5 +78,6 @@ public interface UserAPI {
 
     @PatchMapping("/myPage/edit")
     @Operation(summary = "마이페이지 수정", description = "사용자(기자,일반회원)의 수정된 회원정보를 DB에 업데이트합니다.")
-    ResponseEntity<?> myPageEdit(HttpServletRequest httpServletRequest, @RequestBody MypageEditRequestDTO requestDTO);
+    ResponseEntity<?> myPageEdit(HttpServletRequest httpServletRequest,
+                                 @ModelAttribute MypageEditRequestDTO requestDTO);
 }

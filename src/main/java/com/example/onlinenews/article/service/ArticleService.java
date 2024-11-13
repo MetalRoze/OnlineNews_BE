@@ -270,6 +270,15 @@ public class ArticleService {
                 .state(article.getState())
                 .isPublic(article.getIsPublic())
                 .views(article.getViews())
+                .userId(article.getUser().getId())
+                .userEmail(article.getUser().getEmail())
+                .userName(article.getUser().getName())
+                .userBio(article.getUser().getBio())
+                .userImg(article.getUser().getImg())
+                .publisherId(article.getUser().getPublisher().getId())
+                .publisherName(article.getUser().getPublisher().getName())
+                .publisherUrl(article.getUser().getPublisher().getUrl())
+                .publisherImage(article.getUser().getPublisher().getImg())
                 .images(images.stream().map(img -> img.getImgUrl()).collect(Collectors.toList()))
                 .build();
     }

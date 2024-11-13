@@ -43,7 +43,7 @@ public class ArticleLikeController implements ArticleLikeApi {
     }
 
     @Override
-    public boolean checkLike(HttpServletRequest request, Long articleId) {
+    public Long checkLike(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         return articleLikeService.checkLike(email, articleId);
     }

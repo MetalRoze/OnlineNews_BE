@@ -307,6 +307,7 @@ public class UserService {
 
         MypageResponseDTO responseDTO = new MypageResponseDTO();
         responseDTO.setImg(user.getImg());
+        responseDTO.setId(user.getId());
         responseDTO.setEmail(user.getEmail());
         responseDTO.setName(user.getName());
         responseDTO.setCp(user.getCp());

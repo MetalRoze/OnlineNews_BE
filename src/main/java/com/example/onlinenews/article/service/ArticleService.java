@@ -329,6 +329,14 @@ public class ArticleService {
 
         int urlIndex = 0;
         for (Element img : images) {
+            String imgSrc = img.attr("src"); // 현재 이미지의 src 값 가져오기
+
+            // 버킷 URL이 포함된 경우 변경하지 않음
+            if (imgSrc.contains("onlinen-news-bucket.s3.amazonaws.com")) {
+                continue; // 버킷 URL이 포함된 경우, 교체하지 않고 다음 이미지로 넘어감
+            }
+
+            // 버킷 URL이 포함되지 않은 경우에만 새로운 URL로 교체
             if (urlIndex < imgUrls.size()) {
                 img.attr("src", imgUrls.get(urlIndex));
                 urlIndex++;

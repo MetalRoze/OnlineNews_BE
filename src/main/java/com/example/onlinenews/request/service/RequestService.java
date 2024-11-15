@@ -1,8 +1,10 @@
 package com.example.onlinenews.request.service;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.request.dto.RequestCommentDto;
@@ -27,6 +29,7 @@ public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final ArticleRepository articleRepository;
 
     //request id로 개별 조회
     public RequestDto read(Long reqId){
@@ -42,9 +45,27 @@ public class RequestService {
                 .article(article)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
+                .type("승인 요청")
                 .build();
         requestRepository.save(request);
         notificationService.createRequestNoti(request);
+    }
+
+    //비공개 요청
+    public StateResponse createPrivateRequest(String email, Long articleId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        Request request = Request.builder()
+                .user(user)
+                .publisher(user.getPublisher())
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .status(RequestStatus.PENDING)
+                .type("비공개 요청")
+                .build();
+        requestRepository.save(request);
+        notificationService.createEnrollNoti(request);
+        return StateResponse.builder().code("200").message("비공개요청성공").build();
     }
 
     //시민 기자 등록 요청
@@ -54,6 +75,7 @@ public class RequestService {
                 .publisher(publisher)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
+                .type("기사 등록 요청")
                 .build();
         requestRepository.save(request);
         notificationService.createEnrollNoti(request);

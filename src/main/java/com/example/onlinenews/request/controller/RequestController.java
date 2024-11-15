@@ -1,16 +1,13 @@
 package com.example.onlinenews.request.controller;
 
-import com.example.onlinenews.jwt.entity.CustomUserDetails;
-import com.example.onlinenews.jwt.provider.JwtTokenProvider;
+import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.request.api.RequestApi;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
-import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +28,12 @@ public class RequestController implements RequestApi {
     @Override
     public RequestDto read(Long reqId) {
         return requestService.read(reqId);
+    }
+
+    @Override
+    public StateResponse createPrivateRequest(HttpServletRequest request, Long articleId) {
+        String email = authService.getEmailFromToken(request);
+        return requestService.createPrivateRequest(email, articleId);
     }
 
     @Override

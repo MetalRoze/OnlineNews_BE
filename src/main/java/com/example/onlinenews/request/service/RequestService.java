@@ -68,6 +68,22 @@ public class RequestService {
         return StateResponse.builder().code("200").message("비공개요청성공").build();
     }
 
+    public StateResponse createPublicRequest(String email, Long articleId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        Request request = Request.builder()
+                .user(user)
+                .publisher(user.getPublisher())
+                .article(article)
+                .createdAt(LocalDateTime.now())
+                .status(RequestStatus.PENDING)
+                .type("공개 요청")
+                .build();
+        requestRepository.save(request);
+        notificationService.createEnrollNoti(request);
+        return StateResponse.builder().code("200").message("공개요청성공").build();
+    }
+
     //시민 기자 등록 요청
     public void createEnrollRequest(User user, Publisher publisher){
         Request request = Request.builder()
@@ -80,6 +96,7 @@ public class RequestService {
         requestRepository.save(request);
         notificationService.createEnrollNoti(request);
     }
+
     //시민 기자 등록 수락
     public RequestStatus enrollRequestAccept(String email, Long reqId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
@@ -90,7 +107,6 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
         }
         request.updateStatus(RequestStatus.APPROVED, null);
-
 
         //출판사 수정
         request.getUser().updatePublisher(user.getPublisher());

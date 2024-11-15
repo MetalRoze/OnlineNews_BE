@@ -27,6 +27,12 @@ public interface RequestApi {
     @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
     StateResponse createPrivateRequest(HttpServletRequest request, @PathVariable Long articleId);
 
+
+
+    @PostMapping("/{articleId}/convert-public")
+    @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
+    StateResponse createPublicRequest(HttpServletRequest request, @PathVariable Long articleId);
+
     @PatchMapping("/{reqId}/enroll")
     @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
     ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, @PathVariable Long reqId);

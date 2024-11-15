@@ -37,6 +37,12 @@ public class RequestController implements RequestApi {
     }
 
     @Override
+    public StateResponse createPublicRequest(HttpServletRequest request, Long articleId) {
+        String email = authService.getEmailFromToken(request);
+        return requestService.createPublicRequest(email, articleId);
+    }
+
+    @Override
     public ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, Long reqId) {
         String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.enrollRequestAccept(email, reqId));

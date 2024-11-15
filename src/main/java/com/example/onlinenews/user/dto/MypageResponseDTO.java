@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MypageResponseDTO {
+    private long id;
     private String img;
     private String name;
     private String email;

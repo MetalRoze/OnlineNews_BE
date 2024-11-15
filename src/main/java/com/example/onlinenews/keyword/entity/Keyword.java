@@ -12,23 +12,22 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 public class Keyword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // keyword id (PK)ㅂ
-
-    @OneToOne(fetch = FetchType.LAZY)
+    private Long id; // keyword id (PK)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
-    @Column(length = 10)
-    private String[] keywords = new String[10];
+    @Column(nullable = false)
+    private String keyword;  // 저장할 키워드
 
     @Builder
-    public Keyword(User user, String[] keywords){
+    public Keyword(User user, String keyword) {
         this.user = user;
-        this.keywords = keywords;
+        this.keyword = keyword;
     }
 
-    public void updateKeywords(String[] keywords){
-        this.keywords = keywords;
-    }
+//    public void updateKeywords(String[] keywords){
+//        this.keywords = keywords;
+//    }
 }

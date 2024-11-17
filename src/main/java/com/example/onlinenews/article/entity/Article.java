@@ -1,6 +1,7 @@
 package com.example.onlinenews.article.entity;
 
 import com.example.onlinenews.article_img.entity.ArticleImg;
+import com.example.onlinenews.keyword.entity.Keyword;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.user.entity.User;
@@ -67,10 +68,21 @@ public class Article {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ArticleLike> userLikes = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "article_keywords", joinColumns = @JoinColumn(name = "article_id"))
+    @Column(name = "keyword")
+    private List<String> keywords = new ArrayList<>();  // List<Keyword>로 수정
+
     public void updateStatue(RequestStatus newRequestStatus) {
         this.state= newRequestStatus;
     }
     public void updateIsPublic(Boolean newIsPublic){
         this.isPublic = newIsPublic;
+    }
+
+    @Builder
+    public Article(Long id, List<String> keywords) {
+        this.id = id;
+        this.keywords = keywords;
     }
 }

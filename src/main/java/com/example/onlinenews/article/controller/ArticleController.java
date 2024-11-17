@@ -1,9 +1,11 @@
 package com.example.onlinenews.article.controller;
 
 import com.example.onlinenews.article.api.ArticleAPI;
+import com.example.onlinenews.article.dto.ArticleKeywordDTO;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleUpdateRequestDTO;
 import com.example.onlinenews.article.entity.Category;
+import com.example.onlinenews.keyword.service.KeywordService;
 import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.article.service.ArticleService;
 import com.example.onlinenews.user.service.AuthService;
@@ -40,5 +42,11 @@ public class ArticleController implements ArticleAPI {
     @Override
     public ResponseEntity<?> updateArticle(Long id, ArticleUpdateRequestDTO updateRequest, List<MultipartFile> images) {
         return articleService.updateArticle(id, updateRequest, images);
+    }
+
+    //기사 키워드 저장
+    @Override
+    public ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, Long id, ArticleKeywordDTO requestDto) {
+        return ResponseEntity.ok(articleService.articleKeyword(id, requestDto));
     }
 }

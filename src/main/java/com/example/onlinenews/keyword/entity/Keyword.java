@@ -27,7 +27,4 @@ public class Keyword {
         this.keyword = keyword;
     }
 
-//    public void updateKeywords(String[] keywords){
-//        this.keywords = keywords;
-//    }
 }

@@ -2,6 +2,7 @@ package com.example.onlinenews.comment.service;
 
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.repository.ArticleRepository;
+import com.example.onlinenews.comment.dto.CommentReplRequestDTO;
 import com.example.onlinenews.comment.dto.CommentRequestDTO;
 import com.example.onlinenews.comment.dto.CommentResponseDTO;
 import com.example.onlinenews.comment.entity.Comment;
@@ -26,8 +27,8 @@ public class CommentService {
     private final UserRepository userRepository;
 
     // 댓글 작성
-    public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
-        User user = userRepository.findById(requestDTO.getUserId())
+    public CommentResponseDTO createComment(String email, CommentRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         Article article = articleRepository.findById(requestDTO.getArticleId())
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
@@ -44,11 +45,11 @@ public class CommentService {
     }
 
     // 대댓글 작성
-    public CommentResponseDTO createReply(Long commentId, CommentRequestDTO requestDTO) {
-        Comment parentComment = commentRepository.findById(commentId)
+    public CommentResponseDTO createReply(String email, CommentReplRequestDTO requestDTO) {
+        Comment parentComment = commentRepository.findById(requestDTO.getCommentID())
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
-        User user = userRepository.findById(requestDTO.getUserId())
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         Comment reply = Comment.builder()
@@ -56,6 +57,7 @@ public class CommentService {
                 .parent(parentComment)
                 .article(parentComment.getArticle())
                 .content(requestDTO.getContent())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Comment savedReply = commentRepository.save(reply);
@@ -69,8 +71,8 @@ public class CommentService {
     }
 
     // 댓글 수정
-    public CommentResponseDTO updateComment(Long id, CommentRequestDTO requestDTO) {
-        Comment comment = commentRepository.findById(id)
+    public CommentResponseDTO updateComment(CommentReplRequestDTO requestDTO) {
+        Comment comment = commentRepository.findById(requestDTO.getCommentID())
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
         comment.setContent(requestDTO.getContent());

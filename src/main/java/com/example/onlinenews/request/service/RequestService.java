@@ -64,7 +64,6 @@ public class RequestService {
                 .type("비공개 요청")
                 .build();
         requestRepository.save(request);
-        notificationService.createEnrollNoti(request);
         return StateResponse.builder().code("200").message("비공개 요청을 보냈습니다.").build();
     }
 
@@ -80,8 +79,7 @@ public class RequestService {
                 .type("공개 요청")
                 .build();
         requestRepository.save(request);
-        notificationService.createEnrollNoti(request);
-        return StateResponse.builder().code("200").message("비공개 요청을 보냈습니다.").build();
+        return StateResponse.builder().code("200").message("공개 요청을 보냈습니다.").build();
     }
 
     //시민 기자 등록 요청

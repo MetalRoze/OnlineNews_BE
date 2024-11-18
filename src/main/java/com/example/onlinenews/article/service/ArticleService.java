@@ -380,7 +380,7 @@ public class ArticleService {
         if (!article.getIsPublic()) {
             throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
         }
-        Request request = requestRepository.findByArticle(article).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        Request request = requestRepository.findByArticleAndType(article,"비공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         request.updateStatus(RequestStatus.APPROVED, "");
 
         article.updateIsPublic(false);
@@ -394,7 +394,7 @@ public class ArticleService {
         if (article.getIsPublic()) {
             throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
         }
-        Request request = requestRepository.findByArticle(article).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        Request request = requestRepository.findByArticleAndType(article, "공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         request.updateStatus(RequestStatus.APPROVED, "");
 
         article.updateIsPublic(true);

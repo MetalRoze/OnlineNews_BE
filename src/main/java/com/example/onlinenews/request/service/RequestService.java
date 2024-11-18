@@ -41,6 +41,7 @@ public class RequestService {
     public void create(User user, Article article){
         Request request  = Request.builder()
                 .user(user)
+                .title(article.getTitle()+" 승인요청입니다.")
                 .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
@@ -57,6 +58,7 @@ public class RequestService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         Request request = Request.builder()
                 .user(user)
+                .title(article.getTitle()+" 비공개 요청입니다.")
                 .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
@@ -72,6 +74,7 @@ public class RequestService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         Request request = Request.builder()
                 .user(user)
+                .title(article.getTitle()+" 공개 요청입니다.")
                 .publisher(user.getPublisher())
                 .article(article)
                 .createdAt(LocalDateTime.now())
@@ -86,6 +89,7 @@ public class RequestService {
     public void createEnrollRequest(User user, Publisher publisher){
         Request request = Request.builder()
                 .user(user)
+                .title(user.getName()+" 시민기자 등록 요청입니다.")
                 .publisher(publisher)
                 .createdAt(LocalDateTime.now())
                 .status(RequestStatus.PENDING)
@@ -105,7 +109,7 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
         }
         request.updateStatus(RequestStatus.APPROVED, null);
-
+        request.confirm();
         //출판사 수정
         request.getUser().updatePublisher(user.getPublisher());
         notificationService.createEnrollApprovedNoti(request);
@@ -121,7 +125,7 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_REJECTED);
         }
         request.updateStatus(RequestStatus.REJECTED, null);
-
+        request.confirm();
         notificationService.createEnrollRejectedNoti(request);
     }
 
@@ -135,7 +139,7 @@ public class RequestService {
             throw new BusinessException(ExceptionCode.ALREADY_APPROVED);
         }
         request.updateStatus(RequestStatus.APPROVED, null);
-
+        request.confirm();
         //기사 상태 업데이트
         request.getArticle().updateStatue(request.getStatus());
         request.getArticle().updateIsPublic(true);
@@ -155,7 +159,7 @@ public class RequestService {
         }
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.HOLDING, comment);
-
+        request.confirm();
         request.getArticle().updateStatue(request.getStatus());
         //보류 알림
         notificationService.createHeldNoti(request);
@@ -172,7 +176,7 @@ public class RequestService {
         }
         String comment = requestCommentDto.getComment();
         request.updateStatus(RequestStatus.REJECTED, comment);
-
+        request.confirm();
         request.getArticle().updateStatue(request.getStatus());
 
         //거절 알림

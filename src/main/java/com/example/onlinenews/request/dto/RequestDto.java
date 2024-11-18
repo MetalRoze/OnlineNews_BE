@@ -12,22 +12,27 @@ public class RequestDto {
     private Long id;
     private Long userId;
     private String userName;
+    private String userEmail;
+    private int userGrade;
+    private String requestTitle;
     private Long articleId;
-    private String articleTitle;
     private LocalDateTime createdAt;
+    private LocalDateTime confirmedAt;
     private RequestStatus status;
     private String type;
 
-
-    public RequestDto(Long id, Long userId, String userName, Long articleId, String articleTitle, LocalDateTime createdAt, RequestStatus status, String type) {
+    public RequestDto(Long id, Long userId, String userName, String userEmail, int userGrade, String requestTitle, Long articleId, LocalDateTime createdAt,LocalDateTime confirmedAt, RequestStatus status, String type) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
+        this.userEmail = userEmail;
+        this.userGrade = userGrade;
+        this.requestTitle = requestTitle;
         this.articleId = articleId;
-        this.articleTitle = articleTitle;
         this.createdAt = createdAt;
+        this.confirmedAt=confirmedAt;
         this.status = status;
-        this.type=type;
+        this.type = type;
     }
 
     public static RequestDto fromEntity(Request request) {
@@ -36,9 +41,12 @@ public class RequestDto {
                 request.getId(),
                 request.getUser().getId(),
                 request.getUser().getName(),
-                article != null ? article.getId() : null,
-                article != null ? article.getTitle() : null,
+                request.getUser().getEmail(),
+                request.getUser().getGrade().getValue(),
+                request.getTitle(),
+                article!=null? article.getId() : null,
                 request.getCreatedAt(),
+                request.getConfirmedAt(),
                 request.getStatus(),
                 request.getType()
         );

@@ -2,10 +2,10 @@ package com.example.onlinenews.config;
 
 import com.example.onlinenews.jwt.filter.JwtAuthenticationFilter;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
-import com.example.onlinenews.jwt.service.JpaUserDetailService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +25,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.IOException;
-
 @Configuration
 @EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -41,17 +40,20 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests((registry) ->
-                                registry.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 관련 경로 허용
+                        registry.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Swagger 관련 경로 허용
                                 //이 사이에 권한 인증 요구 추가 .requestMatchers(<특정 API>).authentication()
-                                        .requestMatchers("/api/admin/**").hasAnyRole("SYSTEM_ADMIN", "EDITOR") // 시스템 관리자만 접근 가능
-                                        .requestMatchers("/api/user/**").permitAll()
-                                        .anyRequest().permitAll()
+                                .requestMatchers("/api/admin/**").hasAnyRole("SYSTEM_ADMIN", "EDITOR") // 시스템 관리자만 접근 가능
+                                .requestMatchers("/api/user/**").permitAll()
+                                .anyRequest().permitAll()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .accessDeniedHandler(new AccessDeniedHandler() {
                             @Override
-                            public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException, IOException {
+                            public void handle(HttpServletRequest request, HttpServletResponse response,
+                                               AccessDeniedException accessDeniedException)
+                                    throws IOException, ServletException, IOException {
                                 response.setStatus(403);
                                 response.setCharacterEncoding("utf-8");
                                 response.setContentType("text/html; charset=UTF-8");
@@ -60,7 +62,9 @@ public class SecurityConfig {
                         })
                         .authenticationEntryPoint(new AuthenticationEntryPoint() {
                             @Override
-                            public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                            public void commence(HttpServletRequest request, HttpServletResponse response,
+                                                 AuthenticationException authException)
+                                    throws IOException, ServletException {
                                 response.setStatus(401);
                                 response.setCharacterEncoding("utf-8");
                                 response.setContentType("text/html; charset=UTF-8");
@@ -81,6 +85,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedOrigin("http://myeongbo.site");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

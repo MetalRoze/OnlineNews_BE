@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 요청 아이디 (PK)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -35,26 +35,41 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private LocalDateTime confirmedAt;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status;
 
     @Column
+    private String title;
+
+    @Column
     private String comment;
 
+    @Column
+    private String type;
+
     @Builder
-    public Request(User user, Publisher publisher, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
+    public Request(User user, Publisher publisher, Article article, LocalDateTime createdAt, LocalDateTime confirmedAt,  RequestStatus status, String title, String comment, String type) {
         this.user = user;
         this.publisher = publisher;
         this.article = article;
         this.createdAt = createdAt;
+        this.confirmedAt=confirmedAt;
         this.status = status;
+        this.title = title;
         this.comment = comment;
+        this.type=type;
     }
 
     //상태 업데이트
     public void updateStatus(RequestStatus newStatus, String comment){
         this.status = newStatus;
         this.comment = comment;
+    }
+    public void confirm() {
+        this.confirmedAt = LocalDateTime.now();
     }
 }

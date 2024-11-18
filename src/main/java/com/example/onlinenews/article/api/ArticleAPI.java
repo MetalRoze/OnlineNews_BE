@@ -48,8 +48,23 @@ public interface ArticleAPI {
                                                      @RequestPart("requestDTO") ArticleUpdateRequestDTO updateRequest,
                                                      @RequestPart(value = "images", required = false) List<MultipartFile> images);
 
-
     @PostMapping("{id}/keywords")
     @Operation(summary = "기사 키워드 추출", description = "기사의 키워드를 추출하여 저장합니다.")
     ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, @PathVariable Long id ,@RequestBody ArticleKeywordDTO requestDto);
+
+    @GetMapping("/keywords/{id}")
+    @Operation(summary =  "기사 키워드 조회", description = "해당 id의 기사 키워드를 조회합니다.")
+    ResponseEntity<?> getKeywords(@PathVariable Long id, HttpServletRequest servletRequest);
+  
+    @PatchMapping("/{articleId}/private")
+    @Operation(summary = "기사 비공개 ", description = "편집장이 기사를 비공개합니다.")
+    void convertToPrivate(HttpServletRequest request, @PathVariable Long articleId);
+
+    @PatchMapping("/{articleId}/public")
+    @Operation(summary = "기사 공개 ", description = "편집장이 기사를 공개합니다.")
+    void convertToPublic(HttpServletRequest request, @PathVariable Long articleId);
+
+    @GetMapping("/{articleId}/public-status")
+    @Operation(summary = "현재 공개/비공개 상태 조회", description = "해당 기사의 공개, 비공개 상태를 조회합니다. (true->공개)")
+    boolean getPublicStatus(@PathVariable Long articleId);
 }

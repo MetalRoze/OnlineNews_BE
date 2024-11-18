@@ -17,11 +17,14 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.like.service.ArticleLikeService;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.repository.RequestRepository;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +49,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final RequestService requestService;
     private final ArticleLikeService articleLikeService;
+    private final RequestRepository requestRepository;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -365,6 +369,67 @@ public class ArticleService {
 
         // 5. StateResponse 반환 (필요한 응답 형태로 수정)
         return StateResponse.builder().code("키워드 추출 후 저장").message("키워드 추출 후 저장성공").build();
+    }
+
+    public ResponseEntity<?> getKeywords(Long id) {
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        if(optionalArticle.isEmpty()){
+            throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
+        }
+
+        Article article = optionalArticle.get();
+
+        List<String> keywords = article.getKeywords();  // getKeywords() 메서드로 키워드 리스트 반환
+
+        // 키워드가 비어있는 경우 처리
+        if (keywords.isEmpty()) {
+            return ResponseEntity.status(404).body("No keywords found for the article.");
+        }
+
+        // 정상적으로 키워드 리스트 반환
+        return ResponseEntity.ok(keywords);
+    }
+
+    //승인된 요청은 공개 비공개 설정가능
+    @Transactional
+    public void convertToPrivate(String email, Long articleId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (!article.getIsPublic()) {
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        Request request = requestRepository.findByArticleAndType(article,"비공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+        request.confirm();
+        article.updateIsPublic(false);
+    }
+    @Transactional
+    public void convertToPublic(String email, Long articleId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (article.getIsPublic()) {
+            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
+        }
+        Request request = requestRepository.findByArticleAndType(article, "공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+        request.confirm();
+        article.updateIsPublic(true);
+    }
+
+    public boolean getPublicStatus(Long articleId){
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        return article.getIsPublic();
+    }
+
+    private void checkEditorPermission(User user) {
+        if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
     }
 
 }

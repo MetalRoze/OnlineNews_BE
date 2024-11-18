@@ -3,6 +3,7 @@ package com.example.onlinenews.request.api;
 import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
+import com.example.onlinenews.request.entity.RequestStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,32 +26,31 @@ public interface RequestApi {
 
     @PostMapping("/{articleId}/convert-private")
     @Operation(summary = "기사 비공개 요청", description = "편집장에게 비공개 요청합니다.")
-    RequestDto createPrivateRequest(HttpServletRequest request, @PathVariable Long articleId);
+    StateResponse createPrivateRequest(HttpServletRequest request, @PathVariable Long articleId);
 
     @PostMapping("/{articleId}/convert-public")
     @Operation(summary = "기사 공개 요청", description = "편집장에게 공개 요청을 합니다.")
-    RequestDto createPublicRequest(HttpServletRequest request, @PathVariable Long articleId);
+    StateResponse createPublicRequest(HttpServletRequest request, @PathVariable Long articleId);
 
     @PatchMapping("/{reqId}/enroll")
     @Operation(summary = "시민 기자 등록 요청 수락", description = "편집장이 시민 기자 등록 요청을 수락합니다.")
-    ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, @PathVariable Long reqId);
+    void enrollRequestAccept(HttpServletRequest request, @PathVariable Long reqId);
 
     @PatchMapping("/{reqId}/enroll/reject")
     @Operation(summary = "시민 기자 등록 요청 거절", description = "편집장이 시민 기자 등록 요청을 거절합니다.")
-    ResponseEntity<?> enrollRequestReject(HttpServletRequest request, @PathVariable Long reqId);
+    void enrollRequestReject(HttpServletRequest request, @PathVariable Long reqId);
 
     @PatchMapping("/{reqId}/approve")
     @Operation(summary = "요청 수락", description = "편집장이 id에 해당하는 요청을 수락합니다.")
-    ResponseEntity<?> requestAccept(HttpServletRequest request, @PathVariable Long reqId);
-
+    void requestAccept(HttpServletRequest request, @PathVariable Long reqId);
 
     @PutMapping("/{reqId}/hold")
     @Operation(summary = "요청 보류", description = "편집장이 id에 해당하는 요청을 보류하고 커멘트를 남깁니다.")
-    ResponseEntity<?> requestHold(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
+    void requestHold(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
 
     @PutMapping("/{reqId}/reject")
     @Operation(summary = "요청 거절", description = "편집장이 id에 해당하는 요청을 거절하고 커멘트를 남깁니다.")
-    ResponseEntity<?> requestReject(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
+    void requestReject(HttpServletRequest request, @PathVariable Long reqId, @RequestBody RequestCommentDto requestCommentDto);
 
 
     @GetMapping("/status")

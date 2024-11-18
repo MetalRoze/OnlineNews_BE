@@ -54,11 +54,11 @@ public interface ArticleAPI {
 
     @PatchMapping("/{articleId}/private")
     @Operation(summary = "기사 비공개 ", description = "편집장이 기사를 비공개합니다.")
-    boolean convertToPrivate(HttpServletRequest request, @PathVariable Long articleId);
+    void convertToPrivate(HttpServletRequest request, @PathVariable Long articleId);
 
     @PatchMapping("/{articleId}/public")
     @Operation(summary = "기사 공개 ", description = "편집장이 기사를 공개합니다.")
-    boolean convertToPublic(HttpServletRequest request, @PathVariable Long articleId);
+    void convertToPublic(HttpServletRequest request, @PathVariable Long articleId);
 
     @GetMapping("/{articleId}/public-status")
     @Operation(summary = "현재 공개/비공개 상태 조회", description = "해당 기사의 공개, 비공개 상태를 조회합니다. (true->공개)")

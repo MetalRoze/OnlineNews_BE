@@ -372,31 +372,38 @@ public class ArticleService {
 
     //승인된 요청은 공개 비공개 설정가능
     @Transactional
-    public boolean convertToPrivate(String email, Long reqId){
+    public void convertToPrivate(String email, Long articleId) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        if(!request.getArticle().getIsPublic()){
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (!article.getIsPublic()) {
             throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
         }
-        request.getArticle().updateIsPublic(false);
-        return request.getArticle().getIsPublic();
+        Request request = requestRepository.findByArticle(article).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+
+        article.updateIsPublic(false);
     }
     @Transactional
-    public boolean convertToPublic(String email, Long reqId){
+    public void convertToPublic(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         checkEditorPermission(user);
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        if(request.getArticle().getIsPublic()){
-            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (article.getIsPublic()) {
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
         }
-        request.getArticle().updateIsPublic(true);
-        return request.getArticle().getIsPublic();
+        Request request = requestRepository.findByArticle(article).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+
+        article.updateIsPublic(true);
     }
 
-    public boolean getPublicStatus(Long reqId){
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        return request.getArticle().getIsPublic();
+    public boolean getPublicStatus(Long articleId){
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        return article.getIsPublic();
     }
 
     private void checkEditorPermission(User user) {

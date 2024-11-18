@@ -4,6 +4,7 @@ import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.request.api.RequestApi;
 import com.example.onlinenews.request.dto.RequestCommentDto;
 import com.example.onlinenews.request.dto.RequestDto;
+import com.example.onlinenews.request.entity.RequestStatus;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,45 +32,45 @@ public class RequestController implements RequestApi {
     }
 
     @Override
-    public RequestDto createPrivateRequest(HttpServletRequest request, Long articleId) {
+    public StateResponse createPrivateRequest(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         return requestService.createPrivateRequest(email, articleId);
     }
 
     @Override
-    public RequestDto createPublicRequest(HttpServletRequest request, Long articleId) {
+    public StateResponse createPublicRequest(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         return requestService.createPublicRequest(email, articleId);
     }
 
     @Override
-    public ResponseEntity<?> enrollRequestAccept(HttpServletRequest request, Long reqId) {
+    public void enrollRequestAccept(HttpServletRequest request, Long reqId) {
         String email = authService.getEmailFromToken(request);
-        return ResponseEntity.ok(requestService.enrollRequestAccept(email, reqId));
+        requestService.enrollRequestAccept(email, reqId);
     }
 
     @Override
-    public ResponseEntity<?> enrollRequestReject(HttpServletRequest request, Long reqId) {
+    public void enrollRequestReject(HttpServletRequest request, Long reqId) {
         String email = authService.getEmailFromToken(request);
-        return ResponseEntity.ok(requestService.enrollRequestReject(email, reqId));
+        requestService.enrollRequestReject(email, reqId);
     }
 
     @Override
-    public ResponseEntity<?> requestAccept(HttpServletRequest request, Long reqId) {
+    public void requestAccept(HttpServletRequest request, Long reqId) {
         String email = authService.getEmailFromToken(request);
-        return ResponseEntity.ok(requestService.requestAccept(email, reqId));
+        requestService.requestAccept(email, reqId);
     }
 
     @Override
-    public ResponseEntity<?> requestHold(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
+    public void requestHold(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
         String email = authService.getEmailFromToken(request);
-        return ResponseEntity.ok(requestService.requestHold(email, reqId, requestCommentDto));
+        requestService.requestHold(email, reqId, requestCommentDto);
     }
 
     @Override
-    public ResponseEntity<?> requestReject(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
+    public void requestReject(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
         String email = authService.getEmailFromToken(request);
-        return ResponseEntity.ok(requestService.requestReject(email, reqId, requestCommentDto));
+        requestService.requestReject(email, reqId, requestCommentDto);
     }
 
     @Override

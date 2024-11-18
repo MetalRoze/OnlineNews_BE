@@ -51,15 +51,15 @@ public class ArticleController implements ArticleAPI {
     }
 
     @Override
-    public boolean convertToPrivate(HttpServletRequest request, Long reqId) {
+    public void convertToPrivate(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
-        return articleService.convertToPrivate(email,reqId);
+        articleService.convertToPrivate(email,articleId);
     }
 
     @Override
-    public boolean convertToPublic(HttpServletRequest request, Long reqId) {
+    public void convertToPublic(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
-        return  articleService.convertToPublic(email,reqId);
+        articleService.convertToPublic(email,articleId);
     }
 
     @Override

@@ -402,7 +402,7 @@ public class ArticleService {
         }
         Request request = requestRepository.findByArticleAndType(article,"비공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         request.updateStatus(RequestStatus.APPROVED, "");
-
+        request.confirm();
         article.updateIsPublic(false);
     }
     @Transactional
@@ -412,11 +412,11 @@ public class ArticleService {
 
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         if (article.getIsPublic()) {
-            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
         }
         Request request = requestRepository.findByArticleAndType(article, "공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
         request.updateStatus(RequestStatus.APPROVED, "");
-
+        request.confirm();
         article.updateIsPublic(true);
     }
 

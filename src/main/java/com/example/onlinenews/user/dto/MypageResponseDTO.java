@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class MypageResponseDTO {
+    private long id;
+    private String img;
     private String name;
     private String email;
     private String nickname;
@@ -12,4 +14,5 @@ public class MypageResponseDTO {
     private String sex;
     private String bio;
     private String type;
+    private String publisher;
 }

@@ -8,7 +8,9 @@ public enum Category {
     ECONOMY("경제"),
     LIFE_CULTURE("생활/문화"),
     ENTERTAINMENT("연예"),
-    SCIENCE_TECH("과학/기술");
+    SCIENCE_TECH("기계/IT"),
+    POLITICS("정치"),
+    OPINION("오피니언");
 
     private final String description;
 

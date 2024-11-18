@@ -17,7 +17,9 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.like.service.ArticleLikeService;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.repository.RequestRepository;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
@@ -47,6 +49,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final RequestService requestService;
     private final ArticleLikeService articleLikeService;
+    private final RequestRepository requestRepository;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -273,6 +276,15 @@ public class ArticleService {
                 .state(article.getState())
                 .isPublic(article.getIsPublic())
                 .views(article.getViews())
+                .userId(article.getUser().getId())
+                .userEmail(article.getUser().getEmail())
+                .userName(article.getUser().getName())
+                .userBio(article.getUser().getBio())
+                .userImg(article.getUser().getImg())
+                .publisherId(article.getUser().getPublisher().getId())
+                .publisherName(article.getUser().getPublisher().getName())
+                .publisherUrl(article.getUser().getPublisher().getUrl())
+                .publisherImage(article.getUser().getPublisher().getImg())
                 .images(images.stream().map(img -> img.getImgUrl()).collect(Collectors.toList()))
                 .build();
     }
@@ -323,6 +335,14 @@ public class ArticleService {
 
         int urlIndex = 0;
         for (Element img : images) {
+            String imgSrc = img.attr("src"); // 현재 이미지의 src 값 가져오기
+
+            // 버킷 URL이 포함된 경우 변경하지 않음
+            if (imgSrc.contains("onlinen-news-bucket.s3.amazonaws.com")) {
+                continue; // 버킷 URL이 포함된 경우, 교체하지 않고 다음 이미지로 넘어감
+            }
+
+            // 버킷 URL이 포함되지 않은 경우에만 새로운 URL로 교체
             if (urlIndex < imgUrls.size()) {
                 img.attr("src", imgUrls.get(urlIndex));
                 urlIndex++;
@@ -368,6 +388,48 @@ public class ArticleService {
 
         // 정상적으로 키워드 리스트 반환
         return ResponseEntity.ok(keywords);
+    }
+
+    //승인된 요청은 공개 비공개 설정가능
+    @Transactional
+    public void convertToPrivate(String email, Long articleId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (!article.getIsPublic()) {
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        Request request = requestRepository.findByArticleAndType(article,"비공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+
+        article.updateIsPublic(false);
+    }
+    @Transactional
+    public void convertToPublic(String email, Long articleId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        if (article.getIsPublic()) {
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        Request request = requestRepository.findByArticleAndType(article, "공개 요청").orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        request.updateStatus(RequestStatus.APPROVED, "");
+
+        article.updateIsPublic(true);
+    }
+
+    public boolean getPublicStatus(Long articleId){
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
+        return article.getIsPublic();
+    }
+
+    private void checkEditorPermission(User user) {
+        if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
     }
 
 }

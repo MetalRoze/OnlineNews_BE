@@ -42,14 +42,18 @@ public class Request {
     @Column
     private String comment;
 
+    @Column
+    private String type;
+
     @Builder
-    public Request(User user, Publisher publisher, Article article, LocalDateTime createdAt, RequestStatus status, String comment) {
+    public Request(User user, Publisher publisher, Article article, LocalDateTime createdAt, RequestStatus status, String comment, String type) {
         this.user = user;
         this.publisher = publisher;
         this.article = article;
         this.createdAt = createdAt;
         this.status = status;
         this.comment = comment;
+        this.type=type;
     }
 
     //상태 업데이트

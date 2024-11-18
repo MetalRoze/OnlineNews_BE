@@ -34,8 +34,7 @@ public class Comment {
     @JsonIgnore
     private Article article;
 
-    @Column(nullable = false)
-    @CreatedDate
+    @Column
     private LocalDateTime createdAt;
 
     @Column(nullable = false)

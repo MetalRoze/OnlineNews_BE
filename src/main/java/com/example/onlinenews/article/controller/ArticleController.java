@@ -49,4 +49,9 @@ public class ArticleController implements ArticleAPI {
     public ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, Long id, ArticleKeywordDTO requestDto) {
         return ResponseEntity.ok(articleService.articleKeyword(id, requestDto));
     }
+
+    @Override
+    public ResponseEntity<?> getKeywords(Long id, HttpServletRequest servletRequest) {
+        return articleService.getKeywords(id);
+    }
 }

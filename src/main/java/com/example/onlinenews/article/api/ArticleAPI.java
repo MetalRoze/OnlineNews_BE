@@ -52,4 +52,8 @@ public interface ArticleAPI {
     @PostMapping("{id}/keywords")
     @Operation(summary = "기사 키워드 추출", description = "기사의 키워드를 추출하여 저장합니다.")
     ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, @PathVariable Long id ,@RequestBody ArticleKeywordDTO requestDto);
+
+    @GetMapping("/keywords/{id}")
+    @Operation(summary =  "기사 키워드 조회", description = "해당 id의 기사 키워드를 조회합니다.")
+    ResponseEntity<?> getKeywords(@PathVariable Long id, HttpServletRequest servletRequest);
 }

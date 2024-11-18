@@ -22,6 +22,7 @@ import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -348,6 +349,25 @@ public class ArticleService {
 
         // 5. StateResponse 반환 (필요한 응답 형태로 수정)
         return StateResponse.builder().code("키워드 추출 후 저장").message("키워드 추출 후 저장성공").build();
+    }
+
+    public ResponseEntity<?> getKeywords(Long id) {
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        if(optionalArticle.isEmpty()){
+            throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
+        }
+
+        Article article = optionalArticle.get();
+
+        List<String> keywords = article.getKeywords();  // getKeywords() 메서드로 키워드 리스트 반환
+
+        // 키워드가 비어있는 경우 처리
+        if (keywords.isEmpty()) {
+            return ResponseEntity.status(404).body("No keywords found for the article.");
+        }
+
+        // 정상적으로 키워드 리스트 반환
+        return ResponseEntity.ok(keywords);
     }
 
 }

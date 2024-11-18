@@ -20,14 +20,15 @@ public interface CommentAPI {
     public ResponseEntity<CommentResponseDTO> createReply(HttpServletRequest httpServletRequest,
                                                           @RequestBody CommentReplRequestDTO requestDTO);
     @GetMapping("/article/{articleId}")
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(@PathVariable Long articleId,
-            @RequestParam(defaultValue = "latest") String sortType);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(HttpServletRequest httpServletRequest,
+                                                                         @PathVariable Long articleId,
+                                                                         @RequestParam(defaultValue = "latest") String sortType);
     @PutMapping("/edit")
-    public ResponseEntity<CommentResponseDTO> updateComment(@RequestBody CommentReplRequestDTO requestDTO);
+    public ResponseEntity<String> updateComment(@RequestBody CommentReplRequestDTO requestDTO);
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable Long id);
     @PostMapping("/{id}/like")
-    public ResponseEntity<String> likeComment(@PathVariable Long id);
+    public ResponseEntity<String> likeComment(HttpServletRequest httpServletRequest, @PathVariable Long id);
     @PostMapping("/{id}/unlike")
-    public ResponseEntity<String> unlikeComment(@PathVariable Long id);
+    public ResponseEntity<String> unlikeComment(HttpServletRequest httpServletRequest, @PathVariable Long id);
     }

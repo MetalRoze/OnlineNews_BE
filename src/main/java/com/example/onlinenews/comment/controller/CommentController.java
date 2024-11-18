@@ -26,29 +26,26 @@ public class CommentController  implements CommentAPI {
     public ResponseEntity<CommentResponseDTO> createComment(HttpServletRequest httpServletRequest,
                                                             CommentRequestDTO requestDTO) {
         String email = authService.getEmailFromToken(httpServletRequest);
-
-        CommentResponseDTO responseDTO = commentService.createComment(email, requestDTO);
-        return ResponseEntity.ok(responseDTO);
+        return commentService.createComment(email, requestDTO);
     }
 
     @Override
     public ResponseEntity<CommentResponseDTO> createReply(HttpServletRequest httpServletRequest,
                                                           @RequestBody CommentReplRequestDTO requestDTO) {
         String email = authService.getEmailFromToken(httpServletRequest);
-        CommentResponseDTO responseDTO = commentService.createReply(email, requestDTO);
-        return ResponseEntity.ok(responseDTO);
+        return commentService.createReply(email, requestDTO);
     }
 
     @Override
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(Long articleId, String sortType) {
-        List<CommentResponseDTO> comments = commentService.getCommentsByArticle(articleId, sortType);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(HttpServletRequest httpServletRequest,Long articleId, String sortType) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        List<CommentResponseDTO> comments = commentService.getCommentsByArticle(email, articleId, sortType);
         return ResponseEntity.ok(comments);
     }
 
     @Override
-    public ResponseEntity<CommentResponseDTO> updateComment(CommentReplRequestDTO requestDTO) {
-        CommentResponseDTO updatedComment = commentService.updateComment(requestDTO);
-        return ResponseEntity.ok(updatedComment);
+    public ResponseEntity<String> updateComment(CommentReplRequestDTO requestDTO) {
+        return commentService.updateComment(requestDTO);
     }
 
     @Override
@@ -57,14 +54,14 @@ public class CommentController  implements CommentAPI {
     }
 
     @Override
-    public ResponseEntity<String> likeComment(Long id) {
-
-        return commentService.likeComment(id);
+    public ResponseEntity<String> likeComment(HttpServletRequest httpServletRequest, Long id) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return commentService.likeComment(id, email);
     }
 
     @Override
-    public ResponseEntity<String> unlikeComment(Long id) {
-
-        return commentService.unlikeComment(id);
+    public ResponseEntity<String> unlikeComment(HttpServletRequest httpServletRequest, Long id) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return commentService.unlikeComment(id, email);
     }
 }

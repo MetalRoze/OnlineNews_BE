@@ -16,9 +16,10 @@ public class RequestDto {
     private String articleTitle;
     private LocalDateTime createdAt;
     private RequestStatus status;
+    private String type;
 
 
-    public RequestDto(Long id, Long userId, String userName, Long articleId, String articleTitle, LocalDateTime createdAt, RequestStatus status) {
+    public RequestDto(Long id, Long userId, String userName, Long articleId, String articleTitle, LocalDateTime createdAt, RequestStatus status, String type) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -26,11 +27,11 @@ public class RequestDto {
         this.articleTitle = articleTitle;
         this.createdAt = createdAt;
         this.status = status;
+        this.type=type;
     }
 
     public static RequestDto fromEntity(Request request) {
         Article article = request.getArticle();
-
         return new RequestDto(
                 request.getId(),
                 request.getUser().getId(),
@@ -38,7 +39,8 @@ public class RequestDto {
                 article != null ? article.getId() : null,
                 article != null ? article.getTitle() : null,
                 request.getCreatedAt(),
-                request.getStatus()
+                request.getStatus(),
+                request.getType()
         );
     }
 }

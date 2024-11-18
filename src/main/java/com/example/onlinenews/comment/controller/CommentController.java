@@ -52,20 +52,19 @@ public class CommentController  implements CommentAPI {
     }
 
     @Override
-    public ResponseEntity<Void> deleteComment(Long id) {
-        commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteComment(Long id) {
+        return commentService.deleteComment(id);
     }
 
     @Override
-    public ResponseEntity<Void> likeComment(Long id) {
-        commentService.likeComment(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> likeComment(Long id) {
+
+        return commentService.likeComment(id);
     }
 
     @Override
-    public ResponseEntity<Void> unlikeComment(Long id) {
-        commentService.unlikeComment(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> unlikeComment(Long id) {
+
+        return commentService.unlikeComment(id);
     }
 }

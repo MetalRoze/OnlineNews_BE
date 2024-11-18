@@ -12,6 +12,7 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -81,25 +82,31 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void deleteComment(Long id) {
+    public ResponseEntity<String> deleteComment(Long id) {
         commentRepository.deleteById(id);
+
+        return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
 
     // 좋아요
-    public void likeComment(Long id) {
+    public ResponseEntity<String> likeComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
         comment.setLikeCount(comment.getLikeCount() + 1);
         commentRepository.save(comment);
+
+        return ResponseEntity.ok("좋아요");
     }
 
     // 좋아요 취소
-    public void unlikeComment(Long id) {
+    public ResponseEntity<String> unlikeComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
         comment.setLikeCount(Math.max(0, comment.getLikeCount() - 1));
         commentRepository.save(comment);
+
+        return ResponseEntity.ok("좋아요 취소");
     }
 }

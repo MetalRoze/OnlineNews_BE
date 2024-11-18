@@ -24,9 +24,9 @@ public interface CommentAPI {
     @PutMapping("/edit")
     public ResponseEntity<CommentResponseDTO> updateComment(@RequestBody CommentReplRequestDTO requestDTO);
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id);
+    public ResponseEntity<String> deleteComment(@PathVariable Long id);
     @PostMapping("/{id}/like")
-    public ResponseEntity<Void> likeComment(@PathVariable Long id);
+    public ResponseEntity<String> likeComment(@PathVariable Long id);
     @PostMapping("/{id}/unlike")
-    public ResponseEntity<Void> unlikeComment(@PathVariable Long id);
+    public ResponseEntity<String> unlikeComment(@PathVariable Long id);
     }

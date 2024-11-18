@@ -12,6 +12,7 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +67,24 @@ public class CommentService {
     }
 
     // 특정 기사의 댓글, 대댓글 조회
-    public List<CommentResponseDTO> getCommentsByArticle(Long articleId) {
-        List<Comment> comments = commentRepository.findByArticleIdAndParentIsNull(articleId);
+    public List<CommentResponseDTO> getCommentsByArticle(Long articleId, String sortType){
+        Sort sort;
+
+        switch (sortType.toLowerCase()) {
+            case "like":
+                sort = Sort.by(Sort.Order.desc("likeCount"));
+                break;
+            case "latest":
+                sort = Sort.by(Sort.Order.desc("createdAt"));
+                break;
+            case "oldest":
+                sort = Sort.by(Sort.Order.asc("createdAt"));
+                break;
+            default:
+                sort = Sort.by(Sort.Order.desc("createdAt"));
+        }
+
+        List<Comment> comments = commentRepository.findByArticleIdAndParentIsNull(articleId, sort);
         return comments.stream().map(CommentResponseDTO::new).collect(Collectors.toList());
     }
 

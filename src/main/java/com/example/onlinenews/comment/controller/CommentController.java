@@ -40,8 +40,8 @@ public class CommentController  implements CommentAPI {
     }
 
     @Override
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(Long articleId) {
-        List<CommentResponseDTO> comments = commentService.getCommentsByArticle(articleId);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(Long articleId, String sortType) {
+        List<CommentResponseDTO> comments = commentService.getCommentsByArticle(articleId, sortType);
         return ResponseEntity.ok(comments);
     }
 

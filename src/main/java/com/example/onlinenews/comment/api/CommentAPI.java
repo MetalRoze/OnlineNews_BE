@@ -20,7 +20,8 @@ public interface CommentAPI {
     public ResponseEntity<CommentResponseDTO> createReply(HttpServletRequest httpServletRequest,
                                                           @RequestBody CommentReplRequestDTO requestDTO);
     @GetMapping("/article/{articleId}")
-    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(@PathVariable Long articleId) ;
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByArticle(@PathVariable Long articleId,
+            @RequestParam(defaultValue = "latest") String sortType);
     @PutMapping("/edit")
     public ResponseEntity<CommentResponseDTO> updateComment(@RequestBody CommentReplRequestDTO requestDTO);
     @DeleteMapping("/{id}")

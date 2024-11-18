@@ -1,8 +1,10 @@
 package com.example.onlinenews.article.api;
 
+import com.example.onlinenews.article.dto.ArticleKeywordDTO;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleUpdateRequestDTO;
 import com.example.onlinenews.article.entity.Category;
+import com.example.onlinenews.keyword.dto.KeywordCreateRequestDto;
 import com.example.onlinenews.request.entity.RequestStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,4 +47,9 @@ public interface ArticleAPI {
     ResponseEntity<?> updateArticle(@PathVariable Long id,
                                                      @RequestPart("requestDTO") ArticleUpdateRequestDTO updateRequest,
                                                      @RequestPart(value = "images", required = false) List<MultipartFile> images);
+
+
+    @PostMapping("{id}/keywords")
+    @Operation(summary = "기사 키워드 추출", description = "기사의 키워드를 추출하여 저장합니다.")
+    ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, @PathVariable Long id ,@RequestBody ArticleKeywordDTO requestDto);
 }

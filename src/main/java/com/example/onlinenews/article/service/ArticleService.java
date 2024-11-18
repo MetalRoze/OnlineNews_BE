@@ -3,6 +3,7 @@ package com.example.onlinenews.article.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.onlinenews.article.dto.ArticleKeywordDTO;
 import com.example.onlinenews.article.dto.ArticleRequestDTO;
 import com.example.onlinenews.article.dto.ArticleResponseDTO;
 import com.example.onlinenews.article.dto.ArticleUpdateRequestDTO;
@@ -13,6 +14,7 @@ import com.example.onlinenews.article_img.entity.ArticleImg;
 import com.example.onlinenews.article_img.repository.ArticleImgRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.like.service.ArticleLikeService;
 import com.example.onlinenews.request.entity.RequestStatus;
@@ -270,6 +272,15 @@ public class ArticleService {
                 .state(article.getState())
                 .isPublic(article.getIsPublic())
                 .views(article.getViews())
+                .userId(article.getUser().getId())
+                .userEmail(article.getUser().getEmail())
+                .userName(article.getUser().getName())
+                .userBio(article.getUser().getBio())
+                .userImg(article.getUser().getImg())
+                .publisherId(article.getUser().getPublisher().getId())
+                .publisherName(article.getUser().getPublisher().getName())
+                .publisherUrl(article.getUser().getPublisher().getUrl())
+                .publisherImage(article.getUser().getPublisher().getImg())
                 .images(images.stream().map(img -> img.getImgUrl()).collect(Collectors.toList()))
                 .build();
     }
@@ -320,6 +331,14 @@ public class ArticleService {
 
         int urlIndex = 0;
         for (Element img : images) {
+            String imgSrc = img.attr("src"); // 현재 이미지의 src 값 가져오기
+
+            // 버킷 URL이 포함된 경우 변경하지 않음
+            if (imgSrc.contains("onlinen-news-bucket.s3.amazonaws.com")) {
+                continue; // 버킷 URL이 포함된 경우, 교체하지 않고 다음 이미지로 넘어감
+            }
+
+            // 버킷 URL이 포함되지 않은 경우에만 새로운 URL로 교체
             if (urlIndex < imgUrls.size()) {
                 img.attr("src", imgUrls.get(urlIndex));
                 urlIndex++;
@@ -328,6 +347,24 @@ public class ArticleService {
             }
         }
         return document.body().html();
+    }
+    public StateResponse articleKeyword(Long id, ArticleKeywordDTO requestDTO){
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        if (optionalArticle.isEmpty()) {
+            // Article이 없으면 예외를 던진다.
+            throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
+        }
+
+        Article article = optionalArticle.get();
+
+        // 3. Article에 keyword 추가 (List<String>에 새 키워드를 추가)
+        article.getKeywords().addAll(requestDTO.getKeyword());
+
+        // 4. 수정된 Article 저장 (CascadeType.ALL로 인해 save는 사실 필수적이지 않지만, 명시적으로 호출)
+        articleRepository.save(article);
+
+        // 5. StateResponse 반환 (필요한 응답 형태로 수정)
+        return StateResponse.builder().code("키워드 추출 후 저장").message("키워드 추출 후 저장성공").build();
     }
 
 }

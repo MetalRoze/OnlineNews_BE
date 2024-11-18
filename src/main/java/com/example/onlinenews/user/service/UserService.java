@@ -1,6 +1,8 @@
 package com.example.onlinenews.user.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
@@ -148,6 +150,18 @@ public class UserService {
         return fileUrl;
     }
 
+    public void deletePreviousProfileImg(String filePath) {
+        String fileKey = filePath.substring(filePath.indexOf("profileImg/"));
+
+        try {
+            if (amazonS3.doesObjectExist(bucketName, fileKey)) {
+                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileKey));
+            }
+        } catch (AmazonServiceException e) {
+            throw new RuntimeException("Failed to delete file from S3", e);
+        }
+    }
+
     public JwtToken login(LoginRequestDTO requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
@@ -292,6 +306,8 @@ public class UserService {
         User user = userOptional.get();
 
         MypageResponseDTO responseDTO = new MypageResponseDTO();
+        responseDTO.setImg(user.getImg());
+        responseDTO.setId(user.getId());
         responseDTO.setEmail(user.getEmail());
         responseDTO.setName(user.getName());
         responseDTO.setCp(user.getCp());
@@ -324,6 +340,18 @@ public class UserService {
             String pw = passwordEncoder.encode(requestDTO.getPw());
             user.updatePassword(pw);
         }
+
+        if (requestDTO.getImg() != null) {  // 새로운 이미지가 존재하는 경우만 처리
+            if (user.getImg() != null) {
+                deletePreviousProfileImg(user.getImg()); // 기존 이미지 삭제
+            }
+
+            String newProfileImgUrl = saveProfileImg(requestDTO.getImg()); // 새 이미지 저장
+            updateField(newProfileImgUrl, user::updateImg, user.getImg(), responseDTO::setImg);
+        } else {
+            responseDTO.setImg(user.getImg()); // 이미지가 변경되지 않은 경우 현재 이미지 유지
+        }
+
         responseDTO.setPw("*".repeat(12));
         updateField(requestDTO.getBio(), user::updateBio, user.getBio(), responseDTO::setBio);
         updateField(requestDTO.getCp(), user::updateCp, user.getCp(), responseDTO::setCp);

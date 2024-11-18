@@ -1,17 +1,9 @@
 package com.example.onlinenews.user.entity;
 
+import com.example.onlinenews.keyword.entity.Keyword;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.joda.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -68,6 +62,10 @@ public class User {
     @Column
     private String nickname;
 
+    // 여러 개의 키워드를 가진 사용자
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Keyword> keywords;
+
     public void updatePassword(String encodedPassword) {
         this.pw = encodedPassword;
     }
@@ -83,8 +81,13 @@ public class User {
     public void updateCp(String cp) {
         this.cp = cp;
     }
-    public void updatePublisher(Publisher publisher){
+
+    public void updatePublisher(Publisher publisher) {
         this.publisher = publisher;
+    }
+
+    public void updateImg(String img) {
+        this.img = img;
     }
 
     public String getSex() {

@@ -31,6 +31,6 @@ public interface ArticleLikeApi {
 
     @GetMapping("/{articleId}/like/check")
     @Operation(summary = "좋아요 여부 체크", description = "좋아요 눌렀는 지 확인합니다")
-    boolean checkLike(HttpServletRequest request,  @PathVariable Long articleId);
+    Long checkLike(HttpServletRequest request,  @PathVariable Long articleId);
 
 }

@@ -1,6 +1,8 @@
 package com.example.onlinenews.user.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
@@ -99,6 +101,11 @@ public class UserService {
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
         Publisher publisher = publisherService.getPublisherByName(requestDTO.getPublisher());
+
+        if (publisher == null) {
+            throw new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND);
+        }
+
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -109,10 +116,17 @@ public class UserService {
                 .bio(null)
                 .createdAt(LocalDateTime.now())
                 .grade(UserGrade.CITIZEN_REPORTER).build();
+
         userRepository.save(user);
 
-        //시민 기자 등록 요청
-        requestService.createEnrollRequest(user, publisher);
+        try {
+            //시민 기자 등록 요청
+            requestService.createEnrollRequest(user, publisher);
+        } catch (Exception e) {
+            // 오류 발생 시 유저 정보 삭제
+            userRepository.delete(user);
+            throw e;
+        }
 
     }
 
@@ -134,6 +148,18 @@ public class UserService {
         }
 
         return fileUrl;
+    }
+
+    public void deletePreviousProfileImg(String filePath) {
+        String fileKey = filePath.substring(filePath.indexOf("profileImg/"));
+
+        try {
+            if (amazonS3.doesObjectExist(bucketName, fileKey)) {
+                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileKey));
+            }
+        } catch (AmazonServiceException e) {
+            throw new RuntimeException("Failed to delete file from S3", e);
+        }
     }
 
     public JwtToken login(LoginRequestDTO requestDto) {
@@ -280,6 +306,8 @@ public class UserService {
         User user = userOptional.get();
 
         MypageResponseDTO responseDTO = new MypageResponseDTO();
+        responseDTO.setImg(user.getImg());
+        responseDTO.setId(user.getId());
         responseDTO.setEmail(user.getEmail());
         responseDTO.setName(user.getName());
         responseDTO.setCp(user.getCp());
@@ -287,6 +315,9 @@ public class UserService {
         responseDTO.setType(String.valueOf(user.getGrade()));
         responseDTO.setSex(user.getSex());
         responseDTO.setBio(user.getBio());
+        if (user.getPublisher() != null) {
+            responseDTO.setPublisher(user.getPublisher().getName());
+        }
 
         String maskedPassword = "*".repeat(12);
         responseDTO.setEncodedPw(maskedPassword);
@@ -309,6 +340,18 @@ public class UserService {
             String pw = passwordEncoder.encode(requestDTO.getPw());
             user.updatePassword(pw);
         }
+
+        if (requestDTO.getImg() != null) {  // 새로운 이미지가 존재하는 경우만 처리
+            if (user.getImg() != null) {
+                deletePreviousProfileImg(user.getImg()); // 기존 이미지 삭제
+            }
+
+            String newProfileImgUrl = saveProfileImg(requestDTO.getImg()); // 새 이미지 저장
+            updateField(newProfileImgUrl, user::updateImg, user.getImg(), responseDTO::setImg);
+        } else {
+            responseDTO.setImg(user.getImg()); // 이미지가 변경되지 않은 경우 현재 이미지 유지
+        }
+
         responseDTO.setPw("*".repeat(12));
         updateField(requestDTO.getBio(), user::updateBio, user.getBio(), responseDTO::setBio);
         updateField(requestDTO.getCp(), user::updateCp, user.getCp(), responseDTO::setCp);
@@ -324,5 +367,15 @@ public class UserService {
         } else {
             responseSetter.accept(existingValue);
         }
+    }
+
+    public UserGrade getUserGrade(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        return user.getGrade();
     }
 }

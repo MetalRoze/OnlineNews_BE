@@ -17,7 +17,9 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.like.service.ArticleLikeService;
+import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.request.entity.RequestStatus;
+import com.example.onlinenews.request.repository.RequestRepository;
 import com.example.onlinenews.request.service.RequestService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.entity.UserGrade;
@@ -46,6 +48,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final RequestService requestService;
     private final ArticleLikeService articleLikeService;
+    private final RequestRepository requestRepository;
 
     @Autowired
     private final AmazonS3 amazonS3;
@@ -366,5 +369,41 @@ public class ArticleService {
         // 5. StateResponse 반환 (필요한 응답 형태로 수정)
         return StateResponse.builder().code("키워드 추출 후 저장").message("키워드 추출 후 저장성공").build();
     }
+
+    //승인된 요청은 공개 비공개 설정가능
+    @Transactional
+    public boolean convertToPrivate(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(!request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
+        }
+        request.getArticle().updateIsPublic(false);
+        return request.getArticle().getIsPublic();
+    }
+    @Transactional
+    public boolean convertToPublic(String email, Long reqId){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        checkEditorPermission(user);
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        if(request.getArticle().getIsPublic()){
+            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
+        }
+        request.getArticle().updateIsPublic(true);
+        return request.getArticle().getIsPublic();
+    }
+
+    public boolean getPublicStatus(Long reqId){
+        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
+        return request.getArticle().getIsPublic();
+    }
+
+    private void checkEditorPermission(User user) {
+        if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
+        }
+    }
+
 
 }

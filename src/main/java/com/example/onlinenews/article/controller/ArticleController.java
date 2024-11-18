@@ -49,4 +49,21 @@ public class ArticleController implements ArticleAPI {
     public ResponseEntity<?> keywordCreate(HttpServletRequest servletRequest, Long id, ArticleKeywordDTO requestDto) {
         return ResponseEntity.ok(articleService.articleKeyword(id, requestDto));
     }
+
+    @Override
+    public boolean convertToPrivate(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return articleService.convertToPrivate(email,reqId);
+    }
+
+    @Override
+    public boolean convertToPublic(HttpServletRequest request, Long reqId) {
+        String email = authService.getEmailFromToken(request);
+        return  articleService.convertToPublic(email,reqId);
+    }
+
+    @Override
+    public boolean getPublicStatus(Long reqId) {
+        return  articleService.getPublicStatus(reqId);
+    }
 }

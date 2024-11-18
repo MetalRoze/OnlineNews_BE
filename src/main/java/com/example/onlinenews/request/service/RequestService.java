@@ -52,7 +52,7 @@ public class RequestService {
     }
 
     //비공개 요청
-    public StateResponse createPrivateRequest(String email, Long articleId){
+    public RequestDto createPrivateRequest(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         Request request = Request.builder()
@@ -65,10 +65,10 @@ public class RequestService {
                 .build();
         requestRepository.save(request);
         notificationService.createEnrollNoti(request);
-        return StateResponse.builder().code("200").message("비공개요청성공").build();
+        return RequestDto.fromEntity(request);
     }
 
-    public StateResponse createPublicRequest(String email, Long articleId){
+    public RequestDto createPublicRequest(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
         Request request = Request.builder()
@@ -81,7 +81,7 @@ public class RequestService {
                 .build();
         requestRepository.save(request);
         notificationService.createEnrollNoti(request);
-        return StateResponse.builder().code("200").message("공개요청성공").build();
+        return RequestDto.fromEntity(request);
     }
 
     //시민 기자 등록 요청
@@ -186,35 +186,6 @@ public class RequestService {
         return request.getStatus();
     }
 
-    //승인된 요청은 공개 비공개 설정가능
-    @Transactional
-    public boolean convertToPrivate(String email, Long reqId){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        checkEditorPermission(user);
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        if(!request.getArticle().getIsPublic()){
-            throw new BusinessException(ExceptionCode.ALREADY_PRIVATE);
-        }
-        request.getArticle().updateIsPublic(false);
-        return request.getArticle().getIsPublic();
-    }
-    @Transactional
-    public boolean convertToPublic(String email, Long reqId){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        checkEditorPermission(user);
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        if(request.getArticle().getIsPublic()){
-            throw new BusinessException(ExceptionCode.ALREADY_PUBLIC);
-        }
-        request.getArticle().updateIsPublic(true);
-        return request.getArticle().getIsPublic();
-    }
-
-    public boolean getPublicStatus(Long reqId){
-        Request request = requestRepository.findById(reqId).orElseThrow(() -> new BusinessException(ExceptionCode.REQUEST_NOT_FOUND));
-        return request.getArticle().getIsPublic();
-    }
-
     //상태로 요청조회
     @Transactional
     public List<RequestDto> getByStatus(String email,String keyword) {
@@ -235,9 +206,6 @@ public class RequestService {
                 .map(RequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
-
-    //시민기자 등록 요청
-
 
     private void checkEditorPermission(User user) {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {

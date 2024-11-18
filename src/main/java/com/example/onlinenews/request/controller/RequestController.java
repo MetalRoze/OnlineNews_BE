@@ -31,13 +31,13 @@ public class RequestController implements RequestApi {
     }
 
     @Override
-    public StateResponse createPrivateRequest(HttpServletRequest request, Long articleId) {
+    public RequestDto createPrivateRequest(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         return requestService.createPrivateRequest(email, articleId);
     }
 
     @Override
-    public StateResponse createPublicRequest(HttpServletRequest request, Long articleId) {
+    public RequestDto createPublicRequest(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         return requestService.createPublicRequest(email, articleId);
     }
@@ -70,23 +70,6 @@ public class RequestController implements RequestApi {
     public ResponseEntity<?> requestReject(HttpServletRequest request, Long reqId, RequestCommentDto requestCommentDto) {
         String email = authService.getEmailFromToken(request);
         return ResponseEntity.ok(requestService.requestReject(email, reqId, requestCommentDto));
-    }
-
-    @Override
-    public boolean convertToPrivate(HttpServletRequest request, Long reqId) {
-        String email = authService.getEmailFromToken(request);
-        return requestService.convertToPrivate(email,reqId);
-    }
-
-    @Override
-    public boolean convertToPublic(HttpServletRequest request, Long reqId) {
-        String email = authService.getEmailFromToken(request);
-        return  requestService.convertToPublic(email,reqId);
-    }
-
-    @Override
-    public boolean getPublicStatus(Long reqId) {
-        return  requestService.getPublicStatus(reqId);
     }
 
     @Override

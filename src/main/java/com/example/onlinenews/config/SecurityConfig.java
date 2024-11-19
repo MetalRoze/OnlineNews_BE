@@ -86,6 +86,7 @@ public class SecurityConfig {
         configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedOrigin("http://localhost:5173");
         configuration.addAllowedOrigin("http://myeongbo.site");
+        configuration.addAllowedOrigin("http://13.209.172.56");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true);

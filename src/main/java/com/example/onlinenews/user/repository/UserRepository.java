@@ -14,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByNameAndCp(String username, String cp);
     Optional<User> findByPublisherAndGrade(Publisher publisher, UserGrade userGrade);
+    List<User> findByPublisher(Publisher publisher);
 }

@@ -80,4 +80,8 @@ public interface UserAPI {
     @Operation(summary = "마이페이지 수정", description = "사용자(기자,일반회원)의 수정된 회원정보를 DB에 업데이트합니다.")
     ResponseEntity<?> myPageEdit(HttpServletRequest httpServletRequest,
                                  @ModelAttribute MypageEditRequestDTO requestDTO);
+
+    @GetMapping("/publisher")
+    @Operation(summary = "출판사 직원 조회", description = "출판사에 속한 직원들을 조회합니다.")
+    List<User> getStaffs(HttpServletRequest httpServletRequest);
 }

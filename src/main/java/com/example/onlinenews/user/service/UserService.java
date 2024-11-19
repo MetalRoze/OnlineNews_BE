@@ -378,4 +378,23 @@ public class UserService {
         User user = optionalUser.get();
         return user.getGrade();
     }
+
+    public List<User> getStaffs (String email){
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        Publisher publisher = publisherService.getPublisherByName(optionalUser.get().getPublisher().getName());
+        return userRepository.findByPublisher(publisher);
+    }
+    public List<User> getStaffsByUserGrade (String email, UserGrade userGrade){
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        Publisher publisher = publisherService.getPublisherByName(optionalUser.get().getPublisher().getName());
+        return userRepository.findByPublisherAndGrade(publisher, userGrade);
+    }
 }

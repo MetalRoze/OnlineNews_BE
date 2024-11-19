@@ -49,7 +49,6 @@ public class RequestService {
                 .type("승인 요청")
                 .build();
         requestRepository.save(request);
-        notificationService.createRequestNoti(request);
     }
 
     //비공개 요청
@@ -96,7 +95,6 @@ public class RequestService {
                 .type("기사 등록 요청")
                 .build();
         requestRepository.save(request);
-        notificationService.createEnrollNoti(request);
     }
 
     //시민 기자 등록 수락

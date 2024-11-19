@@ -187,4 +187,10 @@ public class UserController implements UserAPI {
         String email = authService.getEmailFromToken(httpServletRequest);
         return userService.getStaffs(email);
     }
+
+    @Override
+    public List<User> getStaffsByUserGrade(HttpServletRequest httpServletRequest, UserGrade keyword) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return userService.getStaffsByUserGrade(email, keyword);
+    }
 }

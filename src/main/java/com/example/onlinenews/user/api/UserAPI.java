@@ -84,4 +84,8 @@ public interface UserAPI {
     @GetMapping("/publisher")
     @Operation(summary = "출판사 직원 조회", description = "출판사에 속한 직원들을 조회합니다.")
     List<User> getStaffs(HttpServletRequest httpServletRequest);
+
+    @GetMapping("/publisher/grade")
+    @Operation(summary = "출판사 직원 조회", description = "출판사에 속한 직원들을 조회합니다.")
+    List<User> getStaffsByUserGrade(HttpServletRequest httpServletRequest, UserGrade keyword);
 }

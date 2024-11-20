@@ -18,11 +18,19 @@ public interface MainArticleApi {
     ResponseEntity<?> selectArticle(HttpServletRequest request, @PathVariable Long articleId);
 
     @GetMapping("")
-    @Operation(summary = "조회수로 정렬된 헤드라인 기사 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
+    @Operation(summary = "조회수로 정렬된 헤드라인 기사 전체 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
     List<MainArticleDto> mainArticleList();
 
+    @GetMapping("/headline")
+    @Operation(summary = "메인화면의 헤드라인", description = "메인화면의 헤드라인을 조회합니다.")
+    List<MainArticleDto> mainHeadline();
+
     @GetMapping("/category")
-    @Operation(summary = "조회수로 정렬된 헤드라인 기사 조회", description = "헤드라인으로 지정된 기사를 조회수로 정렬하여 조회합니다.")
-    List<MainArticleDto> mainArticlesByCategory(@RequestParam Category category);
+    @Operation(summary = "카테고리 별로 헤드라인 2개 조회", description = "카테고리 별로 조회순 2개의 헤드라인을 가져옵니다")
+    List<MainArticleDto> mainTwoArticlesByCategory(@RequestParam Category category);
+
+    @GetMapping("/category/headline")
+    @Operation(summary = "카테고리 별로 헤드라인 1개 조회", description = "카테고리 별로 헤드라인을 가져옵니다")
+    List<MainArticleDto> mainArticleByCategory(@RequestParam Category category);
 
 }

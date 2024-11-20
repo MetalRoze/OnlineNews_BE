@@ -7,16 +7,19 @@ import lombok.Data;
 public class HistoryDto {
     private String user_email;
     private  String searchTerm;
+    private Long id;
 
-    public HistoryDto(String user_email, String searchTerm){
+    public HistoryDto(String user_email, String searchTerm, Long id){
         this.user_email = user_email;
         this.searchTerm = searchTerm;
+        this.id = id;
     }
 
     public static HistoryDto fromEntity(SearchHistory searchHistory){
         return new HistoryDto(
                 searchHistory.getUser().getEmail(),
-                searchHistory.getSearchTerm()
+                searchHistory.getSearchTerm(),
+                searchHistory.getId()
         );
     }
 }

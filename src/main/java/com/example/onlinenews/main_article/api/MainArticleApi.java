@@ -29,4 +29,8 @@ public interface MainArticleApi {
     @Operation(summary = "카테고리 별로 헤드라인 2개 조회", description = "카테고리 별로 조회순 2개의 헤드라인을 가져옵니다")
     List<MainArticleDto> mainTwoArticlesByCategory(@RequestParam Category category);
 
+    @GetMapping("/category/headline")
+    @Operation(summary = "카테고리 별로 헤드라인 1개 조회", description = "카테고리 별로 헤드라인을 가져옵니다")
+    List<MainArticleDto> mainArticleByCategory(@RequestParam Category category);
+
 }

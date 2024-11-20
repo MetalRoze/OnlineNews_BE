@@ -37,4 +37,9 @@ public class MainArticleController implements MainArticleApi {
     public List<MainArticleDto> mainTwoArticlesByCategory(Category category) {
         return mainArticleService.mainTwoArticlesByCategory(category);
     }
+
+    @Override
+    public List<MainArticleDto> mainArticleByCategory(Category category) {
+        return mainArticleService.mainArticleByCategory(category);
+    }
 }

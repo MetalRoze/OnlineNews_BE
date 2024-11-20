@@ -62,6 +62,13 @@ public class MainArticleService {
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
+    public List<MainArticleDto> mainArticleByCategory(Category category){
+        return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
+                .limit(1)
+                .map(MainArticleDto::fromEntity)
+                .collect(Collectors.toList());
+    }
     private void checkEditorPermission(User user) {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);

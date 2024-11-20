@@ -44,14 +44,21 @@ public class MainArticleService {
 
     public List<MainArticleDto> mainArticles(){
         return mainArticleRepository.findAllByOrderByArticleViewsDesc().stream()
-                .limit(7)
+                .map(MainArticleDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+    //메인 화면 헤드라인 하나
+    public List<MainArticleDto> mainHeadline(){
+        return mainArticleRepository.findAllByOrderByArticleViewsDesc().stream()
+                .limit(1)
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public List<MainArticleDto> mainArticlesByCategory(Category category){
+    //메인에 카테고리 별로 2개
+    public List<MainArticleDto> mainTwoArticlesByCategory(Category category){
         return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
-                .limit(7)
+                .limit(2)
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }

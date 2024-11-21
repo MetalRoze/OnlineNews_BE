@@ -13,8 +13,10 @@ public class PublisherDto {
     private String publisher_name;
     private String publisher_url;
     private String publisher_img;
+    private Long publisher_id;
 
-    public PublisherDto(String publisher_name,String publisher_url, String publisher_img, Type publisher_type) {
+    public PublisherDto(Long publisher_id, String publisher_name,String publisher_url, String publisher_img, Type publisher_type) {
+        this.publisher_id = publisher_id;
         this.publisher_name = publisher_name;
         this.publisher_url = publisher_url;
         this.publisher_img = publisher_img;
@@ -22,6 +24,7 @@ public class PublisherDto {
     }
     public static PublisherDto fromEntity(Publisher publisher) {
         return new PublisherDto(
+                publisher.getId(),
                 publisher.getName(),
                 publisher.getUrl(),
                 publisher.getImg(),

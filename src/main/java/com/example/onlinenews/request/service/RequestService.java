@@ -124,7 +124,7 @@ public class RequestService {
         }
         request.updateStatus(RequestStatus.REJECTED, null);
         request.confirm();
-        notificationService.createEnrollRejectedNoti(request);
+        notificationService.createEnrollApprovedNoti(request);
     }
 
     //요청 수락
@@ -143,7 +143,7 @@ public class RequestService {
         request.getArticle().updateIsPublic(true);
 
         //승인 알림
-        notificationService.createApprovedNoti(request);
+        notificationService.createRequestApprovedNoti(request);
     }
 
     //보류
@@ -160,7 +160,7 @@ public class RequestService {
         request.confirm();
         request.getArticle().updateStatue(request.getStatus());
         //보류 알림
-        notificationService.createHeldNoti(request);
+        notificationService.createRequestApprovedNoti(request);
     }
 
     //거절
@@ -178,7 +178,7 @@ public class RequestService {
         request.getArticle().updateStatue(request.getStatus());
 
         //거절 알림
-        notificationService.createRejectedNoti(request);
+        notificationService.createRequestApprovedNoti(request);
     }
 
     //상태로 요청조회

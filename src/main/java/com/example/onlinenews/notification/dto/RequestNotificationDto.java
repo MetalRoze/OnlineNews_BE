@@ -1,33 +1,26 @@
 package com.example.onlinenews.notification.dto;
 
 import com.example.onlinenews.notification.entity.JournalistNotification;
-import com.example.onlinenews.notification.entity.NotificationType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-
-@Data
+@Getter
+@SuperBuilder
 public class RequestNotificationDto extends BaseNotificationDto {
+    private Long reqId;
     private String comment;
     private String sentBy;
 
-    public RequestNotificationDto(Long id, String sentBy, String notificationContent, String comment, LocalDateTime createdAt, NotificationType type) {
-        super(id, notificationContent, createdAt, type);
-        this.comment = comment;
-        this.sentBy = sentBy;
-    }
-
     public static RequestNotificationDto fromEntity(JournalistNotification notification) {
-        return new RequestNotificationDto(
-                notification.getId(),
-                notification.getRequest().getPublisher().getName(),
-                notification.getRequest().getArticle().getTitle() + " " + notification.getType().getMessage(),
-                notification.getRequest().getComment(),
-                notification.getCreatedAt(),
-                notification.getType()
-        );
+        return RequestNotificationDto.builder()
+                .id(notification.getId())
+                .notificationContent(notification.getMessage())
+                .createdAt(notification.getCreatedAt())
+                .type(notification.getType())
+                .reqId(notification.getTargetId())
+                .comment(notification.getComment())
+                .sentBy(notification.getSenderName())
+                .build();
     }
+
 }
-
-

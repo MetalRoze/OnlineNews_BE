@@ -9,13 +9,7 @@ import com.example.onlinenews.like.dto.ArticleLikeDto;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
 import com.example.onlinenews.notification.entity.JournalistNotification;
-import com.example.onlinenews.notification.repository.JournalistNotificationRepository;
-import com.example.onlinenews.notification.repository.NotificationRepository;
 import com.example.onlinenews.notification.service.NotificationService;
-import com.example.onlinenews.request.dto.RequestDto;
-import com.example.onlinenews.request.entity.Request;
-import com.example.onlinenews.request.entity.RequestStatus;
-import com.example.onlinenews.request.repository.RequestRepository;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +28,6 @@ public class ArticleLikeService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
-    private final JournalistNotificationRepository journalistNotificationRepository;
 
     public long likeCreate(String email, Long articleId){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
@@ -50,7 +43,7 @@ public class ArticleLikeService {
                 .build();
 
         articleLikeRepository.save(articleLike);
-        notificationService.createLikeNoti(articleLike);
+//        notificationService.createLikeNoti(articleLike);
 //        return StateResponse.builder().code("200").message("좋아요 완료").build();
         return articleLike.getId();
     }
@@ -76,11 +69,6 @@ public class ArticleLikeService {
         ArticleLike articleLike = articleLikeRepository.findById(articleLikeId).orElseThrow(()->new BusinessException(ExceptionCode.ARTICLE_LIKE_NOT_FOUND));
         if(user.getId()!=articleLike.getUser().getId()){
             throw new BusinessException(ExceptionCode.USER_MISMATCH);
-        }
-// 관련된 알림 삭제
-        List<JournalistNotification> notifications = journalistNotificationRepository.findByArticleLike(articleLike);
-        for (JournalistNotification notification : notifications) {
-            journalistNotificationRepository.delete(notification);
         }
         articleLikeRepository.delete(articleLike);
         return StateResponse.builder().code("200").message("좋아요 취소 완료").build();

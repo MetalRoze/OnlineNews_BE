@@ -1,9 +1,8 @@
 package com.example.onlinenews.notification.controller;
 
 import com.example.onlinenews.notification.api.NotificationApi;
-import com.example.onlinenews.notification.dto.EditorNotificationDto;
-import com.example.onlinenews.notification.dto.JournalistNotificationDto;
-import com.example.onlinenews.notification.entity.NotificationType;
+import com.example.onlinenews.notification.dto.JournalNotificationDto;
+import com.example.onlinenews.notification.dto.LikeNotificationDto;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,26 +25,20 @@ public class NotificationController implements NotificationApi {
     }
 
     @Override
-    public List<EditorNotificationDto> editorNotiList(HttpServletRequest request) {
+    public List<JournalNotificationDto> getJournalRequestNoti(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
-        return notificationService.editorNotiList(email);
+        return notificationService.getJournalRequestNoti(email);
     }
 
     @Override
-    public List<JournalistNotificationDto> journalistNotiList(HttpServletRequest request) {
+    public List<LikeNotificationDto> getJournalLikeNoti(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
-        return notificationService.journalistNotiList(email);
+        return notificationService.getJournalLikeNoti(email);
     }
 
     @Override
-    public List<EditorNotificationDto> editorNotiListByType(HttpServletRequest request, NotificationType type) {
+    public List<JournalNotificationDto> getJournalCommentNoti(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
-        return notificationService.editorNotiListByType(email, type);
-    }
-
-    @Override
-    public List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, NotificationType type) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.journalNotiListByType(email, type);
+        return notificationService.getJournalCommentNoti(email);
     }
 }

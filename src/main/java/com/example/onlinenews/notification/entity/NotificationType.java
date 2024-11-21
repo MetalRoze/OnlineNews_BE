@@ -1,3 +1,5 @@
+package com.example.onlinenews.notification.entity;
+
 import lombok.Getter;
 
 @Getter

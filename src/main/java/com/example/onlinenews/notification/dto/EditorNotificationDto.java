@@ -1,6 +1,5 @@
 package com.example.onlinenews.notification.dto;
 
-import com.example.onlinenews.notification.entity.EditorNotification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.user.entity.UserGrade;
 import lombok.Data;

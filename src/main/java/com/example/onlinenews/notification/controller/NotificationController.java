@@ -38,13 +38,7 @@ public class NotificationController implements NotificationApi {
     }
 
     @Override
-    public List<EditorNotificationDto> editorNotiListByType(HttpServletRequest request, NotificationType type) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.editorNotiListByType(email, type);
-    }
-
-    @Override
-    public List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, NotificationType type) {
+    public List<JournalistNotificationDto> journalNotiListByType(HttpServletRequest request, String type) {
         String email = authService.getEmailFromToken(request);
         return notificationService.journalNotiListByType(email, type);
     }

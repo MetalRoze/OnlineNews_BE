@@ -15,11 +15,7 @@ public enum NotificationType {
 
     //사용자
     USER_REPLY("댓글에 대댓글이 작성되었습니다."),
-    USER_LIKE("댓글에 좋아요가 달렸습니다."),
-
-    //편집장
-    EDITOR_REQUEST("승인 요청입니다."),
-    EDITOR_ENROLL_REPORTER("시민기자 등록 요청입니다.");
+    USER_LIKE("댓글에 좋아요가 달렸습니다.");
 
     private final String message;
 

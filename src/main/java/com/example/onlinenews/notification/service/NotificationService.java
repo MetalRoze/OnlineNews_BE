@@ -5,14 +5,12 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.notification.dto.EditorNotificationDto;
 import com.example.onlinenews.notification.dto.JournalistNotificationDto;
-import com.example.onlinenews.notification.entity.EditorNotification;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
 import com.example.onlinenews.notification.repository.NotificationRepository;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
-import com.example.onlinenews.user.entity.UserGrade;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -99,18 +97,6 @@ public class NotificationService {
         notification.updateIsRead(true);
         return notification.isRead();
     }
-
-    public List<EditorNotificationDto> editorNotiList(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-        if(user.getGrade().getValue()<9){
-            throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
-        }
-
-        return notificationRepository.findByUser(user).stream()
-                .filter(notification -> notification instanceof EditorNotification)
-                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
-                .collect(Collectors.toList());
-    }
     public List<JournalistNotificationDto> journalistNotiList(String email){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
@@ -119,20 +105,6 @@ public class NotificationService {
                 .map(notification -> JournalistNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
-    public List<EditorNotificationDto> editorNotiListByType(String email, NotificationType notificationType) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
-        List <Notification> notifications = notificationRepository.findByUser(user);
-        if(notifications.isEmpty()){
-            throw new BusinessException(ExceptionCode.USER_MISMATCH);
-        }
-        return notificationRepository.findNotificationsByUserAndType(user, notificationType).stream()
-                .filter(notification -> notification instanceof EditorNotification)
-                .map(notification -> EditorNotificationDto.fromEntity((EditorNotification) notification))
-                .collect(Collectors.toList());
-
-    }
-
     public List<JournalistNotificationDto> journalNotiListByType(String email, NotificationType notificationType) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 

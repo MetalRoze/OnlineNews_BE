@@ -54,17 +54,21 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
-//
-//    public void createLikeNoti (ArticleLike articleLike){
-//        JournalistNotification notification = JournalistNotification.builder()
-//                .user(articleLike.getArticle().getUser())
-//                .articleLike(articleLike)
-//                .createdAt(LocalDateTime.now())
-//                .type(NotificationType.REPORTER_LIKE)
-//                .isRead(false)
-//                .build();
-//        notificationRepository.save(notification);
-//    }
+
+    //좋아요 알림
+    public void createLikeNoti (ArticleLike articleLike){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(articleLike.getArticle().getUser())
+                .type(NotificationType.REPORTER_LIKE)
+                .message(articleLike.getArticle().getTitle()+" "+NotificationType.REPORTER_LIKE.getMessage())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .targetId(articleLike.getId())
+                .senderName(articleLike.getUser().getName())
+                .comment(null)
+                .build();
+        notificationRepository.save(notification);
+    }
 
     //알림 읽음
     @Transactional

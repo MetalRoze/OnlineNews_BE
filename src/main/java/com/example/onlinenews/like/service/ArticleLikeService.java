@@ -43,8 +43,8 @@ public class ArticleLikeService {
                 .build();
 
         articleLikeRepository.save(articleLike);
-//        notificationService.createLikeNoti(articleLike);
-//        return StateResponse.builder().code("200").message("좋아요 완료").build();
+        notificationService.createLikeNoti(articleLike);
+
         return articleLike.getId();
     }
 
@@ -70,6 +70,7 @@ public class ArticleLikeService {
         if(user.getId()!=articleLike.getUser().getId()){
             throw new BusinessException(ExceptionCode.USER_MISMATCH);
         }
+
         articleLikeRepository.delete(articleLike);
         return StateResponse.builder().code("200").message("좋아요 취소 완료").build();
     }

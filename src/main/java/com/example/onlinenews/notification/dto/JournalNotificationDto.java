@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class JournalNotificationDto extends BaseNotificationDto {
-    private Long id;
+    private Long targetId;
     private String comment;
     private String sentBy;
 
@@ -17,7 +17,7 @@ public class JournalNotificationDto extends BaseNotificationDto {
                 .notificationContent(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
                 .type(notification.getType())
-                .id(notification.getTargetId())
+                .targetId(notification.getTargetId())
                 .comment(notification.getComment())
                 .sentBy(notification.getSenderName())
                 .build();

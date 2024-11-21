@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 public class LikeNotificationDto extends BaseNotificationDto {
-    private Long articleLikeId;
+    private Long targetId;
     private String sentBy;
 
     public static LikeNotificationDto fromEntity(JournalistNotification notification) {
@@ -16,7 +16,7 @@ public class LikeNotificationDto extends BaseNotificationDto {
                 .notificationContent(notification.getMessage())
                 .createdAt(notification.getCreatedAt())
                 .type(notification.getType())
-                .articleLikeId(notification.getTargetId())
+                .targetId(notification.getTargetId())
                 .sentBy(notification.getSenderName())
                 .build();
     }

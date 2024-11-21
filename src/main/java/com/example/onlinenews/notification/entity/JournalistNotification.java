@@ -17,13 +17,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
 public class JournalistNotification extends Notification {
-    private Long targetId;   //참조 엔티티 id
-    private Long senderId; //알림 보내는 사람
+    private Long targetId;
+    private String senderName; //알림 보내는 사람
+    private String comment;
 
-    public JournalistNotification(User user, NotificationType type, String message, boolean isRead, LocalDateTime createdAt,  Long targetId, Long senderId) {
+    public JournalistNotification(User user, NotificationType type, String message, boolean isRead, LocalDateTime createdAt,  Long targetId, String senderName, String comment) {
         super(user, type, createdAt, message, isRead);
         this.targetId = targetId;
-        this.senderId = senderId;
+        this.senderName = senderName;
+        this.comment = comment;
     }
 }
 

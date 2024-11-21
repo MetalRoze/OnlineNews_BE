@@ -16,10 +16,10 @@ public class MainArticleDto {
     private String articleSubTitle;
     private int views;
     private String publisherName;
-    private ArticleImg articleImg;
+    private String articleImg;
 
     @Builder
-    public MainArticleDto(Long id, Category category, String articleTitle, String articleSubTitle, int views, String publisherName,  ArticleImg articleImg) {
+    public MainArticleDto(Long id, Category category, String articleTitle, String articleSubTitle, int views, String publisherName,  String articleImg) {
         this.id = id;
         this.category = category;
         this.articleTitle = articleTitle;
@@ -30,10 +30,10 @@ public class MainArticleDto {
     }
 
     public static MainArticleDto fromEntity(MainArticle mainArticle){
-        ArticleImg headlineImage = null;
+        String headlineImage = "";
         List<ArticleImg> headlineImages = mainArticle.getArticle().getImages();
         if(!headlineImages.isEmpty()){
-            headlineImage = mainArticle.getArticle().getImages().get(0);
+            headlineImage = mainArticle.getArticle().getImages().get(0).getImgUrl();
         }
         return new MainArticleDto(
                 mainArticle.getId(),

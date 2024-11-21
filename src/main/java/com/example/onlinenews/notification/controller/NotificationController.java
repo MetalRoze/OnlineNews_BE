@@ -1,8 +1,8 @@
 package com.example.onlinenews.notification.controller;
 
 import com.example.onlinenews.notification.api.NotificationApi;
+import com.example.onlinenews.notification.dto.JournalNotificationDto;
 import com.example.onlinenews.notification.dto.LikeNotificationDto;
-import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class NotificationController implements NotificationApi {
     }
 
     @Override
-    public List<RequestNotificationDto> getJournalRequestNoti(HttpServletRequest request) {
+    public List<JournalNotificationDto> getJournalRequestNoti(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
         return notificationService.getJournalRequestNoti(email);
     }
@@ -34,5 +34,11 @@ public class NotificationController implements NotificationApi {
     public List<LikeNotificationDto> getJournalLikeNoti(HttpServletRequest request) {
         String email = authService.getEmailFromToken(request);
         return notificationService.getJournalLikeNoti(email);
+    }
+
+    @Override
+    public List<JournalNotificationDto> getJournalCommentNoti(HttpServletRequest request) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.getJournalCommentNoti(email);
     }
 }

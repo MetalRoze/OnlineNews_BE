@@ -1,10 +1,11 @@
 package com.example.onlinenews.notification.service;
 
+import com.example.onlinenews.comment.entity.Comment;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.ArticleLike;
+import com.example.onlinenews.notification.dto.JournalNotificationDto;
 import com.example.onlinenews.notification.dto.LikeNotificationDto;
-import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
@@ -70,6 +71,20 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
+    //댓글 알림
+    public void createCommentNoti (Comment comment){
+        JournalistNotification notification = JournalistNotification.builder()
+                .user(comment.getArticle().getUser())
+                .type(NotificationType.REPORTER_COMMENT)
+                .message(comment.getArticle().getTitle()+" "+NotificationType.REPORTER_COMMENT.getMessage())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .targetId(comment.getId())
+                .senderName(comment.getUser().getName())
+                .comment(comment.getContent())
+                .build();
+        notificationRepository.save(notification);
+    }
 
     //알림 읽음
     @Transactional
@@ -82,14 +97,14 @@ public class NotificationService {
         return notification.isRead();
     }
 
-    public List<RequestNotificationDto> getJournalRequestNoti(String email) {
+    public List<JournalNotificationDto> getJournalRequestNoti(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         List<Notification> notifications = notificationRepository.findByUserAndTypes(user, List.of(NotificationType.REQUEST, NotificationType.ENROLL));
 
         return notifications.stream()
                 .filter(notification -> notification instanceof JournalistNotification)
-                .map(notification -> RequestNotificationDto.fromEntity((JournalistNotification) notification))
+                .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 
@@ -99,6 +114,15 @@ public class NotificationService {
         return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_LIKE).stream()
                 .filter(notification -> notification instanceof JournalistNotification)
                 .map(notification -> LikeNotificationDto.fromEntity((JournalistNotification) notification))
+                .collect(Collectors.toList());
+    }
+
+    public List<JournalNotificationDto> getJournalCommentNoti(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_COMMENT).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 

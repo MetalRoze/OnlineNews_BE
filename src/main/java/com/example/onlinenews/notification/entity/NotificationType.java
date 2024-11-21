@@ -4,27 +4,21 @@ import lombok.Getter;
 
 @Getter
 public enum NotificationType {
-    //기자
-    REPORTER_APPROVAL_ACCEPTED("승인 요청이 수락되었습니다."),
-    REPORTER_APPROVAL_HELD("승인 요청이 보류되었습니다."),
-    REPORTER_APPROVAL_REJECTED("승인 요청이 거절되었습니다."),
-    REPORTER_COMMENT("기사에 새로운 댓글이 작성되었습니다."),
-    REPORTER_LIKE("기사에 좋아요가 달렸습니다."),
-    ENROLL_ACCEPTED("시민 기자 등록이 완료되었습니다."),
-    ENROLL_REJECTED("시민 기자 등록이 거절되었습니다."),
+    // 기자 알림
+    REQUEST("", "Request"),
+    REPORTER_COMMENT("기사에 새로운 댓글이 작성되었습니다.", "Comment"),
+    REPORTER_LIKE("기사에 좋아요가 달렸습니다.", "ArticleLike"),
+    ENROLL("", "Request"),
 
-    //사용자
-    USER_REPLY("댓글에 대댓글이 작성되었습니다."),
-    USER_LIKE("댓글에 좋아요가 달렸습니다."),
-
-    //편집장
-    EDITOR_REQUEST("승인 요청입니다."),
-    EDITOR_ENROLL_REPORTER("시민기자 등록 요청입니다.");
+    // 사용자 알림 , 일단 나중에
+    USER_REPLY("댓글에 대댓글이 작성되었습니다.", null),
+    USER_LIKE("댓글에 좋아요가 달렸습니다.", null);
 
     private final String message;
+    private final String targetEntity;
 
-    NotificationType(String message) {
+    NotificationType(String message, String targetEntity) {
         this.message = message;
+        this.targetEntity = targetEntity;
     }
-
 }

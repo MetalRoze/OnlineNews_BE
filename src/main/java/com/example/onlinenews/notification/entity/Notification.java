@@ -33,15 +33,20 @@ public abstract class Notification {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private String message;
+
     @Column(nullable = false)
     private boolean isRead;
 
-    public Notification(User user, NotificationType type, LocalDateTime createdAt, boolean isRead) {
-        this.user =user;
-        this.type=type;
+    public Notification(User user, NotificationType type, LocalDateTime createdAt, String message, boolean isRead) {
+        this.user = user;
+        this.type = type;
         this.createdAt = createdAt;
-        this.isRead=isRead;
+        this.message = message;
+        this.isRead = isRead;
     }
+
     public void updateIsRead(boolean newIsRead){
         this.isRead = newIsRead;
     }

@@ -11,6 +11,7 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.CommentLike;
 import com.example.onlinenews.like.repository.CommentLikeRepository;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 댓글 작성
     public ResponseEntity<CommentResponseDTO> createComment(String email, CommentRequestDTO requestDTO) {
@@ -49,7 +51,8 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
 
         CommentResponseDTO responseDTO = new CommentResponseDTO(savedComment, user, commentLikeRepository);
-
+        //댓글 알림
+        notificationService.createCommentNoti(savedComment);
         return ResponseEntity.ok(responseDTO);
     }
 

@@ -15,5 +15,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("SELECT n FROM Notification n WHERE n.user = :user AND n.type IN (:types)")
     List<Notification> findByUserAndTypes(@Param("user") User user, @Param("types") List<NotificationType> types);
 
+    List<Notification> findByUserAndType(User user, NotificationType type);
     List<Notification> findByUser(User user);
 }

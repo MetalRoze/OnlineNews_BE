@@ -3,6 +3,7 @@ package com.example.onlinenews.notification.service;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.ArticleLike;
+import com.example.onlinenews.notification.dto.LikeNotificationDto;
 import com.example.onlinenews.notification.dto.RequestNotificationDto;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
@@ -82,14 +83,22 @@ public class NotificationService {
     }
 
     public List<RequestNotificationDto> getJournalRequestNoti(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         List<Notification> notifications = notificationRepository.findByUserAndTypes(user, List.of(NotificationType.REQUEST, NotificationType.ENROLL));
 
         return notifications.stream()
                 .filter(notification -> notification instanceof JournalistNotification)
                 .map(notification -> RequestNotificationDto.fromEntity((JournalistNotification) notification))
+                .collect(Collectors.toList());
+    }
+
+    public List<LikeNotificationDto> getJournalLikeNoti(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_LIKE).stream()
+                .filter(notification -> notification instanceof JournalistNotification)
+                .map(notification -> LikeNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 

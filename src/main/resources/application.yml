@@ -52,6 +52,6 @@ jwt:
 secretKey:
   admin: ${ADMIN_SECRET_KEY}
   editor: ${EDITOR_SECRET_KEY}
-a
+
 server:
   port: 8080

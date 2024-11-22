@@ -56,7 +56,6 @@ public class ArticleController implements ArticleAPI {
 
     }
 
-    // 키워드 초기화
     @Override
     public ResponseEntity<?> deleteKeywords(HttpServletRequest servletRequest, Long id) {
         return ResponseEntity.ok(articleService.deleteKeywords(id));

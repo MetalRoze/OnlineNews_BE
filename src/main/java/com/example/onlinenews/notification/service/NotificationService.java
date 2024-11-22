@@ -9,6 +9,7 @@ import com.example.onlinenews.notification.dto.LikeNotificationDto;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
+import com.example.onlinenews.notification.entity.UserNotification;
 import com.example.onlinenews.notification.repository.NotificationRepository;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
@@ -74,6 +75,20 @@ public class NotificationService {
     //댓글 알림
     public void createCommentNoti (Comment comment){
         JournalistNotification notification = JournalistNotification.builder()
+                .user(comment.getArticle().getUser())
+                .type(NotificationType.REPORTER_COMMENT)
+                .message(comment.getArticle().getTitle()+" "+NotificationType.REPORTER_COMMENT.getMessage())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .targetId(comment.getId())
+                .senderName(comment.getUser().getName())
+                .comment(comment.getContent())
+                .build();
+        notificationRepository.save(notification);
+    }
+    //대댓글 알림
+    public void createReplyNoti (Comment comment){
+        UserNotification notification = UserNotification.builder()
                 .user(comment.getArticle().getUser())
                 .type(NotificationType.REPORTER_COMMENT)
                 .message(comment.getArticle().getTitle()+" "+NotificationType.REPORTER_COMMENT.getMessage())

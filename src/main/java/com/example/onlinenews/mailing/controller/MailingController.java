@@ -32,4 +32,16 @@ public class MailingController implements MailingAPI {
             throw new BusinessException(ExceptionCode.EMAIL_CONFLICT);
         }
     }
+
+    @Override
+    public ResponseEntity<?> subscribeMailing(Long userId) {
+        mailingService.subscribeMailing(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<?> unsubscribeMailing(Long userId) {
+        mailingService.unsubscribeMailing(userId);
+        return ResponseEntity.ok().build();
+    }
 }

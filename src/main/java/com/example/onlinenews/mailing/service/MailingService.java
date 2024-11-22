@@ -1,13 +1,21 @@
 package com.example.onlinenews.mailing.service;
 
 import com.example.onlinenews.article.entity.Article;
+import com.example.onlinenews.error.BusinessException;
+import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.mailing.dto.MailArticleDto;
+import com.example.onlinenews.mailing.entity.Mailing;
+import com.example.onlinenews.mailing.repository.MailingRepository;
 import com.example.onlinenews.main_article.entity.MainArticle;
 import com.example.onlinenews.main_article.service.MainArticleService;
+import com.example.onlinenews.user.entity.User;
+import com.example.onlinenews.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +38,10 @@ public class MailingService {
     private JavaMailSender javaMailSender;
     @Autowired
     private TemplateEngine templateEngine;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private MailingRepository mailingRepository;
 
     public void sendSimpleMail(String to, String subject, String content) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -45,7 +57,6 @@ public class MailingService {
         String emailContent = generateEmailTemplate(headArticles);
 
         sendHtmlMail(to, "Today's Headlines", emailContent);
-
     }
 
     private void sendHtmlMail(String to, String subject, String content) throws MessagingException {
@@ -97,4 +108,34 @@ public class MailingService {
 
         return plainText;
     }
+
+
+    public void subscribeMailing(Long userId) {
+        Optional<User> users = userRepository.findById(userId);
+        if (users.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = users.get();
+
+        if (!mailingRepository.existsByUser(user)) {
+            Mailing mailing = new Mailing(user, LocalDateTime.now(), false);
+            mailingRepository.save(mailing);
+        }
+    }
+
+    public void unsubscribeMailing(Long userId) {
+        Optional<User> users = userRepository.findById(userId);
+        if (users.isEmpty()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+
+        User user = users.get();
+
+        if (mailingRepository.existsByUser(user)) {
+            Mailing mailing = mailingRepository.findByUser(user);
+            mailingRepository.delete(mailing);
+        }
+    }
+
+
 }

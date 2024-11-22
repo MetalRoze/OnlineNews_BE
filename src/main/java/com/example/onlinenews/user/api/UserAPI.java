@@ -38,7 +38,7 @@ public interface UserAPI {
 
     @PostMapping("/signup/general")
     @Operation(summary = "일반회원 회원가입", description = "일반회원 회원가입을 수행합니다.")
-    ResponseEntity<?> generalSignup(@ModelAttribute GeneralSignupRequestDTO requestDTO);
+    ResponseEntity<Long> generalSignup(@ModelAttribute GeneralSignupRequestDTO requestDTO);
 
     @PostMapping("/signup/journalist")
     @Operation(summary = "시민기자 회원가입", description = "시민기자 회원가입을 수행합니다.")

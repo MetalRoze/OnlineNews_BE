@@ -25,32 +25,9 @@ public class NotificationController implements NotificationApi {
     }
 
     @Override
-    public List<CommentNotificationDto> getJournalRequestNoti(HttpServletRequest request) {
+    public List<?> getNotiByType(HttpServletRequest request, String type) {
         String email = authService.getEmailFromToken(request);
-        return notificationService.getJournalRequestNoti(email);
+        return notificationService.getNotiByType(email, type);
     }
 
-    @Override
-    public List<LikeNotificationDto> getJournalLikeNoti(HttpServletRequest request) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.getJournalLikeNoti(email);
-    }
-
-    @Override
-    public List<CommentNotificationDto> getJournalCommentNoti(HttpServletRequest request) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.getJournalCommentNoti(email);
-    }
-
-    @Override
-    public List<LikeNotificationDto> getUserCommentLikeNoti(HttpServletRequest request) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.getUserCommentLikeNoti(email);
-    }
-
-    @Override
-    public List<CommentNotificationDto> getUserReplyNoti(HttpServletRequest request) {
-        String email = authService.getEmailFromToken(request);
-        return notificationService.getUserReplyNoti(email);
-    }
 }

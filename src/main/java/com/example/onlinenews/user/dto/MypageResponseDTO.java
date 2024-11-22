@@ -15,4 +15,5 @@ public class MypageResponseDTO {
     private String bio;
     private String type;
     private String publisher;
+    private boolean mailing;
 }

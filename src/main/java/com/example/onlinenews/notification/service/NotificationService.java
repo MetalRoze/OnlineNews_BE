@@ -126,9 +126,7 @@ public class NotificationService {
         return notification.isRead();
     }
 
-    public List<CommentNotificationDto> getJournalRequestNoti(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
+    private List<CommentNotificationDto> getJournalRequestNoti(User user) {
         List<Notification> notifications = notificationRepository.findByUserAndTypes(user, List.of(NotificationType.REQUEST, NotificationType.ENROLL));
 
         return notifications.stream()
@@ -137,40 +135,61 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    public List<LikeNotificationDto> getJournalLikeNoti(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
+    private List<LikeNotificationDto> getJournalLikeNoti(User user) {
         return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_LIKE).stream()
                 .filter(notification -> notification instanceof JournalistNotification)
                 .map(notification -> LikeNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 
-    public List<CommentNotificationDto> getJournalCommentNoti(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
+    private List<CommentNotificationDto> getJournalCommentNoti(User user) {
         return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_COMMENT).stream()
                 .filter(notification -> notification instanceof JournalistNotification)
                 .map(notification -> CommentNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
-    public List<LikeNotificationDto> getUserCommentLikeNoti(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
+    private List<LikeNotificationDto> getUserCommentLikeNoti(User user) {
         return notificationRepository.findByUserAndType(user, NotificationType.USER_LIKE).stream()
                 .filter(notification -> notification instanceof UserNotification)
                 .map(notification -> LikeNotificationDto.fromEntity((UserNotification) notification))
                 .collect(Collectors.toList());
     }
 
-    public List<CommentNotificationDto> getUserReplyNoti(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
-
+    private List<CommentNotificationDto> getUserReplyNoti(User user) {
         return notificationRepository.findByUserAndType(user, NotificationType.USER_REPLY).stream()
                 .filter(notification -> notification instanceof UserNotification)
                 .map(notification -> CommentNotificationDto.fromEntity((UserNotification) notification))
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<?> getNotiByType(String email, String type) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+        switch (type){
+            case "comment":
+                if(user.getGrade().getValue()>3){
+                    return getJournalCommentNoti(user);
+                }
+                else{
+                    return getUserReplyNoti(user);
+                }
+            case "request":
+                if(user.getGrade().getValue()>3){
+                    return getJournalRequestNoti(user);
+                }
+                else{
+                    throw new BusinessException(ExceptionCode.USER_MISMATCH);
+                }
+            case "like":
+                if(user.getGrade().getValue()>3){
+                    return getJournalLikeNoti(user);
+                }
+                else{
+                    return getUserCommentLikeNoti(user);
+                }
+            default:
+                throw new BusinessException(ExceptionCode.NOT_VALID_ERROR);
+        }
+    }
 
 }

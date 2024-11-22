@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Nanum+Myeongjo:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&family=Song+Myung&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700');
+    </style>
+</head>
+<body style="
+            font-family: serif;
+            font-weight: 400;
+            font-style: normal;
+            background-color: #f9f9f9;
+            padding: 20px;
+            margin: 0;
+">
+<div style="max-width: 600px; margin: 0 auto; background-color: #F2F2F7; padding: 20px; border-radius: 5px; border: 1px solid #ddd;">
+    <div style="text-align: center; border-bottom: 1px solid black; padding-bottom: 10px;">
+        <img style="
+             width: 50%;
+             height: auto;"
+             src="https://onlinen-news-bucket.s3.ap-northeast-2.amazonaws.com/온라인신문_로고.png"
+             alt="header logo">
+    </div>
+    <div>
+        <div style="width:100%; border-spacing: 0; flex-direction: row; display: flex; align-items:flex-start; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding: 10px 0;"
+             th:each="article : ${articles}">
+            <!-- 텍스트 열 -->
+            <div style=" width: 100%;height: 150px; padding-left: 10px; padding-right:10px;flex-direction: column; justify-content: flex-start; flex-grow:1; overflow:hidden;">
+                <div style="font-family: 'Noto Sans KR', Arial, sans-serif;  font-size: 22px; font-weight: bold; color: black;"
+                     th:text="${article.articleTitle}">인공지능, 미래 사회의 변화를 이끌다
+                </div>
+                <p style="font-family: 'Noto Sans KR', Arial, sans-serif;  font-size: 15px; color: black; margin: 5px 0 0;"
+                   th:text="${article.reporter}">홍길동 기자</p>
+                <p style="  width: 100%;
+                            max-height:86px;
+                            font-family: 'Noto Sans KR', Arial, sans-serif;
+                            font-weight: 400;
+                            font-style: normal;
+                            font-size: 15px;
+                            color: dimgray;
+                            margin: 5px 0 0;
+                            line-height: 1.18; /* 줄 간격 */
+                            overflow: hidden;
+                            text-overflow: ellipsis; /* 잘린 텍스트에 '...' 표시 */
+                            display: -webkit-box; /* 텍스트를 박스 형태로 설정 */
+                            -webkit-box-orient: vertical; /* 박스 방향 수직 설정 */
+                            -webkit-line-clamp: 2; /* 최대 3줄 표시 */
+                            white-space: normal; /* 줄바꿈 허용 */
+                            word-wrap: break-word;"
+                   th:text="${article.articleContent}">최근 NASA의 우주인 훈련 프로그램에서 가장 중요한 훈련은 바로 "잘 먹고 잘 자는 법"이라고 한다. 우주
+                    비행사들이 지구를 떠나 우주로 가기 전에 가장 큰 난관은 지구의 중력에서 벗어난 채로 생활하는 것이다. 그런데 여기서 놀라운 사실은, 우주에서 살아남기 위한 가장 큰 요소가 바로
+                    중력이 아니라 '잠'이라고 한다 또한 우주식사는 한 끼에 몇 가지 선택지가 있지만, 그 맛은 지구와는 비교할 수 없을 정도로 "상상 그 이상"이라고 한다. NASA의 연구에
+                    따르면, 우주에서는 식사 후 바로 설거지를 할 필요도 없다고. 음식이 일종의 '우주 보온통'에 담겨 있어 설거지 걱정 없이 테이크아웃 방식으로 간편하게 먹을 수 있기 때문이다.
+                    하지만 우주에서의 식사는 아직도 많은 개선이 필요하다. 한 우주인은 "우주에서 제일 맛있는 음식은 사실 지구에서 가져온 마카롱"이라고 고백하며, "우주식당에서 나온 음식을 보면,
+                    마카롱이 그렇게 그리울 수 없다"고 말했다. 우주인들이 지구로 돌아왔을 때, 가장 먼저 하고 싶은 일이 바로 "맛있는 음식을 먹는 것"이라고 하니, 그들의 고충을 이해할 수 있을
+                    듯하다. 우주를 향한 꿈은 계속 커지고 있지만, 그 속에서 "잘 자고 잘 먹는 것"이 우주 여행의 핵심이라니, 우주 여행의 진정한 미션은 아직 '편안한 숙면'과 '맛있는 음식'을
+                    해결하는 것일지도 모른다!
+                </p>
+            </div>
+
+            <!-- 이미지 열 -->
+            <div style="
+                        width: 40%;
+                        text-align: center;
+                        height: 150px;
+                        display: flex;
+                        align-items: center;
+                        padding: 10px 0;
+                        justify-content: center;
+                    "
+                 th:if="${article.articleImageUrl}">
+                <img
+                        style="
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            border-radius: 5px;
+                            display: block;"
+                        th:src="${article.articleImageUrl}" alt="Article Image">
+            </div>
+
+        </div>
+    </div>
+    <div style="text-align: center; border-top: 1px solid black; margin-top: 20px; padding-top: 10px; font-size: 12px; color: #666;">
+        <p>&copy; 2024 명보 신문</p>
+    </div>
+</div>
+
+</body>
+</html>

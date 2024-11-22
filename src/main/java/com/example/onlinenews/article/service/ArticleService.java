@@ -432,4 +432,16 @@ public class ArticleService {
         }
     }
 
+    @Transactional
+    public Object deleteKeywords(Long id) {
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        if(optionalArticle.isEmpty()){
+            throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
+        }
+
+        Article article = optionalArticle.get();
+
+        articleRepository.delete(article);
+        return StateResponse.builder().code("delete keywords").message("키워드 초기화").build();
+    }
 }

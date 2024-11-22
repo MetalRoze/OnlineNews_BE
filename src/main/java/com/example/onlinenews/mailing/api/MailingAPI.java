@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface MailingAPI {
 
     @GetMapping("/sendTest")
-    public ResponseEntity<?> sendTestMailing(@RequestParam String to, @RequestParam String subject,
-                                             @RequestParam String body);
+    ResponseEntity<?> sendTestMailing(@RequestParam String to, @RequestParam String subject,
+                                      @RequestParam String body);
+
+    @GetMapping("/sendDailyTest")
+    ResponseEntity<?> sendDailyMailTest(@RequestParam String to);
 }

@@ -151,6 +151,7 @@ public class CommentService {
         comment.setLikeCount(comment.getLikeCount() + 1);
         commentRepository.save(comment);
 
+        notificationService.createCommentLikeNoti(commentLike);
         return ResponseEntity.ok("좋아요");
     }
 

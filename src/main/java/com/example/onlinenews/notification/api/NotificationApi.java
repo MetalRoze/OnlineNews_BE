@@ -29,11 +29,15 @@ public interface NotificationApi {
     List<JournalNotificationDto> getJournalRequestNoti(HttpServletRequest request);
 
     @GetMapping("/journalist/like")
-    @Operation(summary = "승인 요청 (기사, 시민기자 등록) 현황 알림", description = "기자가 승인요청에 대한 알림을 조회합니다")
+    @Operation(summary = "기사 좋아요 알림", description = "기자가 기사에 달린 좋아요 알림을 조회합니다.")
     List<LikeNotificationDto> getJournalLikeNoti(HttpServletRequest request);
 
     @GetMapping("/journalist/comment")
-    @Operation(summary = "승인 요청 (기사, 시민기자 등록) 현황 알림", description = "기자가 승인요청에 대한 알림을 조회합니다")
+    @Operation(summary = "기사 댓글 알림", description = "기자가 기사에 달린 댓글 알림을 조회합니다.")
     List<JournalNotificationDto> getJournalCommentNoti(HttpServletRequest request);
 
+
+    @GetMapping("/user/like")
+    @Operation(summary = "사용자 댓글 좋아요 알림", description = "사용자가 댓글에 달린 좋아요 알림을 조회합니다.")
+    List<LikeNotificationDto> getUserCommentLikeNoti(HttpServletRequest request);
 }

@@ -140,12 +140,12 @@ public class NotificationService {
                 .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
-    public List<JournalNotificationDto> getUserCommentLikeNoti(String email) {
+    public List<LikeNotificationDto> getUserCommentLikeNoti(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
-        return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_COMMENT).stream()
-                .filter(notification -> notification instanceof JournalistNotification)
-                .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
+        return notificationRepository.findByUserAndType(user, NotificationType.USER_LIKE).stream()
+                .filter(notification -> notification instanceof UserNotification)
+                .map(notification -> LikeNotificationDto.fromEntity((UserNotification) notification))
                 .collect(Collectors.toList());
     }
 

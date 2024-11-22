@@ -41,4 +41,10 @@ public class NotificationController implements NotificationApi {
         String email = authService.getEmailFromToken(request);
         return notificationService.getJournalCommentNoti(email);
     }
+
+    @Override
+    public List<LikeNotificationDto> getUserCommentLikeNoti(HttpServletRequest request) {
+        String email = authService.getEmailFromToken(request);
+        return notificationService.getUserCommentLikeNoti(email);
+    }
 }

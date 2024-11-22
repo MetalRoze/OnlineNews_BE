@@ -98,6 +98,7 @@ public class UserService {
                 .bio(null)
                 .publisher(null)
                 .createdAt(LocalDateTime.now())
+                .nickname(requestDTO.getUser_nickname())
                 .grade(UserGrade.GENERAL_MEMBER).build();
 
         userRepository.save(user);

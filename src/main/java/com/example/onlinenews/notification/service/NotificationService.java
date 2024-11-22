@@ -4,11 +4,13 @@ import com.example.onlinenews.comment.entity.Comment;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.ArticleLike;
-import com.example.onlinenews.notification.dto.JournalNotificationDto;
+import com.example.onlinenews.like.entity.CommentLike;
+import com.example.onlinenews.notification.dto.CommentNotificationDto;
 import com.example.onlinenews.notification.dto.LikeNotificationDto;
 import com.example.onlinenews.notification.entity.JournalistNotification;
 import com.example.onlinenews.notification.entity.Notification;
 import com.example.onlinenews.notification.entity.NotificationType;
+import com.example.onlinenews.notification.entity.UserNotification;
 import com.example.onlinenews.notification.repository.NotificationRepository;
 import com.example.onlinenews.request.entity.Request;
 import com.example.onlinenews.user.entity.User;
@@ -85,7 +87,34 @@ public class NotificationService {
                 .build();
         notificationRepository.save(notification);
     }
-
+    //댓글 좋아요 알림
+    public void createCommentLikeNoti (CommentLike commentLike){
+        UserNotification notification = UserNotification.builder()
+                .user(commentLike.getComment().getUser())
+                .type(NotificationType.USER_LIKE)
+                .message(commentLike.getComment().getContent()+" "+NotificationType.USER_LIKE.getMessage())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .targetId(commentLike.getId())
+                .senderName(commentLike.getUser().getName())
+                .reply(null)
+                .build();
+        notificationRepository.save(notification);
+    }
+    //댓글 좋아요 알림
+    public void createReplyNoti (Comment reply){
+        UserNotification notification = UserNotification.builder()
+                .user(reply.getParent().getUser())
+                .type(NotificationType.USER_REPLY)
+                .message(reply.getParent().getContent()+" "+NotificationType.USER_REPLY.getMessage())
+                .isRead(false)
+                .createdAt(LocalDateTime.now())
+                .targetId(reply.getId())
+                .senderName(reply.getUser().getName())
+                .reply(reply.getContent())
+                .build();
+        notificationRepository.save(notification);
+    }
     //알림 읽음
     @Transactional
     public boolean updateIsRead(String email, Long notificationId){
@@ -97,14 +126,14 @@ public class NotificationService {
         return notification.isRead();
     }
 
-    public List<JournalNotificationDto> getJournalRequestNoti(String email) {
+    public List<CommentNotificationDto> getJournalRequestNoti(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         List<Notification> notifications = notificationRepository.findByUserAndTypes(user, List.of(NotificationType.REQUEST, NotificationType.ENROLL));
 
         return notifications.stream()
                 .filter(notification -> notification instanceof JournalistNotification)
-                .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
+                .map(notification -> CommentNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
 
@@ -117,13 +146,31 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
-    public List<JournalNotificationDto> getJournalCommentNoti(String email) {
+    public List<CommentNotificationDto> getJournalCommentNoti(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
         return notificationRepository.findByUserAndType(user, NotificationType.REPORTER_COMMENT).stream()
                 .filter(notification -> notification instanceof JournalistNotification)
-                .map(notification -> JournalNotificationDto.fromEntity((JournalistNotification) notification))
+                .map(notification -> CommentNotificationDto.fromEntity((JournalistNotification) notification))
                 .collect(Collectors.toList());
     }
+    public List<LikeNotificationDto> getUserCommentLikeNoti(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUserAndType(user, NotificationType.USER_LIKE).stream()
+                .filter(notification -> notification instanceof UserNotification)
+                .map(notification -> LikeNotificationDto.fromEntity((UserNotification) notification))
+                .collect(Collectors.toList());
+    }
+
+    public List<CommentNotificationDto> getUserReplyNoti(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
+
+        return notificationRepository.findByUserAndType(user, NotificationType.USER_REPLY).stream()
+                .filter(notification -> notification instanceof UserNotification)
+                .map(notification -> CommentNotificationDto.fromEntity((UserNotification) notification))
+                .collect(Collectors.toList());
+    }
+
 
 }

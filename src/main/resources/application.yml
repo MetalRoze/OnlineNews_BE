@@ -7,19 +7,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
-
   mail:
     protocol: smtp
     host: smtp.gmail.com
@@ -33,25 +30,20 @@ spring:
           starttls:
             enable: true
           auth: true
-
 cloud:
   aws:
     s3:
       bucket: onlinen-news-bucket
-
     credentials:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
-
 jwt:
   secret: ${JWT_SECRET}
   accessExpiration: 3600000
   refreshExpiration: 1209600000
   issuer: metalroze
-
 secretKey:
   admin: ${ADMIN_SECRET_KEY}
   editor: ${EDITOR_SECRET_KEY}
-
 server:
   port: 8080

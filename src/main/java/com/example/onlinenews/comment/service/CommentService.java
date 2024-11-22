@@ -11,6 +11,7 @@ import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.like.entity.CommentLike;
 import com.example.onlinenews.like.repository.CommentLikeRepository;
+import com.example.onlinenews.notification.service.NotificationService;
 import com.example.onlinenews.user.entity.User;
 import com.example.onlinenews.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class CommentService {
     private final CommentLikeRepository commentLikeRepository;
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 댓글 작성
     public ResponseEntity<CommentResponseDTO> createComment(String email, CommentRequestDTO requestDTO) {
@@ -49,7 +51,8 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
 
         CommentResponseDTO responseDTO = new CommentResponseDTO(savedComment, user, commentLikeRepository);
-
+        //댓글 알림
+        notificationService.createCommentNoti(savedComment);
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -74,7 +77,7 @@ public class CommentService {
         commentRepository.save(parentComment);
 
         CommentResponseDTO responseDTO = new CommentResponseDTO(reply, user, commentLikeRepository);
-
+        notificationService.createReplyNoti(reply);
         return ResponseEntity.ok(responseDTO);  // 새로 작성된 대댓글만 반환
     }
 
@@ -148,6 +151,7 @@ public class CommentService {
         comment.setLikeCount(comment.getLikeCount() + 1);
         commentRepository.save(comment);
 
+        notificationService.createCommentLikeNoti(commentLike);
         return ResponseEntity.ok("좋아요");
     }
 

@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum RequestStatus {
     PENDING("승인대기"),
-    APPROVED("승인됨"),
-    HOLDING("보류됨"),
-    REJECTED("거절됨");
+    APPROVED("승인"),
+    HOLDING("보류"),
+    REJECTED("거절");
 
     private final String description;
 

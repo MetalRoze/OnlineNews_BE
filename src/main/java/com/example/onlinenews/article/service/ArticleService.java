@@ -435,11 +435,13 @@ public class ArticleService {
     @Transactional
     public Object deleteKeywords(Long id) {
         Optional<Article> optionalArticle = articleRepository.findById(id);
-        if(optionalArticle.isEmpty()){
+        if (optionalArticle.isEmpty()) {
             throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
         }
+
         Article article = optionalArticle.get();
 
+        // 키워드 초기화 (리셋)
         article.getKeywords().clear();
 
         // 변경사항을 저장 (JPA의 @Transactional로 인해 자동 플러시됨)
@@ -450,4 +452,5 @@ public class ArticleService {
                 .message("키워드 초기화 완료")
                 .build();
     }
+
 }

@@ -5,6 +5,7 @@ import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.service.JpaUserDetailService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -142,6 +143,9 @@ public class JwtTokenProvider {
 
             return !claims.getBody().getExpiration().before(new Date());
 
+        } catch (ExpiredJwtException e) {
+            log.error("Expired JWT token: {}", token, e);
+            throw new BusinessException(ExceptionCode.TOKEN_EXPIRED);
         } catch (Exception e) {
             log.error("Invalid JWT token: {}", token, e);
             throw new BusinessException(ExceptionCode.TOKEN_NOT_VALID);

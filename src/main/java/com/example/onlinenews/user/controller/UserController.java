@@ -193,4 +193,17 @@ public class UserController implements UserAPI {
         String email = authService.getEmailFromToken(httpServletRequest);
         return userService.getStaffsByUserGrade(email, keyword);
     }
+
+    @Override
+    public ResponseEntity<?> getCustomKeywords(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        List<String> keywords = userService.getCustomKeywords(email);
+        return ResponseEntity.ok(keywords);
+    }
+
+    @Override
+    public ResponseEntity<?> clearCustomKeywords(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return ResponseEntity.ok(userService.clearCustomKeywords(email));
+    }
 }

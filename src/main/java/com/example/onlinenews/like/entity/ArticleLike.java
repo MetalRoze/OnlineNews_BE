@@ -2,7 +2,6 @@ package com.example.onlinenews.like.entity;
 
 import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.keyword.entity.Keyword;
-import com.example.onlinenews.keyword_article_like.entity.KeywordArticleLike;
 import com.example.onlinenews.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -32,8 +31,6 @@ public class ArticleLike {
     @ManyToOne
     private Article article;
 
-    @OneToMany(mappedBy = "articleLike", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<KeywordArticleLike> keywordArticleLikes = new ArrayList<>();
 
     @Column(nullable = false)
     @CreatedDate

@@ -44,7 +44,6 @@ public class ArticleLikeService {
 
         articleLikeRepository.save(articleLike);
         notificationService.createLikeNoti(articleLike);
-        updateCustomKeywords(user, article.getKeywords());
 
         return articleLike.getId();
     }
@@ -84,15 +83,4 @@ public class ArticleLikeService {
 //        return optionalArticleLike.isPresent();
         return optionalArticleLike.map(ArticleLike::getId).orElse(null);
     }
-
-    private void updateCustomKeywords(User user ,List<String> articleKeywords){
-        //초기화말고 변하는 걸로 바꿔야됨.. 일단 테스트
-        user.getCustomKeywords().clear();
-
-        //기사의 키워드를 사용자 맞춤형 키워드로 설정
-        user.getCustomKeywords().addAll(articleKeywords);
-
-        userRepository.save(user);
-    }
-
 }

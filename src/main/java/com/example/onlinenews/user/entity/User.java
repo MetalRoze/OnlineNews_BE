@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.joda.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -63,11 +62,9 @@ public class User {
     @Column
     private String nickname;
 
-    // 사용자의 맞춤형 키워드 리스트
-    @ElementCollection
-    @CollectionTable(name = "user_keywords", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "keyword")
-    private List<String> customKeywords = new ArrayList<>();
+    // 여러 개의 키워드를 가진 사용자
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Keyword> keywords;
 
     public void updatePassword(String encodedPassword) {
         this.pw = encodedPassword;
@@ -99,10 +96,5 @@ public class User {
         } else {
             return "여성";
         }
-    }
-
-    public void updateCustomKeywords(List<String> newKeywords){
-        this.customKeywords.clear();
-        this.customKeywords.addAll(newKeywords);
     }
 }

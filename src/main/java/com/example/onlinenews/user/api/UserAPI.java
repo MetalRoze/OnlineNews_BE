@@ -16,14 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/user")
 @Tag(name = "User", description = "사용자 관련 API")
@@ -88,4 +81,13 @@ public interface UserAPI {
     @GetMapping("/publisher/grade")
     @Operation(summary = "출판사 직원 조회", description = "출판사에 속한 직원들을 조회합니다.")
     List<User> getStaffsByUserGrade(HttpServletRequest httpServletRequest, UserGrade keyword);
+
+    @GetMapping("/keywords")
+    @Operation(summary = "사용자 키워드 조회", description = "사용자의 개인 키워드를 조회합니다.")
+    ResponseEntity<?> getCustomKeywords(HttpServletRequest httpServletRequest);
+
+    @DeleteMapping("/keywords")
+    @Operation(summary = "사용자 키워드 초기화", description = "사용자의 키워드를 초기화합니다.")
+    ResponseEntity<?> clearCustomKeywords(HttpServletRequest httpServletRequest);
+
 }

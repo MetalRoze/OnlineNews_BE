@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
 import com.example.onlinenews.mailing.repository.MailingRepository;
@@ -404,5 +405,27 @@ public class UserService {
 
         Publisher publisher = publisherService.getPublisherByName(optionalUser.get().getPublisher().getName());
         return userRepository.findByPublisherAndGrade(publisher, userGrade);
+    }
+
+    public List<String> getCustomKeywords(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+        return user.getCustomKeywords();
+
+    }
+
+    public Object clearCustomKeywords(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+        user.getCustomKeywords().clear();
+        userRepository.save(user);
+
+        return StateResponse.builder().code("사용자 키워드 초기화").message("clear").build();
     }
 }

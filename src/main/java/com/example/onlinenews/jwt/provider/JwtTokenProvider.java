@@ -177,7 +177,12 @@ public class JwtTokenProvider {
      * @return
      */
     public JwtToken reissueToken(String refreshToken) {
-        String email = getAccount(refreshToken);
+        String email;
+        try {
+            email = getAccount(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new BusinessException(ExceptionCode.REFRESH_TOKEN_EXPIRED);
+        }
 
         JwtToken jwtDto = JwtToken.builder()
                 .accessToken(generateAccessToken(email))

@@ -5,6 +5,7 @@ import com.example.onlinenews.article.repository.ArticleRepository;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
 import com.example.onlinenews.error.StateResponse;
+import com.example.onlinenews.keyword.entity.Keyword;
 import com.example.onlinenews.like.dto.ArticleLikeDto;
 import com.example.onlinenews.like.entity.ArticleLike;
 import com.example.onlinenews.like.repository.ArticleLikeRepository;
@@ -44,7 +45,9 @@ public class ArticleLikeService {
 
         articleLikeRepository.save(articleLike);
         notificationService.createLikeNoti(articleLike);
-        updateCustomKeywords(user, article.getKeywords());
+//        List<Keyword> keywords = article.getKeywords();
+//        articleLike.setK
+        updateUserKeywords(user, article.getKeywords());
 
         return articleLike.getId();
     }
@@ -85,14 +88,19 @@ public class ArticleLikeService {
         return optionalArticleLike.map(ArticleLike::getId).orElse(null);
     }
 
-    private void updateCustomKeywords(User user ,List<String> articleKeywords){
-        //초기화말고 변하는 걸로 바꿔야됨.. 일단 테스트
-        user.getCustomKeywords().clear();
+    private void updateUserKeywords(User user ,List<String> articleKeywords){
+        List<String> customKeywords = user.getCustomKeywords();  // 사용자 키워드 리스트 가져오기
 
-        //기사의 키워드를 사용자 맞춤형 키워드로 설정
-        user.getCustomKeywords().addAll(articleKeywords);
+        // 기사에서 가져온 키워드 리스트를 사용자 키워드 리스트에 추가
+        for (String keyword : articleKeywords) {
+            // 이미 키워드가 사용자 키워드에 없다면 추가
+            if (!customKeywords.contains(keyword)) {
+                customKeywords.add(keyword);
+            }
+        }
 
-        userRepository.save(user);
+        // 사용자 키워드 리스트를 업데이트
+        userRepository.save(user);  // 사용자의 키워드 리스트 저장
     }
 
 }

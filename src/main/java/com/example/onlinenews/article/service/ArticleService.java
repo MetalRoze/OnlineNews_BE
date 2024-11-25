@@ -59,7 +59,7 @@ public class ArticleService {
     private String bucketName;
 
     // 기사 작성
-    public ResponseEntity<String> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
+    public ResponseEntity<Long> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
@@ -107,7 +107,7 @@ public class ArticleService {
         if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
             requestService.create(user, savedArticle);
         }
-        return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
+        return ResponseEntity.ok(savedArticle.getId());
     }
 
     // 기사 검색

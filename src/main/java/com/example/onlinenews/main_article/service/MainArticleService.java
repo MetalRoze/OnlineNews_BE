@@ -61,10 +61,20 @@ public class MainArticleService {
 
     //메인에 카테고리 별로 2개
     public List<MainArticleDto> mainTwoArticlesByCategory(Category category) {
-        return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
-                .limit(2)
-                .map(MainArticleDto::fromEntity)
-                .collect(Collectors.toList());
+        Category headlineCategory = getHeadLineCategory();
+
+        if (headlineCategory != category) {
+            return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
+                    .limit(2)
+                    .map(MainArticleDto::fromEntity)
+                    .collect(Collectors.toList());
+        } else {
+            return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
+                    .skip(1)
+                    .limit(2)
+                    .map(MainArticleDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
     }
 
     public List<MainArticleDto> mainArticleByCategory(Category category) {
@@ -94,6 +104,13 @@ public class MainArticleService {
             }
         }
         return headArticles;
+    }
+
+    private Category getHeadLineCategory(){
+        return mainArticleRepository.findAllByOrderByArticleViewsDesc().stream()
+                .findFirst()
+                .map(MainArticle::getCategory)
+                .orElse(null);
     }
 
 }

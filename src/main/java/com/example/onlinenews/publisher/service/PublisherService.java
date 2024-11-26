@@ -23,6 +23,7 @@ public class PublisherService {
     public Publisher getPublisherByName(String publisher_name){
         return publisherRepository.findByName(publisher_name);
     }
+
     public StateResponse publisherCreate(PublisherCreateRequestDTO requestDTO){
         Publisher publisher = Publisher.builder()
                 .name(requestDTO.getPublisher_name())

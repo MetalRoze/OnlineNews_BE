@@ -62,6 +62,12 @@ public class ArticleController implements ArticleAPI {
     }
 
     @Override
+    public ResponseEntity<?> getAllKeywords(HttpServletRequest servletRequest) {
+        List<String> keywords = articleService.getAllKeywords();
+        return ResponseEntity.ok(keywords);
+    }
+
+    @Override
     public void convertToPrivate(HttpServletRequest request, Long articleId) {
         String email = authService.getEmailFromToken(request);
         articleService.convertToPrivate(email,articleId);

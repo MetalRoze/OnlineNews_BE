@@ -9,19 +9,16 @@ public class RssArticleDto {
     private String publisherName;
     private String title;
     private String subtitle;
-    private String content;
     private String url;
     private String userName;
-    private String createdAt;
 
     @Builder
-    public RssArticleDto(Long publisherId, String publisherName, String title, String subtitle, String url, String userName, String createdAt, String imgUrl) {
+    public RssArticleDto(Long publisherId, String publisherName, String title, String subtitle, String url, String userName) {
         this.publisherId=publisherId;
         this.publisherName = publisherName;
         this.title = title;
         this.subtitle = subtitle;
         this.url = url;
         this.userName = userName;
-        this.createdAt=createdAt;
     }
 }

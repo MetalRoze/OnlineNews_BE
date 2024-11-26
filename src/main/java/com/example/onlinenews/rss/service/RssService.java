@@ -50,25 +50,22 @@ public class RssService {
     public List<RssArticleDto> getRssFeedsByCategoryName(String categoryName) {
         List<Rss> allRssRecords = rssRepository.findAll();
         List<RssArticleDto> allRssArticles = new ArrayList<>();
-        int i = 0;
+
         for (Rss rss : allRssRecords) {
             String rssFeedUrl = getCategoryUrlByName(rss, categoryName);
             if (rssFeedUrl != null) {
                 List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl, rss.getPublisher().getId(), rss.getPublisher().getName());
                 allRssArticles.addAll(rssArticles.subList(0, Math.min(3, rssArticles.size())));
             }
-
-            i++;
-            if (i == 3) {
-                break;
-            }
-
         }
+
         Collections.shuffle(allRssArticles);
         System.out.println(allRssArticles.size());
 
         return allRssArticles;
     }
+
+
     //출판사의 전체 기사 조회
     public List<RssArticleDto> getRssFeedsByPublisher(Long publisherId) {
         Publisher publisher = publisherRepository.findById(publisherId)
@@ -77,13 +74,11 @@ public class RssService {
         List<RssArticleDto> allArticles = new ArrayList<>();
         List<String> rssFeedUrls = getAllCategoryUrls(rss);
 
-        int i = 0;
         for (String rssFeedUrl : rssFeedUrls) {
             if (rssFeedUrl != null) {
                 List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl, rss.getPublisher().getId(), rss.getPublisher().getName());
-                allArticles.addAll(rssArticles.subList(0, Math.min(3, rssArticles.size())));
+                allArticles.addAll(rssArticles);
             }
-
         }
         return allArticles;
     }

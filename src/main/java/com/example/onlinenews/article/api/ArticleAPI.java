@@ -60,6 +60,10 @@ public interface ArticleAPI {
     @Operation(summary =  "기사 키워드 초기화", description = "해당 기사의 키워드를 초기화합니다.")
     ResponseEntity<?> deleteKeywords(HttpServletRequest servletRequest, @PathVariable Long id);
 
+    @GetMapping("/keywords")
+    @Operation(summary = "전체 기사의 키워드 조회",description = "전체 기사의 키워드 조회합니다.")
+    ResponseEntity<?> getAllKeywords(HttpServletRequest servletRequest);
+
     @PatchMapping("/{articleId}/private")
     @Operation(summary = "기사 비공개 ", description = "편집장이 기사를 비공개합니다.")
     void convertToPrivate(HttpServletRequest request, @PathVariable Long articleId);

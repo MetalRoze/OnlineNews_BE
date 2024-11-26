@@ -66,7 +66,9 @@ public class MainArticleService {
                 .map(MainArticleDto::fromEntity)
                 .collect(Collectors.toList());
     }
+    private Category getHeadLineCategory(){
 
+    }
     public List<MainArticleDto> mainArticleByCategory(Category category) {
         return mainArticleRepository.findByCategoryOrderByArticleViewsDesc(category).stream()
                 .limit(1)

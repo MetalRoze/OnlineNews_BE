@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,7 +64,7 @@ public class ArticleController implements ArticleAPI {
 
     @Override
     public ResponseEntity<?> getAllKeywords(HttpServletRequest servletRequest) {
-        List<String> keywords = articleService.getAllKeywords();
+        Map<Long, List<String>> keywords = articleService.getAllKeywords();
         return ResponseEntity.ok(keywords);
     }
 

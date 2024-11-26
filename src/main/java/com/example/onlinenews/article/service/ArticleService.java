@@ -453,4 +453,7 @@ public class ArticleService {
                 .build();
     }
 
+    public List<String> getAllKeywords(){
+        return articleRepository.findAllKeywords();
+    }
 }

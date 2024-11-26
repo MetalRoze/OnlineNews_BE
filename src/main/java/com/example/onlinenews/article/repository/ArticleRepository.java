@@ -4,6 +4,7 @@ import com.example.onlinenews.article.entity.Article;
 import com.example.onlinenews.article.entity.Category;
 import com.example.onlinenews.request.entity.RequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     // 상태에 따라 기사 목록 조회
     List<Article> findByState(RequestStatus state);
+
+    @Query("SELECT k FROM Article a JOIN a.keywords k")
+    List<String> findAllKeywords();
+
 }

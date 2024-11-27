@@ -458,13 +458,13 @@ public class ArticleService {
         Map<Long, List<String>> articleKeywordsMap = new HashMap<>();
 
         for (Object[] result : results) {
-            Long articleId = (Long) result[0];  // Article ID
-            String keyword = (String) result[1];  // Keyword
+            Long articleId = (Long) result[0];
+            String keyword = (String) result[1];
 
-            // Map에 키워드 추가
             articleKeywordsMap.computeIfAbsent(articleId, k -> new ArrayList<>()).add(keyword);
         }
 
         return articleKeywordsMap;
     }
+
 }

@@ -30,7 +30,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT k FROM Article a JOIN a.keywords k")
     List<String> findAllKeywords();
 
-    @Query("SELECT a.id, k FROM Article a JOIN a.keywords k")
+    @Query(value = "SELECT ak.article_id, ak.keyword FROM article_keywords ak", nativeQuery = true)
     List<Object[]> findArticleIdsAndKeywords();
 
 }

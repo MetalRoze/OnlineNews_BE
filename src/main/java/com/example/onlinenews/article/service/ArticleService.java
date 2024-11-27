@@ -453,15 +453,16 @@ public class ArticleService {
                 .build();
     }
 
-    public Map<Long, List<String>> getAllKeywords(){
+    public Map<Long, List<String>> getAllKeywords() {
         List<Object[]> results = articleRepository.findArticleIdsAndKeywords();
         Map<Long, List<String>> articleKeywordsMap = new HashMap<>();
 
-        // 쿼리 결과를 Map으로 변환
         for (Object[] result : results) {
-            Long articleId = (Long) result[0];  // article id
-            List<String> keywords = (List<String>) result[1];  // keywords list
-            articleKeywordsMap.put(articleId, keywords);
+            Long articleId = (Long) result[0];  // Article ID
+            String keyword = (String) result[1];  // Keyword
+
+            // Map에 키워드 추가
+            articleKeywordsMap.computeIfAbsent(articleId, k -> new ArrayList<>()).add(keyword);
         }
 
         return articleKeywordsMap;

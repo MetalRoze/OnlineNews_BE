@@ -60,7 +60,7 @@ public class KeywordService {
         customKeywords.add(requestDto.getKeyword());
 
         // 수정된 키워드 리스트를 저장
-        user.setCustomKeywords(customKeywords);  // User 엔티티의 키워드 업데이트
+        user.updateCustomKeywords(customKeywords);  // User 엔티티의 키워드 업데이트
         userRepository.save(user);
 
         return StateResponse.builder().code("키워드 추가").message("키워드 생성").build();

@@ -39,17 +39,30 @@ public class KeywordService {
                 .collect(Collectors.toList());
     }
 
-    public StateResponse keywordCreate(String email, KeywordCreateRequestDto requestDto){
+    public StateResponse keywordCreate(String email, KeywordCreateRequestDto requestDto) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if(!optionalUser.isPresent()){
-            throw  new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        if (!optionalUser.isPresent()) {
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
         }
         User user = optionalUser.get();
 
-        Keyword keyword = Keyword.builder()
-                .user(user)
-                .keyword(requestDto.getKeyword()).build();
-        keywordRepository.save(keyword);
+        // 사용자의 맞춤형 키워드 리스트
+        List<String> customKeywords = user.getCustomKeywords();
+
+        // 키워드가 50개 이상인 경우, 새로운 키워드를 추가하기 전에 앞쪽부터 삭
+        if (customKeywords.size() >= 15) {
+            int deleteCount = 1;  // 새로 추가할 키워드 1개에 대해 삭제할 키워드 수는 1개
+            for (int i = 0; i < deleteCount; i++) {
+                customKeywords.remove(0);  // 가장 앞에 있는 키워드를 삭제
+            }
+        }
+        // 새로운 키워드 추가
+        customKeywords.add(requestDto.getKeyword());
+
+        // 수정된 키워드 리스트를 저장
+        user.updateCustomKeywords(customKeywords);  // User 엔티티의 키워드 업데이트
+        userRepository.save(user);
+
         return StateResponse.builder().code("키워드 추가").message("키워드 생성").build();
     }
 }

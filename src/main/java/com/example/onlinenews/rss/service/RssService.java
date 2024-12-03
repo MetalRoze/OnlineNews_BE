@@ -95,12 +95,6 @@ public class RssService {
 
             for (SyndEntry entry : entries) {
                 String subtitle = (entry.getDescription() != null) ? entry.getDescription().getValue() : "";
-                String createdAt = (entry.getPublishedDate() != null) ? entry.getPublishedDate().toString() : "";
-
-                // createdAt이 null일때는 jsoup파싱
-                if (createdAt.isEmpty()) {
-                    createdAt = fetchPublishedDateFromHtml(index, rssUrl);
-                }
 
                 RssArticleDto rssArticleDto = RssArticleDto.builder()
                         .publisherId(pubId)
@@ -120,15 +114,15 @@ public class RssService {
     }
 
 
-    private String fetchPublishedDateFromHtml(int index, String rssFeedUrl) {
-        try {
-            Document doc = Jsoup.connect(rssFeedUrl).get();
-            Element item = doc.select("item").get(index);
-            return item.select("pubDate").text();
-        } catch (Exception e) {
-            return "";
-        }
-    }
+//    private String fetchPublishedDateFromHtml(int index, String rssFeedUrl) {
+//        try {
+//            Document doc = Jsoup.connect(rssFeedUrl).get();
+//            Element item = doc.select("item").get(index);
+//            return item.select("pubDate").text();
+//        } catch (Exception e) {
+//            return "";
+//        }
+//    }
 
     private String getCategoryUrlByName(Rss rss, String categoryName) {
         return switch (categoryName.toLowerCase()) {

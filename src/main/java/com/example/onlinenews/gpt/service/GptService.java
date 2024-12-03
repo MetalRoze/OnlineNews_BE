@@ -44,7 +44,6 @@ public class GptService {
             message.put("content", question);
 
             request.set("messages", messages);
-            request.put("max_tokens", 150);
 
             // HTTP 요청 생성
             HttpEntity<String> entity = new HttpEntity<>(request.toString(), headers);

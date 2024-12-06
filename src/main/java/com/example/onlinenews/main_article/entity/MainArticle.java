@@ -43,4 +43,8 @@ public class MainArticle {
         this.createdAt = createdAt;
         this.category = category;
     }
+
+    public void updateCreatedAt(LocalDateTime time){
+        this.createdAt = time;
+    }
 }

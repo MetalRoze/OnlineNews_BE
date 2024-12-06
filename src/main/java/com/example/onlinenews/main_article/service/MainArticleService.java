@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class MainArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public StateResponse selectArticle(String email, Long articleId) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
@@ -35,13 +37,19 @@ public class MainArticleService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND));
 
-        MainArticle mainArticle = MainArticle.builder()
-                .publisher(user.getPublisher())
-                .article(article)
-                .createdAt(LocalDateTime.now())
-                .category(article.getCategory())
-                .build();
-        mainArticleRepository.save(mainArticle);
+        //이미 함 -> 시간 업데이트
+       if(mainArticleRepository.findByArticle(article).isPresent()){
+           MainArticle mainArticle = mainArticleRepository.findByArticle(article).get();
+           mainArticle.updateCreatedAt(LocalDateTime.now());
+       }else{
+           MainArticle mainArticle = MainArticle.builder()
+                   .publisher(user.getPublisher())
+                   .article(article)
+                   .createdAt(LocalDateTime.now())
+                   .category(article.getCategory())
+                   .build();
+           mainArticleRepository.save(mainArticle);
+       }
         return StateResponse.builder().code("200").message("success").build();
     }
 

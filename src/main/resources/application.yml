@@ -45,5 +45,8 @@ jwt:
 secretKey:
   admin: ${ADMIN_SECRET_KEY}
   editor: ${EDITOR_SECRET_KEY}
+
+openai:
+  api-key: ${OPEN_AI_KEY}
 server:
   port: 8080

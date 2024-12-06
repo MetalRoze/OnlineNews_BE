@@ -67,6 +67,8 @@ dependencies {
     //rss
     implementation 'com.rometools:rome:1.15.0'
 
+    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
+
 }
 
 test {

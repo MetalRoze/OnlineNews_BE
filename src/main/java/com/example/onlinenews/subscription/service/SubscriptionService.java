@@ -66,24 +66,22 @@ public class SubscriptionService  {
     }
 
     @Transactional
-    public StateResponse unsubscribe(String email, Long id){
+    public StateResponse unsubscribe(String email, Long publisherId) {
+        // 사용자 조회
         Optional<User> optionalUser = userRepository.findByEmail(email);
-        if(!optionalUser.isPresent()){
+        if (!optionalUser.isPresent()) {
             throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
         }
         User user = optionalUser.get();
 
-        Optional<Subscription> optionalSubscription = subscriptionRepository.findById(id);
-        if(!optionalSubscription.isPresent()){
+        // 발행사 ID와 사용자로 구독 조회
+        Optional<Subscription> optionalSubscription = subscriptionRepository.findByPublisherIdAndUser(publisherId, user);
+        if (!optionalSubscription.isPresent()) {
             throw new BusinessException(ExceptionCode.SUB_NOT_FOUND);
         }
         Subscription subscription = optionalSubscription.get();
 
-        // 구독이 현재 사용자와 일치하는지 확인
-        if (!subscription.getUser().equals(user)) {
-            throw new BusinessException(ExceptionCode.SUB_NOT_MATCH_USER);
-        }
-
+        // 구독 삭제
         subscriptionRepository.delete(subscription);
         return StateResponse.builder().code("sub delete").message("구독 취소 성공").build();
     }

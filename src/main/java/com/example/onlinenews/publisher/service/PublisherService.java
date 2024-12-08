@@ -44,6 +44,7 @@ public class PublisherService {
 
     public List<PublisherDto> getByTypeList(String pub_type){
         return publisherRepository.findByType(pub_type).stream()
+                .filter(publisher -> publisher.getId() != 19) // publisherId가 19인 건 제외
                 .map(PublisherDto::fromEntity)
                 .collect(Collectors.toList());
     }

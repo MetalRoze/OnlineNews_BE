@@ -26,7 +26,7 @@ public class SubscriptionDto {
         return new SubscriptionDto(
                 subscription.getUser().getEmail(),
                 subscription.getPublisher().getName(),
-                subscription.getPublisher().getUrl(),
+                subscription.getPublisher().getImg(),
                 subscription.getPublisher().getId()
         );
     }

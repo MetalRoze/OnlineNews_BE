@@ -23,6 +23,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -59,7 +60,7 @@ public class MailingService {
         sendHtmlMail(to, "Today's Headlines", emailContent);
     }
 
-    private void sendHtmlMail(String to, String subject, String content) throws MessagingException {
+    void sendHtmlMail(String to, String subject, String content) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -74,7 +75,8 @@ public class MailingService {
         }
     }
 
-    private List<MailArticleDto> getHeadArticlesByCategory() {
+    @Transactional
+    List<MailArticleDto> getHeadArticlesByCategory() {
         List<MainArticle> articles = mainArticleService.getHeadArticlesForToday();
 
         List<MailArticleDto> mailArticles = new ArrayList<>();
@@ -95,7 +97,7 @@ public class MailingService {
         return mailArticles;
     }
 
-    private String generateEmailTemplate(List<MailArticleDto> articles) {
+    public String generateEmailTemplate(List<MailArticleDto> articles) {
         Context context = new Context();
         context.setVariable("articles", articles);  // articles 변수로 템플릿에 전달
 

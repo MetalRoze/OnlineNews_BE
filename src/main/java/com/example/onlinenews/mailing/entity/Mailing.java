@@ -48,7 +48,8 @@ public class Mailing {
     private boolean isSent; //전송여부
 
     @Builder
-    public Mailing(LocalDateTime send_at, boolean is_sent) {
+    public Mailing(User user, LocalDateTime send_at, boolean is_sent) {
+        this.user = user;
         this.sendAt = send_at;
         this.isSent = is_sent;
     }

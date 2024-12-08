@@ -59,7 +59,7 @@ public class ArticleService {
     private String bucketName;
 
     // 기사 작성
-    public ResponseEntity<String> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
+    public ResponseEntity<Long> createArticle(ArticleRequestDTO requestDTO, String email, List<MultipartFile> images) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.USER_NOT_FOUND));
 
@@ -107,7 +107,7 @@ public class ArticleService {
         if(user.getGrade().getValue() < UserGrade.REPORTER.getValue()){
             requestService.create(user, savedArticle);
         }
-        return ResponseEntity.ok("기사가 제출되었습니다. 승인을 기다려 주세요!");
+        return ResponseEntity.ok(savedArticle.getId());
     }
 
     // 기사 검색
@@ -430,6 +430,41 @@ public class ArticleService {
         if (user.getGrade().getValue() < UserGrade.EDITOR.getValue()) {
             throw new BusinessException(ExceptionCode.USER_NOT_ALLOWED);
         }
+    }
+
+    @Transactional
+    public Object deleteKeywords(Long id) {
+        Optional<Article> optionalArticle = articleRepository.findById(id);
+        if (optionalArticle.isEmpty()) {
+            throw new BusinessException(ExceptionCode.ARTICLE_NOT_FOUND);
+        }
+
+        Article article = optionalArticle.get();
+
+        // 키워드 초기화 (리셋)
+        article.getKeywords().clear();
+
+        // 변경사항을 저장 (JPA의 @Transactional로 인해 자동 플러시됨)
+        articleRepository.save(article);
+
+        return StateResponse.builder()
+                .code("delete keywords")
+                .message("키워드 초기화 완료")
+                .build();
+    }
+
+    public Map<Long, List<String>> getAllKeywords() {
+        List<Object[]> results = articleRepository.findArticleIdsAndKeywords();
+        Map<Long, List<String>> articleKeywordsMap = new HashMap<>();
+
+        for (Object[] result : results) {
+            Long articleId = (Long) result[0];
+            String keyword = (String) result[1];
+
+            articleKeywordsMap.computeIfAbsent(articleId, k -> new ArrayList<>()).add(keyword);
+        }
+
+        return articleKeywordsMap;
     }
 
 }

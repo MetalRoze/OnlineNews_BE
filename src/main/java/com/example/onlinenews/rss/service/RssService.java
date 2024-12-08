@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -45,23 +46,30 @@ public class RssService {
         return StateResponse.builder().code("200").message("success").build();
     }
 
+
     public List<RssArticleDto> getRssFeedsByCategoryName(String categoryName) {
         List<Rss> allRssRecords = rssRepository.findAll();
         List<RssArticleDto> allRssArticles = new ArrayList<>();
 
         for (Rss rss : allRssRecords) {
             String rssFeedUrl = getCategoryUrlByName(rss, categoryName);
-
             if (rssFeedUrl != null) {
                 List<RssArticleDto> rssArticles = fetchRssFeed(rssFeedUrl, rss.getPublisher().getId(), rss.getPublisher().getName());
-                allRssArticles.addAll(rssArticles);
+                allRssArticles.addAll(rssArticles.subList(0, Math.min(3, rssArticles.size())));
             }
         }
+
+        Collections.shuffle(allRssArticles);
+        System.out.println(allRssArticles.size());
+
         return allRssArticles;
     }
+
+
     //출판사의 전체 기사 조회
     public List<RssArticleDto> getRssFeedsByPublisher(Long publisherId) {
-        Publisher publisher  = publisherRepository.findById(publisherId).orElseThrow(()->new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND));
+        Publisher publisher = publisherRepository.findById(publisherId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.PUBLISHER_NOT_FOUND));
         Rss rss = rssRepository.findByPublisher(publisher);
         List<RssArticleDto> allArticles = new ArrayList<>();
         List<String> rssFeedUrls = getAllCategoryUrls(rss);
@@ -72,7 +80,6 @@ public class RssService {
                 allArticles.addAll(rssArticles);
             }
         }
-
         return allArticles;
     }
 
@@ -88,21 +95,14 @@ public class RssService {
 
             for (SyndEntry entry : entries) {
                 String subtitle = (entry.getDescription() != null) ? entry.getDescription().getValue() : "";
-                String createdAt = (entry.getPublishedDate() != null) ? entry.getPublishedDate().toString() : "";
-
-                // createdAt이 null일때는 jsoup파싱
-                if (createdAt.isEmpty()) {
-                    createdAt = fetchPublishedDateFromHtml(index, rssUrl);
-                }
 
                 RssArticleDto rssArticleDto = RssArticleDto.builder()
-                        .pubId(pubId)
+                        .publisherId(pubId)
                         .publisherName(publisherName)
                         .title(entry.getTitle())
                         .subtitle(subtitle)
                         .url(entry.getLink())
-                        .createdAt(createdAt)
-                        .author(entry.getAuthor())
+                        .userName(entry.getAuthor())
                         .build();
                 rssArticleDtos.add(rssArticleDto);
                 index++;
@@ -114,15 +114,15 @@ public class RssService {
     }
 
 
-    private String fetchPublishedDateFromHtml(int index, String rssFeedUrl) {
-        try {
-            Document doc = Jsoup.connect(rssFeedUrl).get();
-            Element item = doc.select("item").get(index);
-            return item.select("pubDate").text();
-        } catch (Exception e) {
-            return "";
-        }
-    }
+//    private String fetchPublishedDateFromHtml(int index, String rssFeedUrl) {
+//        try {
+//            Document doc = Jsoup.connect(rssFeedUrl).get();
+//            Element item = doc.select("item").get(index);
+//            return item.select("pubDate").text();
+//        } catch (Exception e) {
+//            return "";
+//        }
+//    }
 
     private String getCategoryUrlByName(Rss rss, String categoryName) {
         return switch (categoryName.toLowerCase()) {

@@ -6,8 +6,10 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.example.onlinenews.error.BusinessException;
 import com.example.onlinenews.error.ExceptionCode;
+import com.example.onlinenews.error.StateResponse;
 import com.example.onlinenews.jwt.dto.JwtToken;
 import com.example.onlinenews.jwt.provider.JwtTokenProvider;
+import com.example.onlinenews.mailing.repository.MailingRepository;
 import com.example.onlinenews.publisher.entity.Publisher;
 import com.example.onlinenews.publisher.service.PublisherService;
 import com.example.onlinenews.request.service.RequestService;
@@ -44,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final MailingRepository mailingRepository;
     private final PublisherService publisherService;
     private final RequestService requestService;
     private final PasswordEncoder passwordEncoder;
@@ -60,10 +63,12 @@ public class UserService {
     private String editorSecretKey;
 
     @Autowired
-    public UserService(UserRepository userRepository, PublisherService publisherService, RequestService requestService,
+    public UserService(UserRepository userRepository, MailingRepository mailingRepository,
+                       PublisherService publisherService, RequestService requestService,
                        PasswordEncoder passwordEncoder, AmazonS3 amazonS3,
                        JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
+        this.mailingRepository = mailingRepository;
         this.publisherService = publisherService;
         this.requestService = requestService;
         this.passwordEncoder = passwordEncoder;
@@ -83,7 +88,7 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    public void createGeneralUser(GeneralCreateRequestDTO requestDTO) {
+    public Long createGeneralUser(GeneralCreateRequestDTO requestDTO) {
         User user = User.builder()
                 .email(requestDTO.getUser_email())
                 .pw(requestDTO.getUser_pw())
@@ -94,9 +99,11 @@ public class UserService {
                 .bio(null)
                 .publisher(null)
                 .createdAt(LocalDateTime.now())
+                .nickname(requestDTO.getUser_nickname())
                 .grade(UserGrade.GENERAL_MEMBER).build();
 
         userRepository.save(user);
+        return user.getId();
     }
 
     public void createJournalistUser(JournallistCreateRequestDTO requestDTO) {
@@ -322,6 +329,7 @@ public class UserService {
         String maskedPassword = "*".repeat(12);
         responseDTO.setEncodedPw(maskedPassword);
 
+        responseDTO.setMailing(mailingRepository.existsByUser(user));
         return responseDTO;
     }
 
@@ -379,7 +387,7 @@ public class UserService {
         return user.getGrade();
     }
 
-    public List<User> getStaffs (String email){
+    public List<User> getStaffs(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
@@ -388,7 +396,8 @@ public class UserService {
         Publisher publisher = publisherService.getPublisherByName(optionalUser.get().getPublisher().getName());
         return userRepository.findByPublisher(publisher);
     }
-    public List<User> getStaffsByUserGrade (String email, UserGrade userGrade){
+
+    public List<User> getStaffsByUserGrade(String email, UserGrade userGrade) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
             throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
@@ -396,5 +405,27 @@ public class UserService {
 
         Publisher publisher = publisherService.getPublisherByName(optionalUser.get().getPublisher().getName());
         return userRepository.findByPublisherAndGrade(publisher, userGrade);
+    }
+
+    public List<String> getCustomKeywords(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+        return user.getCustomKeywords();
+
+    }
+
+    public Object clearCustomKeywords(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()){
+            throw new BusinessException(ExceptionCode.USER_NOT_FOUND);
+        }
+        User user = optionalUser.get();
+        user.getCustomKeywords().clear();
+        userRepository.save(user);
+
+        return StateResponse.builder().code("사용자 키워드 초기화").message("clear").build();
     }
 }

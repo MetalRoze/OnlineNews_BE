@@ -77,7 +77,7 @@ public class CommentService {
         commentRepository.save(parentComment);
 
         CommentResponseDTO responseDTO = new CommentResponseDTO(reply, user, commentLikeRepository);
-
+        notificationService.createReplyNoti(reply);
         return ResponseEntity.ok(responseDTO);  // 새로 작성된 대댓글만 반환
     }
 
@@ -151,6 +151,7 @@ public class CommentService {
         comment.setLikeCount(comment.getLikeCount() + 1);
         commentRepository.save(comment);
 
+        notificationService.createCommentLikeNoti(commentLike);
         return ResponseEntity.ok("좋아요");
     }
 

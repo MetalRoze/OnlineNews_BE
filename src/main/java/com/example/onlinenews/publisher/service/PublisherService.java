@@ -23,6 +23,7 @@ public class PublisherService {
     public Publisher getPublisherByName(String publisher_name){
         return publisherRepository.findByName(publisher_name);
     }
+
     public StateResponse publisherCreate(PublisherCreateRequestDTO requestDTO){
         Publisher publisher = Publisher.builder()
                 .name(requestDTO.getPublisher_name())
@@ -33,12 +34,13 @@ public class PublisherService {
         return StateResponse.builder().code("success!!!!!").message("신문사 추가 성공").build();
     }
 
-    public List<PublisherDto> list(){
+    public List<PublisherDto> list() {
         return publisherRepository.findAll().stream()
                 .filter(publisher -> publisher.getId() != 19) // publisherId가 19인 건 제외
                 .map(PublisherDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
 
     public List<PublisherDto> getByTypeList(String pub_type){
         return publisherRepository.findByType(pub_type).stream()

@@ -49,7 +49,7 @@ public class UserController implements UserAPI {
     }
 
     @Override
-    public ResponseEntity<?> generalSignup(GeneralSignupRequestDTO requestDTO) {
+    public ResponseEntity<Long> generalSignup(GeneralSignupRequestDTO requestDTO) {
         if (userService.emailExists(requestDTO.getUser_email())) {
             throw new BusinessException(ExceptionCode.EMAIL_CONFLICT);
         }
@@ -76,8 +76,8 @@ public class UserController implements UserAPI {
         createRequestDTO.setUser_img(user_img);
         createRequestDTO.setUser_nickname(requestDTO.getUser_nickname());
 
-        userService.createGeneralUser(createRequestDTO);
-        return ResponseEntity.ok(createRequestDTO);
+        Long userId = userService.createGeneralUser(createRequestDTO);
+        return ResponseEntity.ok(userId);
     }
 
     @Override
@@ -192,5 +192,18 @@ public class UserController implements UserAPI {
     public List<User> getStaffsByUserGrade(HttpServletRequest httpServletRequest, UserGrade keyword) {
         String email = authService.getEmailFromToken(httpServletRequest);
         return userService.getStaffsByUserGrade(email, keyword);
+    }
+
+    @Override
+    public ResponseEntity<?> getCustomKeywords(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        List<String> keywords = userService.getCustomKeywords(email);
+        return ResponseEntity.ok(keywords);
+    }
+
+    @Override
+    public ResponseEntity<?> clearCustomKeywords(HttpServletRequest httpServletRequest) {
+        String email = authService.getEmailFromToken(httpServletRequest);
+        return ResponseEntity.ok(userService.clearCustomKeywords(email));
     }
 }

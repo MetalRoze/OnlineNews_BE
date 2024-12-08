@@ -11,19 +11,21 @@ import java.util.List;
 @Data
 public class MainArticleDto {
     private Long id;
+    private Long mainArticleId;
     private Category category;
-    private String articleTitle;
-    private String articleSubTitle;
+    private String title;
+    private String subtitle;
     private int views;
     private String publisherName;
     private String articleImg;
 
     @Builder
-    public MainArticleDto(Long id, Category category, String articleTitle, String articleSubTitle, int views, String publisherName,  String articleImg) {
+    public MainArticleDto(Long id, Long mainArticleId, Category category, String title, String subtitle, int views, String publisherName,  String articleImg) {
         this.id = id;
+        this.mainArticleId = mainArticleId;
         this.category = category;
-        this.articleTitle = articleTitle;
-        this.articleSubTitle = articleSubTitle;
+        this.title = title;
+        this.subtitle = subtitle;
         this.views = views;
         this.publisherName = publisherName;
         this.articleImg = articleImg;
@@ -36,6 +38,7 @@ public class MainArticleDto {
             headlineImage = mainArticle.getArticle().getImages().get(0).getImgUrl();
         }
         return new MainArticleDto(
+                mainArticle.getArticle().getId(),
                 mainArticle.getId(),
                 mainArticle.getCategory(),
                 mainArticle.getArticle().getTitle(),

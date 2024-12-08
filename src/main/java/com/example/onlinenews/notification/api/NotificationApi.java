@@ -1,6 +1,6 @@
 package com.example.onlinenews.notification.api;
 
-import com.example.onlinenews.notification.dto.JournalNotificationDto;
+import com.example.onlinenews.notification.dto.CommentNotificationDto;
 import com.example.onlinenews.notification.dto.LikeNotificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,16 +24,7 @@ public interface NotificationApi {
     ResponseEntity<?> updateIsRead(HttpServletRequest request,  @PathVariable Long notificationId);
 
 
-    @GetMapping("/journalist/request")
-    @Operation(summary = "승인 요청 (기사, 시민기자 등록) 현황 알림", description = "기자가 승인요청에 대한 알림을 조회합니다")
-    List<JournalNotificationDto> getJournalRequestNoti(HttpServletRequest request);
-
-    @GetMapping("/journalist/like")
-    @Operation(summary = "승인 요청 (기사, 시민기자 등록) 현황 알림", description = "기자가 승인요청에 대한 알림을 조회합니다")
-    List<LikeNotificationDto> getJournalLikeNoti(HttpServletRequest request);
-
-    @GetMapping("/journalist/comment")
-    @Operation(summary = "승인 요청 (기사, 시민기자 등록) 현황 알림", description = "기자가 승인요청에 대한 알림을 조회합니다")
-    List<JournalNotificationDto> getJournalCommentNoti(HttpServletRequest request);
-
+    @GetMapping("")
+    @Operation(summary = "타입별로 알림 조회", description = "type 별로 알림을 조회합니다.")
+    List<?> getNotiByType(HttpServletRequest request, @RequestParam String type);
 }

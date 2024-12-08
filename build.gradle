@@ -55,16 +55,19 @@ dependencies {
     //mailing
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     //jackson 모듈 추가
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.17.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    
+
     //사용하려는 Jsoup 버전 
     implementation 'org.jsoup:jsoup:1.15.4'
 
     //rss
     implementation 'com.rometools:rome:1.15.0'
+
+    implementation 'io.github.flashvayne:chatgpt-spring-boot-starter:1.0.4'
 
 }
 

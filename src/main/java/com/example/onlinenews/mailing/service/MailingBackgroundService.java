@@ -23,7 +23,7 @@ public class MailingBackgroundService {
     private MailingRepository mailingRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?")
+    @Scheduled(cron = "0 0 9 * * *")
     public void sendDailyEmails() {
         // 메일링 구독자를 가져옵니다.
         List<Mailing> mailingList = mailingRepository.findAll();
